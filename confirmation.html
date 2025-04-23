@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Commande - KoLo Livraison</title>
+    <style>
+        /* Styles généraux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('https://source.unsplash.com/random/1920x1080/?food');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .confirmation-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            color: #333;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .confirmation-icon {
+            font-size: 60px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #ff4e00;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .order-number {
+            background-color: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 15px 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #e64600, #ff8033);
+        }
+
+        .steps {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .step {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background-color: #ff4e00;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex-grow: 1;
+        }
+
+        /* Styles pour mobile */
+        @media screen and (max-width: 768px) {
+            .header {
+                font-size: 24px;
+                padding: 12px;
+                width: 95%;
+            }
+            
+            .confirmation-container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .order-number {
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🍔 KoLo Livraison - Repas Universitaires 🍕</div>
+
+    <div class="confirmation-container">
+        <div class="confirmation-icon">✅</div>
+        <h1>Commande Confirmée!</h1>
+        <p>Merci pour votre commande. Nous l'avons bien reçue et elle est en cours de traitement.</p>
+        
+        <div class="order-number">
+            Commande #<span id="order-id">KL-</span>
+        </div>
+        
+        <p>Un livreur vous contactera très bientôt pour confirmer la livraison.</p>
+        
+        <div class="steps">
+            <h3>Prochaines étapes:</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">Votre commande est en cours de préparation.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">Un livreur vous appellera pour confirmer la livraison.</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">Votre repas sera livré rapidement à l'emplacement indiqué.</div>
+            </div>
+        </div>
+        
+        <p>Temps estimé de livraison: <strong>30-45 minutes</strong></p>
+        
+        <a href="index.html" class="btn">Retour à l'accueil</a>
+    </div>
+
+    <script>
+        // Génération d'un numéro de commande aléatoire
+        window.onload = function() {
+            const date = new Date();
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            
+            const orderId = `KL-${day}${month}-${randomNum}`;
+            document.getElementById('order-id').textContent = orderId;
+            
+            // Récupérer les paramètres de l'URL pour afficher plus d'informations si nécessaire
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Écouter les événements de retour pour éviter de revenir à la page de confirmation
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function() {
+                window.history.pushState(null, "", window.location.href);
+                redirectToHome();
+            };
+        };
+        
+        // Redirection vers la page d'accueil
+        function redirectToHome() {
+            window.location.href = "index.html";
+        }
+        
+        // Pour empêcher la soumission à nouveau d'une commande si l'utilisateur actualise la page
+        if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_RELOAD) {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
