@@ -621,9 +621,8 @@
         <ul class="nav-links" id="navLinks">
             <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
             <li><a href="#menu"><i class="fas fa-utensils"></i> Menu</a></li>
-            <li><a href="#" onclick="if(prompt('Entré le code fournisseur :')==='marcio@')location.href='fournisseur.html';else alert('Code incorrect');"><i class="fas fa-utensils"></i> Accès fournisseur</a></li>
-            <li><a href="#contact"><i class="fas fa-info-circle"></i> Infos</a></li>
-            <li><a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            <li><a href="#" onclick="if(prompt('Entré le code fournisseur :')==='marcio@')location.href='fournisseur.html';else alert('Code incorrect');"><i class="fas fa-utensils"></i> Accès fournisseur</a></li>   
+            
         </ul>
         
         <div class="mobile-menu-icon" onclick="toggleMenu()">
@@ -953,86 +952,91 @@
         </div>
 
         <!-- Formulaire de commande -->
-        <div class="order-box">
-            <h2>Votre Commande</h2>
-            <div class="order-items" id="order-items">
-                <!-- Les articles commandés apparaîtront ici -->
-                <div class="order-item" id="empty-cart">
-                    Votre panier est vide
-                </div>
-            </div>
-            <div class="order-total" id="order-total">
-                Total: 0 FCFA
-            </div>
-
-            <form id="order-form">
-                <div class="form-group">
-                    <label for="name">Nom et Prénom</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Numéro de téléphone</label>
-                    <input type="tel" id="phone" required>
-                </div>
-                </div>
-                <div class="form-group">
-                    <label for="payment">Mode de paiement</label>
-                    <select id="payment" required>
-                        <option value="">Choisir un mode de paiement</option>
-                        <option value="cash">Paiement à la livraison</option>
-                        <option value="mobile">MTN money 05 54 55 95 33</option>
-                        <option value="mobile">MOOV money 01 53 70 71 86</option>
-                        <option value="mobile">WAVE 07 19 98 30 44</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-submit">Confirmer la commande</button>
-            </form>
+<div class="order-box">
+    <h2>Votre Commande</h2>
+    <div class="order-items" id="order-items">
+        <!-- Les articles commandés apparaîtront ici -->
+        <div class="order-item" id="empty-cart">
+            Votre panier est vide
         </div>
     </div>
+    <div class="order-total" id="order-total">
+        Total: 0 FCFA
+    </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+    <form id="order-form">
+        <div class="form-group">
+            <label for="name">Nom et Prénom</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Numéro de téléphone</label>
+            <input type="tel" id="phone" required>
+        </div>
+        <div class="form-group">
+            <label for="location">Lieu de livraison</label>
+            <input type="text" id="location" required>
+        </div>
+        <div class="form-group">
+            <label for="details">Détails supplémentaires</label>
+            <textarea id="details" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="payment">Mode de paiement</label>
+            <select id="payment" required>
+                <option value="">Choisir un mode de paiement</option>
+                <option value="cash">Paiement à la livraison</option>
+                <option value="mtn">MTN money 05 54 55 95 33</option>
+                <option value="moov">MOOV money 01 53 70 71 86</option>
+                <option value="wave">WAVE 07 19 98 30 44</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-submit">Confirmer la commande</button>
+    </form>
+</div>
 
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
-            authDomain: "kolo-livraison.firebaseapp.com",
-            databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
-            projectId: "kolo-livraison",
-            storageBucket: "kolo-livraison.firebasestorage.app",
-            messagingSenderId: "78667636312",
-            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-            measurementId: "G-R79LC3XQL4"
-        };
+<!-- Script Firebase -->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        // Suite du script Firebase
-const database = getDatabase(app);
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
+        authDomain: "kolo-livraison.firebaseapp.com",
+        databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
+        projectId: "kolo-livraison",
+        storageBucket: "kolo-livraison.firebasestorage.app",
+        messagingSenderId: "78667636312",
+        appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
+        measurementId: "G-R79LC3XQL4"
+    };
 
-// Fonction pour envoyer la commande à Firebase
-function sendOrderToFirebase(orderData) {
-    const ordersRef = ref(database, 'orders');
-    const newOrderRef = push(ordersRef);
-    set(newOrderRef, {
-        ...orderData,
-        timestamp: new Date().toISOString()
-    })
-    .then(() => {
-        alert("Votre commande a été envoyée avec succès! Nous vous contacterons bientôt.");
-        clearCart();
-        document.getElementById('order-form').reset();
-    })
-    .catch((error) => {
-        console.error("Erreur lors de l'envoi de la commande: ", error);
-        alert("Une erreur s'est produite. Veuillez réessayer.");
-    });
-}
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    // Rendre la fonction sendOrderToFirebase globale
+    window.sendOrderToFirebase = function(orderData) {
+        const ordersRef = ref(database, 'orders');
+        const newOrderRef = push(ordersRef);
+        set(newOrderRef, {
+            ...orderData,
+            timestamp: new Date().toISOString()
+        })
+        .then(() => {
+            alert("Votre commande a été envoyée avec succès! Nous vous contacterons bientôt.");
+            clearCart();
+            document.getElementById('order-form').reset();
+        })
+        .catch((error) => {
+            console.error("Erreur lors de l'envoi de la commande: ", error);
+            alert("Une erreur s'est produite. Veuillez réessayer.");
+        });
+    };
 </script>
 
 <!-- Script principal -->
@@ -1042,7 +1046,7 @@ let cart = [];
 let total = 0;
 
 // Fonction pour ajouter un élément au panier
-function addToCart(item, price) {
+window.addToCart = function(item, price) {
     cart.push({item, price});
     updateCart();
     
@@ -1067,7 +1071,7 @@ function addToCart(item, price) {
             document.body.removeChild(notification);
         }, 500);
     }, 3000);
-}
+};
 
 // Fonction pour mettre à jour l'affichage du panier
 function updateCart() {
@@ -1110,53 +1114,62 @@ function updateCart() {
 }
 
 // Fonction pour supprimer un élément du panier
-function removeFromCart(index) {
+window.removeFromCart = function(index) {
     cart.splice(index, 1);
     updateCart();
-}
+};
 
 // Fonction pour vider le panier
-function clearCart() {
+window.clearCart = function() {
     cart = [];
     updateCart();
-}
+};
 
-// Gestionnaire d'événement pour le formulaire de commande
-document.getElementById('order-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Vérifier si le panier est vide
-    if (cart.length === 0) {
-        alert("Votre panier est vide. Veuillez ajouter des articles avant de commander.");
-        return;
+// Attendre que le DOM soit chargé
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestionnaire d'événement pour le formulaire de commande
+    const orderForm = document.getElementById('order-form');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Vérifier si le panier est vide
+            if (cart.length === 0) {
+                alert("Votre panier est vide. Veuillez ajouter des articles avant de commander.");
+                return;
+            }
+            
+            // Récupérer les valeurs du formulaire
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const details = document.getElementById('details').value;
+            const payment = document.getElementById('payment').value;
+            
+            // Préparer les données de commande
+            const orderData = {
+                customerName: name,
+                customerPhone: phone,
+                deliveryLocation: location,
+                locationDetails: details,
+                paymentMethod: payment,
+                items: cart.map(item => item.item),
+                itemPrices: cart.map(item => item.price),
+                totalAmount: total,
+                status: 'new'
+            };
+            
+            // Envoyer la commande à Firebase
+            window.sendOrderToFirebase(orderData);
+        });
     }
-    
-    // Récupérer les valeurs du formulaire
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const location = document.getElementById('location').value;
-    const details = document.getElementById('details').value;
-    const payment = document.getElementById('payment').value;
-    
-    // Préparer les données de commande
-    const orderData = {
-        customerName: name,
-        customerPhone: phone,
-        deliveryLocation: location,
-        locationDetails: details,
-        paymentMethod: payment,
-        items: cart.map(item => item.item),
-        itemPrices: cart.map(item => item.price),
-        totalAmount: total,
-        status: 'new'
-    };
-    
-    // Envoyer la commande à Firebase
-    sendOrderToFirebase(orderData);
+
+    // Initialiser le panier
+    updateCart();
 });
 
 // Fonction pour filtrer par catégorie
-function filterByCategory() {
+window.filterByCategory = function() {
     const category = document.getElementById('category-filter').value;
     const boxes = document.querySelectorAll('.box');
     
@@ -1173,10 +1186,10 @@ function filterByCategory() {
             }
         });
     }
-}
+};
 
 // Fonction pour filtrer par prix
-function filterByPrice() {
+window.filterByPrice = function() {
     const priceRange = document.getElementById('price-filter').value;
     const cards = document.querySelectorAll('.card');
     
@@ -1196,10 +1209,10 @@ function filterByPrice() {
             card.style.display = 'none';
         }
     });
-}
+};
 
 // Fonction de recherche de plats
-function searchPlats() {
+window.searchPlats = function() {
     const searchTerm = document.getElementById('search-input').value.toLowerCase();
     const cards = document.querySelectorAll('.card');
     
@@ -1213,13 +1226,13 @@ function searchPlats() {
             card.style.display = 'none';
         }
     });
-}
+};
 
 // Toggle menu mobile
-function toggleMenu() {
+window.toggleMenu = function() {
     const navLinks = document.getElementById('navLinks');
     navLinks.classList.toggle('show');
-}
+};
 
 // Fonction pour gérer les questions fréquentes (FAQ)
 document.addEventListener('DOMContentLoaded', function() {
@@ -1242,105 +1255,41 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Fonction pour faire défiler horizontalement les sliders avec le défilement de la souris
-document.querySelectorAll('.slider-container').forEach(container => {
-    container.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        container.scrollLeft += e.deltaY;
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.slider-container').forEach(container => {
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            container.scrollLeft += e.deltaY;
+        });
     });
 });
 </script>
-
-<!-- Section FAQ -->
-<section id="faq" class="box">
-    <h2><i class="fas fa-question-circle"></i> Questions fréquentes</h2>
-    
-    <div class="faq-section">
-        <div class="faq-item">
-            <div class="faq-question">
-                Comment puis-je passer une commande ? <i class="fas fa-plus"></i>
-            </div>
-            <div class="faq-answer">
-                C'est très simple ! Parcourez notre menu, sélectionnez les plats que vous souhaitez commander en cliquant sur le bouton "Commander", puis complétez le formulaire de commande avec vos informations. Votre commande sera traitée immédiatement !
-            </div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-question">
-                Combien de temps faut-il pour être livré ? <i class="fas fa-plus"></i>
-            </div>
-            <div class="faq-answer">
-                La livraison prend généralement entre 30 et 45 minutes en fonction de votre localisation sur le campus et du volume de commandes en cours. Nous faisons notre maximum pour vous livrer le plus rapidement possible !
-            </div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-question">
-                Est-ce que la livraison est gratuite ? <i class="fas fa-plus"></i>
-            </div>
-            <div class="faq-answer">
-                Oui, la livraison est entièrement gratuite sur tout le campus universitaire !
-            </div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-question">
-                Quels modes de paiement acceptez-vous ? <i class="fas fa-plus"></i>
-            </div>
-            <div class="faq-answer">
-                Nous acceptons le paiement en espèces à la livraison ainsi que les paiements par Mobile Money (Orange Money, MTN Money, Moov Money).
-            </div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-question">
-                Comment puis-je modifier ou annuler ma commande ? <i class="fas fa-plus"></i>
-            </div>
-            <div class="faq-answer">
-                Pour modifier ou annuler votre commande, veuillez nous contacter rapidement par téléphone au numéro affiché dans la section "Contact". Notez que les modifications ou annulations ne sont possibles que dans les 10 minutes suivant votre commande.
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Section Contact -->
-<section id="contact" class="box">
-    <h2><i class="fas fa-address-card"></i> Nous contacter</h2>
-    
-    <div style="display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-start; margin: 20px 0;">
-        <div style="flex: 1; min-width: 250px; margin: 15px; text-align: left;">
-            <h3 style="color: var(--primary-blue); margin-bottom: 15px;">Informations</h3>
-            <p><i class="fas fa-map-marker-alt" style="color: var(--primary-red); margin-right: 10px;"></i> Campus universitaire</p>
-            <p><i class="fas fa-phone" style="color: var(--primary-red); margin-right: 10px;"></i> +225 05 54 55 95 33 </p>
-            <p><i class="fas fa-envelope" style="color: var(--primary-red); margin-right: 10px;"></i> contact@lokoexpress.com</p>
-            <p><i class="fas fa-clock" style="color: var(--primary-red); margin-right: 10px;"></i> Lun-Sam: 8h-10h</p>
-        </div>
-        
-        <div style="flex: 1; min-width: 250px; margin: 15px;">
-            <h3 style="color: var(--primary-blue); margin-bottom: 15px;">Envoyez-nous un message</h3>
-            <form id="contact-form">
-                <div class="form-group">
-                    <input type="text" placeholder="Votre nom" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" placeholder="Votre email" required>
-                </div>
-                <div class="form-group">
-                    <textarea placeholder="Votre message" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;" required></textarea>
-                </div>
-                <button type="submit" class="btn-submit" style="max-width: 200px;">
-                    <i class="fas fa-paper-plane"></i> Envoyer
-                </button>
-            </form>
-        </div>
-    </div>
-</section>
-
 <!-- Footer -->
 <footer>
     <div class="footer-content">
         <div class="footer-section">
             <h3>LOKO EXPRESS</h3>
-            <p>Votre service de livraison de repas sur le campus universitaire. Rapide, savoureux et abordable !</p>
+            <p>Votre service de restauration rapide sur le campus universitaire. Des repas délicieux, frais et livrés rapidement.</p>
+        </div>
+        
+        <div class="footer-section">
+            <h3>Liens Rapides</h3>
+            <a href="#">Accueil</a>
+            <a href="#menu">Menu</a>
+            <a href="#order">Commander</a>
+            <a href="#contact">Contact</a>
+            <a href="#faq">FAQ</a>
+        </div>
+        
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <p><i class="fas fa-phone"></i> +225 07 19 98 30 44</p>
+            <p><i class="fas fa-envelope"></i> contact@lokoexpress.com</p>
+            <p><i class="fas fa-map-marker-alt"></i> Campus Universitaire</p>
+        </div>
+        
+        <div class="footer-section">
+            <h3>Suivez-nous</h3>
             <div class="social-media">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-instagram"></i></a>
@@ -1348,25 +1297,10 @@ document.querySelectorAll('.slider-container').forEach(container => {
                 <a href="#"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
-        
-        <div class="footer-section">
-            <h3>Liens rapides</h3>
-            <a href="#">Accueil</a>
-            <a href="#menu">Menu</a>
-            <a href="#order">Commander</a>
-            <a href="#faq">FAQ</a>
-            <a href="#contact">Contact</a>
-        </div>
-        
-        <div class="footer-section">
-            <h3>Horaires</h3>
-            <p>Lundi - Samedi: 8h - 10h</p>
-            
-        </div>
     </div>
     
     <div class="copyright">
-        &copy; 2025 LOKO EXPRESS. Tous droits réservés. Edit Marcio Jardel.Z 
+        &copy; 2025 LOKO EXPRESS - Tous droits réservés
     </div>
 </footer>
 
