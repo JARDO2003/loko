@@ -3,258 +3,558 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOKO EXPRESS - Gestion des Commandes</title>
+    <title>LOKO EXPRESS - Espace Fournisseur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-red: #e63946;
+            --primary-blue: #1d3557;
+            --light-blue: #457b9d;
+            --white: #ffffff;
+            --light-gray: #f1faee;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
+            background-color: var(--light-gray);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
-            background: #f5f5f5;
-            padding: 20px;
+            padding: 0;
         }
-        
-        .header {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(to right, #ff4e00, #ff9a56);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 0 auto 20px auto;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: auto;
-        }
-        
-        .filter-bar {
+
+        .navbar {
+            background-color: var(--primary-blue);
+            color: var(--white);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        
-        .filter-group {
+
+        .logo {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        select, button {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--white);
         }
-        
-        button {
-            background: #ff4e00;
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin: 0 15px;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-links a:hover {
+            color: #ff9a56;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
             color: white;
-            border: none;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background-color 0.3s;
+            font-weight: 500;
         }
-        
-        button:hover {
-            background: #e64600;
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--light-blue);
+            color: var(--white);
         }
-        
-        .order-list {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
         }
-        
-        .order-table {
+
+        .content-area {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-blue);
+        }
+
+        .order-list, .product-list {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 15px;
         }
-        
-        .order-table th, .order-table td {
-            padding: 12px 15px;
+
+        .order-list th, .order-list td, .product-list th, .product-list td {
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #ddd;
         }
-        
-        .order-table th {
-            background: #f9f9f9;
-            font-weight: bold;
+
+        .order-list th, .product-list th {
+            background-color: var(--light-gray);
+            color: var(--primary-blue);
         }
-        
-        .order-row:hover {
-            background: #f5f5f5;
-        }
-        
-        .status-new {
-            background-color: #ffeaa7;
-        }
-        
-        .status-processing {
-            background-color: #81ecec;
-        }
-        
-        .status-delivered {
-            background-color: #55efc4;
-        }
-        
-        .status-cancelled {
-            background-color: #fab1a0;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 15px;
             font-size: 12px;
-            font-weight: bold;
         }
-        
-        .order-details {
-            display: none;
+
+        .status-new {
+            background-color: #ffcccb;
+            color: #d32f2f;
+        }
+
+        .status-processing {
+            background-color: #fff9c4;
+            color: #f57f17;
+        }
+
+        .status-delivered {
+            background-color: #c8e6c9;
+            color: #388e3c;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .btn-view {
+            background-color: var(--light-blue);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #ffa726;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: var(--primary-red);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--primary-blue);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(to right, #c1121f, #14213d);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: var(--white);
+            border-radius: 8px;
             padding: 15px;
-            background: #f9f9f9;
-            border-top: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        
-        .item-list {
-            list-style: none;
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            height: 300px;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: var(--white);
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .order-details {
+            margin-top: 20px;
+        }
+
+        .order-items {
+            margin-top: 15px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 10px;
-        }
-        
-        .item-list li {
             padding: 5px 0;
             border-bottom: 1px dashed #eee;
         }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .btn-success {
-            background: #00b894;
-        }
-        
-        .btn-warning {
-            background: #fdcb6e;
-            color: #333;
-        }
-        
-        .btn-danger {
-            background: #d63031;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .page-btn {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .page-btn.active {
-            background: #ff4e00;
-            color: white;
-            border-color: #ff4e00;
-        }
-        
+
         @media screen and (max-width: 768px) {
-            .filter-bar {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
+            .dashboard {
+                grid-template-columns: 1fr;
             }
             
-            .filter-group {
-                width: 100%;
-            }
-            
-            select {
-                width: 100%;
-            }
-            
-            .order-table th:nth-child(3),
-            .order-table td:nth-child(3),
-            .order-table th:nth-child(4),
-            .order-table td:nth-child(4) {
-                display: none;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">🍔 KoLo Livraison - Gestion des Commandes 🍕</div>
-    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+                <rect width="50" height="50" fill="#1d3557" rx="10" />
+                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="bold">LE</text>
+            </svg>
+            <div class="logo-text">LOKO EXPRESS - ESPACE FOURNISSEUR</div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Retour au site</a></li>
+            <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        </ul>
+    </nav>
+
     <div class="container">
-        <div class="filter-bar">
-            <div class="filter-group">
-                <select id="status-filter">
-                    <option value="all">Tous les statuts</option>
-                    <option value="nouveau">Nouveaux</option>
-                    <option value="en-cours">En cours</option>
-                    <option value="livré">Livrés</option>
-                    <option value="annulé">Annulés</option>
-                </select>
-                <select id="date-filter">
-                    <option value="all">Toutes les dates</option>
-                    <option value="today">Aujourd'hui</option>
-                    <option value="yesterday">Hier</option>
-                    <option value="week">Cette semaine</option>
-                </select>
+        <div class="header">
+            <i class="fas fa-user-cog"></i> Tableau de Bord Fournisseur
+        </div>
+        
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="menu-item active" data-target="orders-section">
+                    <i class="fas fa-shopping-bag"></i> Commandes
+                </div>
+                <div class="menu-item" data-target="products-section">
+                    <i class="fas fa-utensils"></i> Produits
+                </div>
+                <div class="menu-item" data-target="add-product-section">
+                    <i class="fas fa-plus-circle"></i> Ajouter un produit
+                </div>
+                <div class="menu-item" data-target="stats-section">
+                    <i class="fas fa-chart-bar"></i> Statistiques
+                </div>
+                <div class="menu-item" data-target="settings-section">
+                    <i class="fas fa-cog"></i> Paramètres
+                </div>
             </div>
-            <button id="refresh-btn">Actualiser</button>
-        </div>
-        
-        <div class="order-list">
-            <table class="order-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Client</th>
-                        <th>Lieu</th>
-                        <th>Date/Heure</th>
-                        <th>Total</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-container">
-                    <!-- Les commandes seront chargées ici -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="pagination" id="pagination">
-            <!-- Pagination sera générée ici -->
+            
+            <div class="content-area">
+                <!-- Section Commandes -->
+                <div class="section active" id="orders-section">
+                    <h2 class="section-title">Gestion des Commandes</h2>
+                    <table class="order-list">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <!-- Les commandes seront chargées dynamiquement ici -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Section Produits -->
+                <div class="section" id="products-section">
+                    <h2 class="section-title">Gestion des Produits</h2>
+                    <table class="product-list">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Nom</th>
+                                <th>Catégorie</th>
+                                <th>Prix</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Les produits seront chargés dynamiquement ici -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Section Ajouter un Produit -->
+                <div class="section" id="add-product-section">
+                    <h2 class="section-title">Ajouter un Nouveau Produit</h2>
+                    <form id="add-product-form">
+                        <div class="form-group">
+                            <label for="product-name">Nom du produit</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-category">Catégorie</label>
+                            <select id="product-category" required>
+                                <option value="">Sélectionner une catégorie</option>
+                                <option value="category-a">Pâtes & Petit pois</option>
+                                <option value="category-b">Tchèpe</option>
+                                <option value="category-c">Attieke / Alloco / Igname</option>
+                                <option value="category-d">Riz sauce</option>
+                                <option value="category-e">Garba</option>
+                                <option value="category-f">Porc au four</option>
+                                <option value="category-g">Plats traditionnels</option>
+                                <option value="category-h">Desserts</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Prix (FCFA)</label>
+                            <input type="number" id="product-price" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-description">Description</label>
+                            <textarea id="product-description" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-image">Image</label>
+                            <input type="file" id="product-image" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn-submit">Ajouter le produit</button>
+                    </form>
+                </div>
+                
+                <!-- Section Statistiques -->
+                <div class="section" id="stats-section">
+                    <h2 class="section-title">Statistiques</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-shopping-cart" style="color: var(--primary-red); font-size: 24px;"></i>
+                            <div class="stat-value" id="total-orders">0</div>
+                            <div class="stat-label">Commandes Totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-money-bill-wave" style="color: var(--primary-blue); font-size: 24px;"></i>
+                            <div class="stat-value" id="total-revenue">0 FCFA</div>
+                            <div class="stat-label">Revenus</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-utensils" style="color: var(--light-blue); font-size: 24px;"></i>
+                            <div class="stat-value" id="total-products">0</div>
+                            <div class="stat-label">Produits</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <p>Graphique des ventes à venir...</p>
+                    </div>
+                </div>
+                
+                <!-- Section Paramètres -->
+                <div class="section" id="settings-section">
+                    <h2 class="section-title">Paramètres</h2>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label for="store-name">Nom du restaurant</label>
+                            <input type="text" id="store-name" value="LOKO EXPRESS">
+                        </div>
+                        <div class="form-group">
+                            <label for="store-phone">Téléphone</label>
+                            <input type="tel" id="store-phone" value="05 54 55 95 33">
+                        </div>
+                        <div class="form-group">
+                            <label for="store-email">Email</label>
+                            <input type="email" id="store-email" value="lokoexpress@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="delivery-areas">Zones de livraison</label>
+                            <textarea id="delivery-areas" rows="3">Campus Universitaire, Résidence A, Résidence B, Résidence C, Campus 1, Campus 2, Campus 3</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Changer le mot de passe</label>
+                            <input type="password" id="password" placeholder="Nouveau mot de passe">
+                        </div>
+                        <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import des fonctions Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        
+    <!-- Modal Voir Commande -->
+    <div id="view-order-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="section-title">Détails de la Commande</h2>
+            <div id="order-details-content" class="order-details">
+                <!-- Les détails de la commande seront chargés ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier Commande -->
+    <div id="edit-order-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="section-title">Modifier la Commande</h2>
+            <form id="edit-order-form">
+                <div class="form-group">
+                    <label for="edit-order-status">Statut de la commande</label>
+                    <select id="edit-order-status" required>
+                        <option value="Nouvelle">Nouvelle</option>
+                        <option value="En cours">En cours</option>
+                        <option value="Livrée">Livrée</option>
+                    </select>
+                </div>
+                <input type="hidden" id="edit-order-id">
+                <button type="submit" class="btn-submit">Mettre à jour</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+    <script>
         // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
@@ -266,273 +566,220 @@
             appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
             measurementId: "G-R79LC3XQL4"
         };
-        
-        // Initialisation de Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        
-        // Référence aux commandes
-        const ordersRef = ref(database, 'orders');
-        
-        // Variables pour la pagination
-        let currentPage = 1;
-        const ordersPerPage = 10;
-        let allOrders = [];
-        
-        // Charger les commandes
-        onValue(ordersRef, (snapshot) => {
-            const data = snapshot.val();
-            allOrders = [];
-            
-            if (data) {
-                // Convertir les données en tableau
-                Object.keys(data).forEach(key => {
-                    allOrders.push({
-                        id: key,
-                        ...data[key]
-                    });
-                });
-                
-                // Trier par date (plus récent en premier)
-                allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Modals
+        const viewModal = document.getElementById('view-order-modal');
+        const editModal = document.getElementById('edit-order-modal');
+        const closeBtns = document.getElementsByClassName('close');
+
+        // Fermer les modals quand on clique sur ×
+        for (let i = 0; i < closeBtns.length; i++) {
+            closeBtns[i].addEventListener('click', function() {
+                viewModal.style.display = "none";
+                editModal.style.display = "none";
+            });
+        }
+
+        // Fermer les modals quand on clique en dehors
+        window.addEventListener('click', function(event) {
+            if (event.target == viewModal) {
+                viewModal.style.display = "none";
             }
-            
-            applyFilters();
+            if (event.target == editModal) {
+                editModal.style.display = "none";
+            }
         });
-        
-        // Fonction pour mettre à jour le statut d'une commande
-        window.updateOrderStatus = function(orderId, newStatus) {
-            const updates = {};
-            updates[`/orders/${orderId}/status`] = newStatus;
-            
-            update(ref(database), updates)
-                .then(() => {
-                    alert(`Statut de la commande mis à jour: ${newStatus}`);
-                })
-                .catch((error) => {
-                    alert('Erreur lors de la mise à jour: ' + error.message);
-                });
-        };
-        
-        // Fonction pour basculer l'affichage des détails
-        window.toggleDetails = function(orderId) {
-            const detailsElement = document.getElementById(`details-${orderId}`);
-            if (detailsElement.style.display === 'block') {
-                detailsElement.style.display = 'none';
-            } else {
-                detailsElement.style.display = 'block';
-            }
-        };
-        
-        // Fonction pour appliquer les filtres
-        function applyFilters() {
-            const statusFilter = document.getElementById('status-filter').value;
-            const dateFilter = document.getElementById('date-filter').value;
-            
-            // Filtrer les commandes
-            let filteredOrders = [...allOrders];
-            
-            if (statusFilter !== 'all') {
-                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
-            }
-            
-            if (dateFilter !== 'all') {
-                const now = new Date();
-                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const yesterday = new Date(today);
-                yesterday.setDate(yesterday.getDate() - 1);
-                const weekStart = new Date(today);
-                weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+
+        // Navigation entre les sections
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all menu items
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                // Add active class to clicked menu item
+                this.classList.add('active');
                 
-                filteredOrders = filteredOrders.filter(order => {
-                    const orderDate = new Date(order.timestamp);
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                // Show selected section
+                document.getElementById(this.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // Charger les commandes depuis Firebase
+        function loadOrders() {
+            const ordersRef = database.ref('orders');
+            ordersRef.on('value', (snapshot) => {
+                const orders = snapshot.val();
+                const ordersTableBody = document.getElementById('orders-table-body');
+                ordersTableBody.innerHTML = '';
+                
+                if (orders) {
+                    let orderCount = 0;
+                    let totalRevenue = 0;
                     
-                    if (dateFilter === 'today') {
-                        return orderDate >= today;
-                    } else if (dateFilter === 'yesterday') {
-                        return orderDate >= yesterday && orderDate < today;
-                    } else if (dateFilter === 'week') {
-                        return orderDate >= weekStart;
+                    Object.keys(orders).forEach(key => {
+                        const order = orders[key];
+                        const row = document.createElement('tr');
+                        
+                        // Format date pour affichage
+                        const orderDate = new Date(order.orderDate);
+                        const formattedDate = orderDate.toLocaleDateString('fr-FR');
+                        
+                        // Status class
+                        let statusClass = '';
+                        switch(order.status) {
+                            case 'Nouvelle': statusClass = 'status-new'; break;
+                            case 'En cours': statusClass = 'status-processing'; break;
+                            case 'Livrée': statusClass = 'status-delivered'; break;
+                            default: statusClass = '';
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${key.substring(0, 8)}</td>
+                            <td>${order.customerName}</td>
+                            <td>${order.total} FCFA</td>
+                            <td>${formattedDate}</td>
+                            <td><span class="order-status ${statusClass}">${order.status}</span></td>
+                            <td>
+                                <button class="action-btn btn-view" data-id="${key}">Voir</button>
+                                <button class="action-btn btn-edit" data-id="${key}">Modifier</button>
+                            </td>
+                        `;
+                        
+                        ordersTableBody.appendChild(row);
+                        
+                        // Update statistics
+                        orderCount++;
+                        totalRevenue += parseFloat(order.total || 0);
+                    });
+                    
+                    // Update stats display
+                    document.getElementById('total-orders').textContent = orderCount;
+                    document.getElementById('total-revenue').textContent = `${totalRevenue} FCFA`;
+                    
+                    // Ajouter les événements pour les boutons d'action
+                    attachButtonEvents();
+                }
+            });
+        }
+
+        // Attacher les gestionnaires d'événements aux boutons
+        function attachButtonEvents() {
+            // Boutons "Voir"
+            document.querySelectorAll('.btn-view').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    viewOrder(orderId);
+                });
+            });
+            
+            // Boutons "Modifier"
+            document.querySelectorAll('.btn-edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    editOrder(orderId);
+                });
+            });
+        }
+
+        // Voir les détails d'une commande
+        function viewOrder(orderId) {
+            const orderRef = database.ref('orders/' + orderId);
+            orderRef.once('value', (snapshot) => {
+                const order = snapshot.val();
+                if (order) {
+                    // Format date
+                    const orderDate = new Date(order.orderDate);
+                    const formattedDate = orderDate.toLocaleDateString('fr-FR') + ' ' + orderDate.toLocaleTimeString('fr-FR');
+                    
+                    // Préparer le contenu HTML pour les détails de la commande
+                    let detailsHtml = `
+                        <div><strong>ID de commande:</strong> ${orderId}</div>
+                        <div><strong>Client:</strong> ${order.customerName}</div>
+                        <div><strong>Téléphone:</strong> ${order.customerPhone || 'Non spécifié'}</div>
+                        <div><strong>Adresse:</strong> ${order.deliveryAddress || 'Non spécifiée'}</div>
+                        <div><strong>Date:</strong> ${formattedDate}</div>
+                        <div><strong>Statut:</strong> ${order.status}</div>
+                        <div><strong>Total:</strong> ${order.total} FCFA</div>
+                        <div class="order-items">
+                            <h3>Articles commandés:</h3>
+                    `;
+                    
+                    // Ajouter les articles si disponibles
+                    if (order.items && order.items.length > 0) {
+                        order.items.forEach(item => {
+                            detailsHtml += `
+                                <div class="order-item">
+                                    <span>${item.quantity}x ${item.name}</span>
+                                    <span>${item.price * item.quantity} FCFA</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        detailsHtml += '<div>Aucun article disponible</div>';
                     }
                     
-                    return true;
-                });
-            }
-            
-            // Calculer le nombre total de pages
-            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-            
-            // Assurer que la page actuelle est valide
-            if (currentPage > totalPages) {
-                currentPage = totalPages > 0 ? totalPages : 1;
-            }
-            
-            // Obtenir les commandes pour la page actuelle
-            const startIndex = (currentPage - 1) * ordersPerPage;
-            const endIndex = startIndex + ordersPerPage;
-            const currentOrders = filteredOrders.slice(startIndex, endIndex);
-            
-            renderOrders(currentOrders);
-            renderPagination(totalPages);
-        }
-        
-        // Fonction pour afficher les commandes
-        function renderOrders(orders) {
-            const container = document.getElementById('orders-container');
-            container.innerHTML = '';
-            
-            if (orders.length === 0) {
-                container.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Aucune commande trouvée</td></tr>';
-                return;
-            }
-            
-            orders.forEach(order => {
-                const date = new Date(order.timestamp);
-                const formattedDate = date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR');
-                
-                // Créer la ligne de la commande
-                const row = document.createElement('tr');
-                row.className = 'order-row';
-                row.innerHTML = `
-                    <td>#${order.id.slice(-6)}</td>
-                    <td>${order.customer.name}<br>${order.customer.phone}</td>
-                    <td>${order.customer.location}<br>${order.customer.details || ''}</td>
-                    <td>${formattedDate}</td>
-                    <td>${order.total} FCFA</td>
-                    <td>
-                        <span class="status-badge status-${order.status}">
-                            ${getStatusLabel(order.status)}
-                        </span>
-                    </td>
-                    <td>
-                        <button onclick="toggleDetails('${order.id}')">Détails</button>
-                    </td>
-                `;
-                
-                container.appendChild(row);
-                
-                // Créer la section détails
-                const detailsRow = document.createElement('tr');
-                detailsRow.innerHTML = `
-                    <td colspan="7">
-                        <div id="details-${order.id}" class="order-details">
-                            <h3>Articles commandés:</h3>
-                            <ul class="item-list">
-                                ${order.items.map(item => `
-                                    <li>${item.name} - ${item.price} FCFA</li>
-                                `).join('')}
-                            </ul>
-                            <div>Mode de paiement: ${getPaymentMethod(order.customer.paymentMethod)}</div>
-                            <div class="action-buttons">
-                                ${getActionButtons(order.id, order.status)}
-                            </div>
-                        </div>
-                    </td>
-                `;
-                
-                container.appendChild(detailsRow);
-            });
-        }
-        
-        // Fonction pour obtenir le libellé du statut
-        function getStatusLabel(status) {
-            switch(status) {
-                case 'nouveau': return 'Nouveau';
-                case 'en-cours': return 'En cours';
-                case 'livré': return 'Livré';
-                case 'annulé': return 'Annulé';
-                default: return status;
-            }
-        }
-        
-        // Fonction pour obtenir le libellé du mode de paiement
-        function getPaymentMethod(method) {
-            switch(method) {
-                case 'cash': return 'Paiement à la livraison';
-                case 'mobile': return 'Mobile Money';
-                default: return method;
-            }
-        }
-        
-        // Fonction pour générer les boutons d'action selon le statut
-        function getActionButtons(orderId, status) {
-            switch(status) {
-                case 'nouveau':
-                    return `
-                        <button class="btn-success" onclick="updateOrderStatus('${orderId}', 'en-cours')">Accepter</button>
-                        <button class="btn-danger" onclick="updateOrderStatus('${orderId}', 'annulé')">Annuler</button>
-                    `;
-                case 'en-cours':
-                    return `
-                        <button class="btn-success" onclick="updateOrderStatus('${orderId}', 'livré')">Marquer livré</button>
-                        <button class="btn-danger" onclick="updateOrderStatus('${orderId}', 'annulé')">Annuler</button>
-                    `;
-                default:
-                    return '';
-            }
-        }
-        
-        // Fonction pour générer la pagination
-        function renderPagination(totalPages) {
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-            
-            if (totalPages <= 1) return;
-            
-            // Bouton précédent
-            const prevButton = document.createElement('button');
-            prevButton.className = 'page-btn';
-            prevButton.innerHTML = '&laquo;';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    applyFilters();
+                    detailsHtml += '</div>';
+                    
+                    // Afficher dans le modal
+                    document.getElementById('order-details-content').innerHTML = detailsHtml;
+                    viewModal.style.display = "block";
                 }
             });
-            pagination.appendChild(prevButton);
-            
-            // Pages
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-                pageButton.textContent = i;
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    applyFilters();
-                });
-                pagination.appendChild(pageButton);
-            }
-            
-            // Bouton suivant
-            const nextButton = document.createElement('button');
-            nextButton.className = 'page-btn';
-            nextButton.innerHTML = '&raquo;';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    applyFilters();
+        }
+
+        // Modifier une commande
+        function editOrder(orderId) {
+            const orderRef = database.ref('orders/' + orderId);
+            orderRef.once('value', (snapshot) => {
+                const order = snapshot.val();
+                if (order) {
+                    // Remplir le formulaire avec les données actuelles
+                    document.getElementById('edit-order-status').value = order.status;
+                    document.getElementById('edit-order-id').value = orderId;
+                    
+                    // Afficher le modal
+                    editModal.style.display = "block";
                 }
             });
-            pagination.appendChild(nextButton);
         }
-        
-        // Événements
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('status-filter').addEventListener('change', () => {
-                currentPage = 1;
-                applyFilters();
-            });
+
+        // Gérer la soumission du formulaire de modification
+        document.getElementById('edit-order-form').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            document.getElementById('date-filter').addEventListener('change', () => {
-                currentPage = 1;
-                applyFilters();
-            });
+            const orderId = document.getElementById('edit-order-id').value;
+            const newStatus = document.getElementById('edit-order-status').value;
             
-            document.getElementById('refresh-btn').addEventListener('click', () => {
-                applyFilters();
-            });
+            if (orderId && newStatus) {
+                // Mettre à jour le statut dans Firebase
+                database.ref('orders/' + orderId).update({
+                    status: newStatus
+                }).then(() => {
+                    alert('Commande mise à jour avec succès !');
+                    editModal.style.display = "none";
+                }).catch(error => {
+                    alert('Erreur lors de la mise à jour: ' + error.message);
+                });
+            }
+        });
+
+        // Déconnexion
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Chargement initial des données
+        window.addEventListener('DOMContentLoaded', () => {
+            loadOrders();
         });
     </script>
 </body>
