@@ -38,7 +38,6 @@
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            flex-wrap: wrap;
         }
 
         .logo {
@@ -47,126 +46,135 @@
             gap: 10px;
         }
 
+        .logo svg {
+            height: 40px;
+            width: 40px;
+        }
+
         .logo-text {
             font-size: 1.2rem;
             font-weight: bold;
             color: var(--white);
         }
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
-        .nav-links li {
-            margin: 0 15px;
-        }
-
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .nav-links a:hover {
-            color: #ff9a56;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
         .header {
             font-size: 24px;
             font-weight: bold;
-            margin-bottom: 20px;
             background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
             color: white;
             padding: 15px;
             text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin: 20px auto;
+            max-width: 90%;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 0 10px;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-        }
-
-        .sidebar {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-weight: 500;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background-color: var(--light-blue);
-            color: var(--white);
-        }
-
-        .menu-item i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .content-area {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow-x: auto; /* Pour permettre le défilement horizontal sur petit écran */
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .section-title {
-            color: var(--primary-blue);
+            grid-template-columns: 1fr;
+            gap: 15px;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light-blue);
-            font-size: 1.5rem;
         }
 
-        .order-list, .product-list {
+        .stat-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-card .icon {
+            font-size: 24px;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .filter-bar {
+            background-color: var(--white);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-item {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .filter-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .filter-item select, .filter-item input {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
 
-        .order-list th, .order-list td, .product-list th, .product-list td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .orders-container {
+            margin-bottom: 20px;
         }
 
-        .order-list th, .product-list th {
-            background-color: var(--light-gray);
+        .order-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .order-card.new {
+            border-left-color: var(--primary-red);
+        }
+
+        .order-card.in-progress {
+            border-left-color: #fca311;
+        }
+
+        .order-card.completed {
+            border-left-color: #2a9d8f;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .order-id {
+            font-weight: bold;
             color: var(--primary-blue);
         }
 
@@ -174,123 +182,103 @@
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 12px;
-            white-space: nowrap;
+            font-weight: 500;
+            color: white;
         }
 
-        .status-new {
-            background-color: #ffcccb;
-            color: #d32f2f;
+        .order-status.new {
+            background-color: var(--primary-red);
         }
 
-        .status-processing {
-            background-color: #fff9c4;
-            color: #f57f17;
+        .order-status.in-progress {
+            background-color: #fca311;
         }
 
-        .status-delivered {
-            background-color: #c8e6c9;
-            color: #388e3c;
+        .order-status.completed {
+            background-color: #2a9d8f;
+        }
+
+        .order-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .order-details.show {
+            display: block;
+        }
+
+        .customer-info, .delivery-info, .order-items {
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            font-weight: 500;
+            width: 120px;
+        }
+
+        .info-value {
+            flex: 1;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .action-btn {
-            padding: 6px 12px;
+            flex: 1;
+            padding: 8px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-weight: bold;
             cursor: pointer;
-            margin-right: 5px;
-            font-weight: 500;
-            margin-bottom: 5px;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
-        .btn-view {
-            background-color: var(--light-blue);
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .update-btn {
+            background-color: #fca311;
             color: white;
         }
 
-        .btn-edit {
-            background-color: #ffa726;
+        .complete-btn {
+            background-color: #2a9d8f;
             color: white;
         }
 
-        .btn-delete {
+        .delete-btn {
             background-color: var(--primary-red);
             color: white;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--primary-blue);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px; /* Améliore l'expérience mobile */
-        }
-
-        .btn-submit {
-            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            margin-top: 10px;
-            width: 100%; /* Pour les petits écrans */
-        }
-
-        .btn-submit:hover {
-            background: linear-gradient(to right, #c1121f, #14213d);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background-color: var(--white);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-blue);
-            margin: 10px 0;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .chart-container {
-            margin-top: 20px;
-            height: 300px;
-            background-color: var(--light-gray);
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -299,451 +287,211 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .modal-content {
-            position: relative;
             background-color: var(--white);
-            margin: 10% auto;
+            margin: 15% auto;
             padding: 20px;
-            width: 90%;
-            max-width: 600px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .close {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 24px;
+        .modal-title {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
         }
 
-        .order-details {
-            margin-top: 20px;
+        .cancel-btn {
+            background-color: #ddd;
         }
 
-        .order-items {
-            margin-top: 15px;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
+        .save-btn {
+            background-color: var(--primary-blue);
+            color: white;
         }
 
-        .order-item {
+        .pagination {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
-            border-bottom: 1px dashed #eee;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
         }
 
-        /* Menu hamburger pour mobile */
-        .hamburger-menu {
-            display: none;
-            flex-direction: column;
+        .page-btn {
+            background-color: var(--white);
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 5px;
             cursor: pointer;
         }
 
-        .bar {
-            width: 25px;
-            height: 3px;
-            background-color: white;
-            margin: 3px 0;
-            transition: 0.4s;
+        .page-btn.active {
+            background-color: var(--primary-blue);
+            color: white;
         }
 
-        /* Media queries pour responsive design */
-        @media screen and (max-width: 992px) {
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media screen and (min-width: 768px) {
             .dashboard {
-                grid-template-columns: 1fr 1.5fr;
-            }
-            
-            .logo-text {
-                font-size: 1rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stat-card:last-child {
-                grid-column: span 2;
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
-        @media screen and (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stat-card {
-                grid-column: auto !important;
-            }
-
-            .logo-text {
-                font-size: 0.9rem;
-            }
-
-            .header {
-                font-size: 20px;
-            }
-
-            /* Adaptation de la navbar */
-            .nav-links {
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-                padding-top: 10px;
-            }
-
-            .nav-links li {
-                margin: 8px 0;
-            }
-
-            /* Tables pour mobile */
-            .order-list th, .order-list td, .product-list th, .product-list td {
-                padding: 8px;
-                font-size: 14px;
-            }
-            
-            /* Réduction de la taille des boutons pour mobile */
-            .action-btn {
-                padding: 5px 8px;
-                font-size: 12px;
-            }
-        }
-
-        @media screen and (max-width: 576px) {
-            .navbar {
-                padding: 10px;
-                justify-content: center;
-                text-align: center;
+        @media screen and (max-width: 600px) {
+            .action-buttons {
                 flex-direction: column;
             }
-
-            .logo {
-                margin-bottom: 10px;
-                justify-content: center;
-            }
-
-            .header {
-                font-size: 18px;
-                padding: 10px;
-            }
-
-            .section-title {
-                font-size: 1.2rem;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-                padding: 15px;
-            }
-
-            /* Ajuster les tables pour tout petit écran */
-            .order-list, .product-list {
-                font-size: 12px;
-            }
-
-            .order-list th, .order-list td, .product-list th, .product-list td {
-                padding: 6px;
-            }
-
-            /* Améliorer la lisibilité des formulaires sur mobile */
-            .form-group {
+            
+            .info-row {
+                flex-direction: column;
                 margin-bottom: 10px;
             }
-
-            input, select, textarea {
-                padding: 8px;
-            }
-
-            .btn-submit {
-                padding: 10px;
-            }
-
-            /* Affichage des actions en colonne sur très petit écran */
-            td .action-btn {
-                display: block;
-                margin-bottom: 5px;
-                text-align: center;
-                width: 100%;
-            }
-        }
-
-        /* Style adapté pour les tables sur appareils mobiles */
-        @media screen and (max-width: 480px) {
-            /* Transformer les tableaux pour les rendre verticaux sur mobile */
-            .order-list, .product-list {
-                border: 0;
-            }
-
-            .order-list thead, .product-list thead {
-                display: none;
-            }
-
-            .order-list tr, .product-list tr {
-                display: block;
-                margin-bottom: 15px;
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                padding: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-
-            .order-list td, .product-list td {
-                display: block;
-                text-align: right;
-                padding-left: 50%;
-                position: relative;
-                border-bottom: 1px dotted #ddd;
-            }
-
-            .order-list td:last-child, .product-list td:last-child {
-                border-bottom: none;
-            }
-
-            .order-list td::before, .product-list td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 8px;
-                font-weight: bold;
-                text-align: left;
-            }
-
-            /* Ajuster le statut d'ordre pour l'affichage vertical */
-            .order-status {
-                display: inline-block;
-                margin-top: 4px;
+            
+            .info-label {
+                width: auto;
+                margin-bottom: 2px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="logo">
             <svg width="40" height="40" viewBox="0 0 50 50">
                 <rect width="50" height="50" fill="#1d3557" rx="10" />
                 <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="bold">LE</text>
             </svg>
-            <div class="logo-text">LOKO EXPRESS - ESPACE FOURNISSEUR</div>
+            <div class="logo-text">LOKO EXPRESS - Fournisseur</div>
         </div>
-        
-        <ul class="nav-links">
-            <li><a href="index.html"><i class="fas fa-home"></i> Retour au site</a></li>
-            <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-        </ul>
     </nav>
 
+    <div class="header">
+        <i class="fas fa-user-shield"></i> Gestion des Commandes
+    </div>
+
     <div class="container">
-        <div class="header">
-            <i class="fas fa-user-cog"></i> Tableau de Bord Fournisseur
-        </div>
-        
         <div class="dashboard">
-            <div class="sidebar">
-                <div class="menu-item active" data-target="orders-section">
-                    <i class="fas fa-shopping-bag"></i> Commandes
-                </div>
-                <div class="menu-item" data-target="products-section">
-                    <i class="fas fa-utensils"></i> Produits
-                </div>
-                <div class="menu-item" data-target="add-product-section">
-                    <i class="fas fa-plus-circle"></i> Ajouter un produit
-                </div>
-                <div class="menu-item" data-target="stats-section">
-                    <i class="fas fa-chart-bar"></i> Statistiques
-                </div>
-                <div class="menu-item" data-target="settings-section">
-                    <i class="fas fa-cog"></i> Paramètres
-                </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="value" id="total-orders">0</div>
+                <div class="label">Commandes totales</div>
             </div>
-            
-            <div class="content-area">
-                <!-- Section Commandes -->
-                <div class="section active" id="orders-section">
-                    <h2 class="section-title">Gestion des Commandes</h2>
-                    <div style="overflow-x: auto;">
-                        <table class="order-list">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Client</th>
-                                    <th>Montant</th>
-                                    <th>Date</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table-body">
-                                <!-- Les commandes seront chargées dynamiquement ici -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Section Produits -->
-                <div class="section" id="products-section">
-                    <h2 class="section-title">Gestion des Produits</h2>
-                    <div style="overflow-x: auto;">
-                        <table class="product-list">
-                            <thead>
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Nom</th>
-                                    <th>Catégorie</th>
-                                    <th>Prix</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="products-table-body">
-                                <!-- Les produits seront chargés dynamiquement ici -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Section Ajouter un Produit -->
-                <div class="section" id="add-product-section">
-                    <h2 class="section-title">Ajouter un Nouveau Produit</h2>
-                    <form id="add-product-form">
-                        <div class="form-group">
-                            <label for="product-name">Nom du produit</label>
-                            <input type="text" id="product-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-category">Catégorie</label>
-                            <select id="product-category" required>
-                                <option value="">Sélectionner une catégorie</option>
-                                <option value="category-a">Pâtes & Petit pois</option>
-                                <option value="category-b">Tchèpe</option>
-                                <option value="category-c">Attieke / Alloco / Igname</option>
-                                <option value="category-d">Riz sauce</option>
-                                <option value="category-e">Garba</option>
-                                <option value="category-f">Porc au four</option>
-                                <option value="category-g">Plats traditionnels</option>
-                                <option value="category-h">Desserts</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-price">Prix (FCFA)</label>
-                            <input type="number" id="product-price" min="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-description">Description</label>
-                            <textarea id="product-description" rows="3" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-image">Image</label>
-                            <input type="file" id="product-image" accept="image/*">
-                        </div>
-                        <button type="submit" class="btn-submit">Ajouter le produit</button>
-                    </form>
-                </div>
-                
-                <!-- Section Statistiques -->
-                <div class="section" id="stats-section">
-                    <h2 class="section-title">Statistiques</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-shopping-cart" style="color: var(--primary-red); font-size: 24px;"></i>
-                            <div class="stat-value" id="total-orders">0</div>
-                            <div class="stat-label">Commandes Totales</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-money-bill-wave" style="color: var(--primary-blue); font-size: 24px;"></i>
-                            <div class="stat-value" id="total-revenue">0 FCFA</div>
-                            <div class="stat-label">Revenus</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-utensils" style="color: var(--light-blue); font-size: 24px;"></i>
-                            <div class="stat-value" id="total-products">0</div>
-                            <div class="stat-label">Produits</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <p>Graphique des ventes à venir...</p>
-                    </div>
-                </div>
-                
-                <!-- Section Paramètres -->
-                <div class="section" id="settings-section">
-                    <h2 class="section-title">Paramètres</h2>
-                    <form id="settings-form">
-                        <div class="form-group">
-                            <label for="store-name">Nom du restaurant</label>
-                            <input type="text" id="store-name" value="LOKO EXPRESS">
-                        </div>
-                        <div class="form-group">
-                            <label for="store-phone">Téléphone</label>
-                            <input type="tel" id="store-phone" value="05 54 55 95 33">
-                        </div>
-                        <div class="form-group">
-                            <label for="store-email">Email</label>
-                            <input type="email" id="store-email" value="lokoexpress@gmail.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="delivery-areas">Zones de livraison</label>
-                            <textarea id="delivery-areas" rows="3">Campus Universitaire, Résidence A, Résidence B, Résidence C, Campus 1, Campus 2, Campus 3</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Changer le mot de passe</label>
-                            <input type="password" id="password" placeholder="Nouveau mot de passe">
-                        </div>
-                        <button type="submit" class="btn-submit">Enregistrer les modifications</button>
-                    </form>
-                </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-clock"></i></div>
+                <div class="value" id="pending-orders">0</div>
+                <div class="label">En attente</div>
             </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-truck"></i></div>
+                <div class="value" id="in-progress-orders">0</div>
+                <div class="label">En cours</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-check-circle"></i></div>
+                <div class="value" id="completed-orders">0</div>
+                <div class="label">Complétées</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-item">
+                <label for="status-filter"><i class="fas fa-filter"></i> Statut</label>
+                <select id="status-filter" onchange="filterOrders()">
+                    <option value="all">Tous</option>
+                    <option value="new">Nouvelles</option>
+                    <option value="in-progress">En cours</option>
+                    <option value="completed">Complétées</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="date-filter"><i class="fas fa-calendar"></i> Date</label>
+                <input type="date" id="date-filter" onchange="filterOrders()">
+            </div>
+            <div class="filter-item">
+                <label for="search-filter"><i class="fas fa-search"></i> Recherche</label>
+                <input type="text" id="search-filter" placeholder="Nom, ID..." onkeyup="filterOrders()">
+            </div>
+        </div>
+
+        <div class="orders-container" id="orders-container">
+            <!-- Les commandes seront chargées ici via JavaScript -->
+            <div class="loading">Chargement des commandes...</div>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <!-- La pagination sera générée par JavaScript -->
         </div>
     </div>
 
-    <!-- Modal Voir Commande -->
-    <div id="view-order-modal" class="modal">
+    <!-- Modal pour mettre à jour le statut -->
+    <div id="status-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="section-title">Détails de la Commande</h2>
-            <div id="order-details-content" class="order-details">
-                <!-- Les détails de la commande seront chargés ici -->
+            <h3 class="modal-title">Mettre à jour le statut</h3>
+            <div class="form-group">
+                <label for="status-select">Nouveau statut</label>
+                <select id="status-select">
+                    <option value="new">Nouvelle</option>
+                    <option value="in-progress">En cours</option>
+                    <option value="completed">Complétée</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" onclick="closeModal()">Annuler</button>
+                <button class="modal-btn save-btn" onclick="updateOrderStatus()">Enregistrer</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Modifier Commande -->
-    <div id="edit-order-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="section-title">Modifier la Commande</h2>
-            <form id="edit-order-form">
-                <div class="form-group">
-                    <label for="edit-order-status">Statut de la commande</label>
-                    <select id="edit-order-status" required>
-                        <option value="Nouvelle">Nouvelle</option>
-                        <option value="En cours">En cours</option>
-                        <option value="Livrée">Livrée</option>
-                    </select>
-                </div>
-                <input type="hidden" id="edit-order-id">
-                <button type="submit" class="btn-submit">Mettre à jour</button>
-            </form>
-        </div>
-    </div>
+    <script type="module">
+        // Import des fonctions Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
 
-    <!-- Scripts Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-
-    <script>
         // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
@@ -752,382 +500,270 @@
             projectId: "kolo-livraison",
             storageBucket: "kolo-livraison.firebasestorage.app",
             messagingSenderId: "78667636312",
-            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-            measurementId: "G-R79LC3XQL4"
+            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d"
         };
 
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const storage = firebase.storage();
-
-        // Modals
-        const viewModal = document.getElementById('view-order-modal');
-        const editModal = document.getElementById('edit-order-modal');
-        const closeBtns = document.getElementsByClassName('close');
-
-        // Fermer les modals quand on clique sur ×
-        for (let i = 0; i < closeBtns.length; i++) {
-            closeBtns[i].addEventListener('click', function() {
-                viewModal.style.display = "none";
-                editModal.style.display = "none";
-            });
-        }
-
-        // Fermer les modals quand on clique en dehors
-        window.addEventListener('click', function(event) {
-            if (event.target == viewModal) {
-                viewModal.style.display = "none";
-            }
-            if (event.target == editModal) {
-                editModal.style.display = "none";
-            }
-        });
-
-        // Navigation entre les sections
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Remove active class from all menu items
-                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                // Add active class to clicked menu item
-                this.classList.add('active');
-                
-                // Hide all sections
-                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-                // Show selected section
-                document.getElementById(this.getAttribute('data-target')).classList.add('active');
-            });
-        });
-
-        // Charger les commandes depuis Firebase
-        function loadOrders() {
-            const ordersRef = database.ref('orders');
-            ordersRef.on('value', (snapshot) => {
-                const orders = snapshot.val();
-                const ordersTableBody = document.getElementById('orders-table-body');
-                ordersTableBody.innerHTML = '';
-                
-                if (orders) {
-                    let orderCount = 0;
-                    let totalRevenue = 0;
-                    
-                    Object.keys(orders).forEach(key => {
-                        const order = orders[key];
-                        const row = document.createElement('tr');
-                        
-                        // Format date pour affichage
-                        const orderDate = new Date(order.orderDate);
-                        const formattedDate = orderDate.toLocaleDateString('fr-FR');
-                        
-                        // Status class
-                        let statusClass = '';
-                        switch(order.status) {
-                            case 'Nouvelle': statusClass = 'status-new'; break;
-                            case 'En cours': statusClass = 'status-processing'; break;
-                            case 'Livrée': statusClass = 'status-delivered'; break;
-                            default: statusClass = '';
-                        }
-
-                        // Ajouter des attributs data-label pour l'affichage mobile
-                        row.innerHTML = `
-                            <td data-label="ID">${key.substring(0, 8)}</td>
-                            <td data-label="Client">${order.customerName}</td>
-                            <td data-label="Montant">${order.total} FCFA</td>
-                            <td data-label="Date">${formattedDate}</td>
-                            <td data-label="Statut"><span class="order-status ${statusClass}">${order.status}</span></td>
-                            <td data-label="Actions">
-                                <button class="action-btn btn-view" data-id="${key}">Voir</button>
-                                <button class="action-btn btn-edit" data-id="${key}">Modifier</button>
-                            </td>
-                        `;
-                        
-                        ordersTableBody.appendChild(row);
-                        
-                        // Update statistics
-                        orderCount++;
-                        totalRevenue += parseFloat(order.total || 0);
-                    });
-                    
-                    // Update stats display
-                    document.getElementById('total-orders').textContent = orderCount;
-                    document.getElementById('total-revenue').textContent = `${totalRevenue} FCFA`;
-                    
-                    // Ajouter les événements pour les boutons d'action
-                    attachButtonEvents();
-                }
-            });
-        }
-
-        // Attacher les gestionnaires d'événements aux boutons
-        function attachButtonEvents() {
-            // Boutons "Voir"
-            document.querySelectorAll('.btn-view').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.getAttribute('data-id');
-                    viewOrder(orderId);
+        // Initialisation Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Référence à la collection "orders"
+        const ordersRef = ref(database, 'orders');
+        
+        // Variables globales
+        let allOrders = [];
+        let currentOrderId = '';
+        let ordersPerPage = 5;
+        let currentPage = 1;
+        
+        // Écoute des changements dans la base de données
+        onValue(ordersRef, (snapshot) => {
+            allOrders = [];
+            snapshot.forEach((childSnapshot) => {
+                const orderData = childSnapshot.val();
+                allOrders.push({
+                    id: childSnapshot.key,
+                    ...orderData
                 });
             });
             
-            // Boutons "Modifier"
-            document.querySelectorAll('.btn-edit').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.getAttribute('data-id');
-                    editOrder(orderId);
-                });
-            });
-        }
+            // Trier les commandes par date (les plus récentes d'abord)
+            allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Mettre à jour les statistiques
+            updateStats();
+            
+            // Filtrer et afficher les commandes
+            filterOrders();
+        });
 
-        // Voir les détails d'une commande
-        function viewOrder(orderId) {
-            const orderRef = database.ref('orders/' + orderId);
-            orderRef.once('value', (snapshot) => {
-                const order = snapshot.val();
-                if (order) {
-                    // Format date
-                    const orderDate = new Date(order.orderDate);
-                    const formattedDate = orderDate.toLocaleDateString('fr-FR') + ' ' + orderDate.toLocaleTimeString('fr-FR');
-                    
-                    // Préparer le contenu HTML pour les détails de la commande
-                    let detailsHtml = `
-                        <div><strong>ID de commande:</strong> ${orderId}</div>
-                        <div><strong>Client:</strong> ${order.customerName}</div>
-                        <div><strong>Téléphone:</strong> ${order.customerPhone || 'Non spécifié'}</div>
-                        <div><strong>Adresse:</strong> ${order.deliveryAddress || 'Non spécifiée'}</div>
-                        <div><strong>Date:</strong> ${formattedDate}</div>
-                        <div><strong>Statut:</strong> ${order.status}</div>
-                        <div><strong>Total:</strong> ${order.total} FCFA</div>
-                        <div class="order-items">
-                            <h3>Articles commandés:</h3>
-                    `;
-                    
-                    // Ajouter les articles si disponibles
-                    if (order.items && order.items.length > 0) {
-                        order.items.forEach(item => {
-                            detailsHtml += `
-                                <div class="order-item">
-                                    <span>${item.quantity}x ${item.name}</span>
-                                    <span>${item.price * item.quantity} FCFA</span>
+        // Mise à jour des statistiques
+        window.updateStats = function() {
+            document.getElementById('total-orders').textContent = allOrders.length;
+            document.getElementById('pending-orders').textContent = allOrders.filter(order => order.status === 'new').length;
+            document.getElementById('in-progress-orders').textContent = allOrders.filter(order => order.status === 'in-progress').length;
+            document.getElementById('completed-orders').textContent = allOrders.filter(order => order.status === 'completed').length;
+        };
+
+        // Filtrer les commandes selon les critères
+        window.filterOrders = function() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+            const searchFilter = document.getElementById('search-filter').value.toLowerCase();
+            
+            let filteredOrders = [...allOrders];
+            
+            // Filtre par statut
+            if (statusFilter !== 'all') {
+                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
+            }
+            
+            // Filtre par date
+            if (dateFilter) {
+                const selectedDate = new Date(dateFilter).toDateString();
+                filteredOrders = filteredOrders.filter(order => {
+                    const orderDate = new Date(order.timestamp).toDateString();
+                    return orderDate === selectedDate;
+                });
+            }
+            
+            // Filtre par recherche
+            if (searchFilter) {
+                filteredOrders = filteredOrders.filter(order => {
+                    return (
+                        order.id.toLowerCase().includes(searchFilter) ||
+                        order.customerName.toLowerCase().includes(searchFilter) ||
+                        order.customerPhone.toLowerCase().includes(searchFilter)
+                    );
+                });
+            }
+            
+            // Pagination
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            if (currentPage > totalPages) {
+                currentPage = totalPages || 1;
+            }
+            
+            const start = (currentPage - 1) * ordersPerPage;
+            const end = start + ordersPerPage;
+            const paginatedOrders = filteredOrders.slice(start, end);
+            
+            // Afficher les commandes
+            displayOrders(paginatedOrders);
+            
+            // Mettre à jour la pagination
+            updatePagination(totalPages);
+        };
+
+        // Afficher les commandes
+        function displayOrders(orders) {
+            const container = document.getElementById('orders-container');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="no-results">Aucune commande trouvée</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            orders.forEach(order => {
+                const statusClass = order.status;
+                const statusText = order.status === 'new' ? 'Nouvelle' : order.status === 'in-progress' ? 'En cours' : 'Complétée';
+                const orderDate = new Date(order.timestamp).toLocaleString('fr-FR');
+                
+                html += `
+                    <div class="order-card ${statusClass}" id="order-${order.id}">
+                        <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
+                            <div class="order-id">${order.customerName} - ${orderDate}</div>
+                            <div class="order-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="order-details" id="details-${order.id}">
+                            <div class="customer-info">
+                                <div class="section-title">Client</div>
+                                <div class="info-row">
+                                    <div class="info-label">Nom:</div>
+                                    <div class="info-value">${order.customerName}</div>
                                 </div>
-                            `;
-                        });
-                    } else {
-                        detailsHtml += '<div>Aucun article disponible</div>';
-                    }
-                    
-                    detailsHtml += '</div>';
-                    
-                    // Afficher dans le modal
-                    document.getElementById('order-details-content').innerHTML = detailsHtml;
-                    viewModal.style.display = "block";
-                }
+                                <div class="info-row">
+                                    <div class="info-label">Téléphone:</div>
+                                    <div class="info-value">${order.customerPhone}</div>
+                                </div>
+                            </div>
+                            <div class="delivery-info">
+                                <div class="section-title">Livraison</div>
+                                <div class="info-row">
+                                    <div class="info-label">Adresse:</div>
+                                    <div class="info-value">${order.deliveryLocation}</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Détails:</div>
+                                    <div class="info-value">${order.locationDetails || 'Aucun'}</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Paiement:</div>
+                                    <div class="info-value">${order.paymentMethod}</div>
+                                </div>
+                            </div>
+                            <div class="order-items">
+                                <div class="section-title">Articles (${order.items.length})</div>
+                                ${order.items.map((item, index) => `
+                                    <div class="item-row">
+                                        <div>${item}</div>
+                                        <div>${order.itemPrices[index]} FCFA</div>
+                                    </div>
+                                `).join('')}
+                                <div class="item-row" style="font-weight: bold; margin-top: 5px;">
+                                    <div>Total</div>
+                                    <div>${order.totalAmount} FCFA</div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn update-btn" onclick="openStatusModal('${order.id}')">
+                                    <i class="fas fa-pen"></i> Modifier
+                                </button>
+                                <button class="action-btn complete-btn" onclick="markAsCompleted('${order.id}')">
+                                    <i class="fas fa-check"></i> Terminer
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
+            
+            container.innerHTML = html;
         }
 
-        // Modifier une commande
-        function editOrder(orderId) {
-            const orderRef = database.ref('orders/' + orderId);
-            orderRef.once('value', (snapshot) => {
-                const order = snapshot.val();
-                if (order) {
-                    // Remplir le formulaire avec les données actuelles
-                    document.getElementById('edit-order-status').value = order.status;
-                    document.getElementById('edit-order-id').value = orderId;
-                    
-                    // Afficher le modal
-                    editModal.style.display = "block";
+        // Mettre à jour la pagination
+        function updatePagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination');
+            let html = '';
+            
+            if (totalPages > 1) {
+                // Bouton Précédent
+                html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+                
+                // Pages
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<button class="page-btn ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
                 }
-            });
+                
+                // Bouton Suivant
+                html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+            }
+            
+            paginationContainer.innerHTML = html;
         }
 
-        // Gérer la soumission du formulaire de modification
-        document.getElementById('edit-order-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Changer de page
+        window.changePage = function(page) {
+            currentPage = page;
+            filterOrders();
+        };
+
+        // Afficher/masquer les détails d'une commande
+        window.toggleOrderDetails = function(orderId) {
+            const detailsElement = document.getElementById(`details-${orderId}`);
+            detailsElement.classList.toggle('show');
+        };
+
+        // Ouvrir le modal pour changer le statut
+        window.openStatusModal = function(orderId) {
+            currentOrderId = orderId;
+            const order = allOrders.find(o => o.id === orderId);
+            document.getElementById('status-select').value = order.status;
+            document.getElementById('status-modal').style.display = 'block';
+        };
+
+        // Fermer le modal
+        window.closeModal = function() {
+            document.getElementById('status-modal').style.display = 'none';
+        };
+
+        // Mettre à jour le statut d'une commande
+        window.updateOrderStatus = function() {
+            const newStatus = document.getElementById('status-select').value;
             
-            const orderId = document.getElementById('edit-order-id').value;
-            const newStatus = document.getElementById('edit-order-status').value;
-            
-            if (orderId && newStatus) {
-                // Mettre à jour le statut dans Firebase
-                database.ref('orders/' + orderId).update({
-                    status: newStatus
-                }).then(() => {
-                    alert('Commande mise à jour avec succès !');
-                    editModal.style.display = "none";
-                }).catch(error => {
-                    alert('Erreur lors de la mise à jour: ' + error.message);
+            update(ref(database, `orders/${currentOrderId}`), {
+                status: newStatus
+            })
+            .then(() => {
+                closeModal();
+            })
+            .catch((error) => {
+                console.error("Erreur lors de la mise à jour du statut:", error);
+                alert("Une erreur s'est produite lors de la mise à jour du statut.");
+            });
+        };
+
+        // Marquer une commande comme terminée
+        window.markAsCompleted = function(orderId) {
+            if (confirm("Êtes-vous sûr de vouloir marquer cette commande comme terminée?")) {
+                update(ref(database, `orders/${orderId}`), {
+                    status: 'completed'
                 });
             }
-        });
+        };
 
-        // Formulaire d'ajout de produit
-        document.getElementById('add-product-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const productName = document.getElementById('product-name').value;
-            const productCategory = document.getElementById('product-category').value;
-            const productPrice = document.getElementById('product-price').value;
-            const productDescription = document.getElementById('product-description').value;
-            const productImage = document.getElementById('product-image').files[0];
-            
-            if (productName && productCategory && productPrice) {
-                // En cas réel, vous téléchargeriez l'image vers Firebase Storage
-                // et enregistreriez les données du produit avec l'URL de l'image
-                
-                alert('Produit ajouté avec succès !');
-                this.reset();
+        // Supprimer une commande
+        window.deleteOrder = function(orderId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer cette commande? Cette action est irréversible.")) {
+                remove(ref(database, `orders/${orderId}`))
+                .catch((error) => {
+                    console.error("Erreur lors de la suppression:", error);
+                    alert("Une erreur s'est produite lors de la suppression.");
+                });
             }
-        });
+        };
 
-        // Formulaire de paramètres
-        document.getElementById('settings-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Paramètres enregistrés avec succès !');
-        });
-
-        // Déconnexion
-        document.getElementById('logout-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-                window.location.href = 'index.html';
-            }
-        });
-
-        // Simuler le chargement des produits
-        function loadProducts() {
-            const products = [
-                {
-                    id: 'prod001',
-                    name: 'Tchèpe au Poulet',
-                    category: 'Tchèpe',
-                    price: 2500,
-                    image: 'tchepe.jpg'
-                },
-                {
-                    id: 'prod002',
-                    name: 'Riz Sauce Arachide',
-                    category: 'Riz sauce',
-                    price: 1800,
-                    image: 'riz-sauce.jpg'
-                },
-                {
-                    id: 'prod003',
-                    name: 'Garba Extra',
-                    category: 'Garba',
-                    price: 1500,
-                    image: 'garba.jpg'
-                }
-            ];
-            
-            const productsTableBody = document.getElementById('products-table-body');
-            productsTableBody.innerHTML = '';
-            
-            products.forEach(product => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td data-label="Image">
-                        <img src="/api/placeholder/50/50" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
-                    </td>
-                    <td data-label="Nom">${product.name}</td>
-                    <td data-label="Catégorie">${product.category}</td>
-                    <td data-label="Prix">${product.price} FCFA</td>
-                    <td data-label="Actions">
-                        <button class="action-btn btn-edit">Modifier</button>
-                        <button class="action-btn btn-delete">Supprimer</button>
-                    </td>
-                `;
-                
-                productsTableBody.appendChild(row);
-            });
-            
-            // Mettre à jour le compteur de produits
-            document.getElementById('total-products').textContent = products.length;
-        }
-
-        // Simuler des commandes pour test
-        function simulateOrders() {
-            if (!database.ref('orders').once('value').then(snapshot => snapshot.exists())) {
-                const sampleOrders = {
-                    'order001': {
-                        customerName: 'Konan Kouadio',
-                        customerPhone: '05 44 33 22 11',
-                        deliveryAddress: 'Résidence B, Chambre 102',
-                        orderDate: new Date().toISOString(),
-                        status: 'Nouvelle',
-                        total: 4500,
-                        items: [
-                            { name: 'Tchèpe au Poulet', quantity: 1, price: 2500 },
-                            { name: 'Jus de Gingembre', quantity: 2, price: 1000 }
-                        ]
-                    },
-                    'order002': {
-                        customerName: 'Aminata Bamba',
-                        customerPhone: '07 88 99 00 11',
-                        deliveryAddress: 'Campus 1, Bâtiment C',
-                        orderDate: new Date(Date.now() - 86400000).toISOString(), // Hier
-                        status: 'En cours',
-                        total: 3000,
-                        items: [
-                            { name: 'Garba Extra', quantity: 2, price: 1500 }
-                        ]
-                    },
-                    'order003': {
-                        customerName: 'Souleymane Touré',
-                        customerPhone: '01 23 45 67 89',
-                        deliveryAddress: 'Résidence C, Chambre 315',
-                        orderDate: new Date(Date.now() - 172800000).toISOString(), // Il y a 2 jours
-                        status: 'Livrée',
-                        total: 3800,
-                        items: [
-                            { name: 'Riz Sauce Arachide', quantity: 1, price: 1800 },
-                            { name: 'Alloco Poisson', quantity: 1, price: 2000 }
-                        ]
-                    }
-                };
-                
-                // Ajouter les commandes d'exemple à Firebase
-                database.ref('orders').set(sampleOrders);
-            }
-        }
-
-        // Fonction pour ajuster l'affichage des tables sur mobile
-        function setupMobileTables() {
-            if (window.innerWidth <= 480) {
-                // Ajuster les tableaux pour l'affichage mobile
-                const applyMobileTableStyles = () => {
-                    document.querySelectorAll('.order-list tr, .product-list tr').forEach(row => {
-                        if (row.parentElement.tagName.toLowerCase() === 'tbody') {
-                            row.style.marginBottom = '15px';
-                            row.style.display = 'block';
-                            row.style.border = '1px solid #ddd';
-                            row.style.borderRadius = '6px';
-                            row.style.padding = '8px';
-                        }
-                    });
-                };
-                
-                // Appliquer après le chargement des données
-                setTimeout(applyMobileTableStyles, 1000);
-            }
-        }
-
-        // Détection de changement de taille d'écran
-        window.addEventListener('resize', function() {
-            setupMobileTables();
-        });
-
-        // Chargement initial des données
-        window.addEventListener('DOMContentLoaded', () => {
-            loadOrders();
-            loadProducts();
-            simulateOrders();
-            setupMobileTables();
-            
-            // Initialiser les statistiques avec des valeurs par défaut si nécessaire
-            document.getElementById('total-orders').textContent = '0';
-            document.getElementById('total-revenue').textContent = '0 FCFA';
-            document.getElementById('total-products').textContent = '0';
-        });
+        // Rendre les fonctions disponibles globalement
+        window.filterOrders = filterOrders;
     </script>
 </body>
 </html>
