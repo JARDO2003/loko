@@ -604,31 +604,35 @@
                 padding: 10px;
             }
         }
+        .logo img {
+    height: 60px;
+    width: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="logo">
-            <!-- Logo généré comme SVG inline pour remplacer l'image -->
-            <svg width="50" height="50" viewBox="0 0 50 50">
-                <rect width="50" height="50" fill="#1d3557" rx="10" />
-                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="bold">LE</text>
-            </svg>
-            <div class="logo-text">LOKO EXPRESS</div>
-        </div>
+<nav class="navbar">
+    <div class="logo">
+        <!-- Image logo à remplacer avec votre propre URL d'image -->
+        <img src="image/logo exp.jpg" alt="LOKO EXPRESS Logo">
+        <div class="logo-text">LOKO EXPRESS</div>
+    </div>
+    
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="#menu"><i class="fas fa-utensils"></i> Menu</a></li>
+        <li><a href="#" onclick="if(prompt('Entré le code fournisseur :')==='marcio@')location.href='fournisseur.html';else alert('Code incorrect');"><i class="fas fa-utensils"></i> Accès fournisseur</a></li>   
+    </ul>
+    
+    <div class="mobile-menu-icon" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+</nav>
         
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-            <li><a href="#menu"><i class="fas fa-utensils"></i> Menu</a></li>
-            <li><a href="#" onclick="if(prompt('Entré le code fournisseur :')==='marcio@')location.href='fournisseur.html';else alert('Code incorrect');"><i class="fas fa-utensils"></i> Accès fournisseur</a></li>   
-            
-        </ul>
-        
-        <div class="mobile-menu-icon" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i>
-        </div>
-    </nav>
+
 
     <div class="header">
         <i class="fas fa-hamburger"></i> LOKO EXPRESS - Repas Universitaires <i class="fas fa-pizza-slice"></i>
