@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promotion Express - KoLo Livraison</title>
+    <title>KoLo Livraison - Repas Universitaires</title>
     <style>
-        /* Styles généraux */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,422 +14,399 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-attachment: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-            text-align: center;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            padding: 20px;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* Animation de fond */
+        /* Particules flottantes en arrière-plan */
         body::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+            background-size: 100px 100px, 150px 150px, 80px 80px;
             animation: float 20s ease-in-out infinite;
             pointer-events: none;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
         }
 
-        .header {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #ff4e00, #ff9a56, #ffd700);
-            background-size: 200% 200%;
-            color: white;
-            padding: 20px;
+        .container {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            padding: 50px 40px;
             text-align: center;
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 800px;
-            animation: gradient 3s ease infinite;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .header::before {
-            content: '🎉';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 40px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .promotion-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 40px;
-            margin: 20px auto;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            color: #333;
-            max-width: 700px;
-            width: 90%;
+            max-width: 480px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.18);
             position: relative;
             overflow: hidden;
             transform: translateY(0);
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .promotion-container:hover {
-            transform: translateY(-5px);
-        }
-
-        .promotion-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .good-news {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-bottom: 30px;
-            font-weight: bold;
-            font-size: 20px;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-            animation: slideIn 1s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        h1 {
-            color: #ff4e00;
-            margin-bottom: 25px;
-            font-size: 36px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .promotion-details {
-            background: linear-gradient(135deg, #ff4e00, #ff9a56);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            margin: 25px 0;
-            box-shadow: 0 10px 25px rgba(255, 78, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .promotion-details::before {
+        .container::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shine 3s linear infinite;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
         }
 
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
-        .offer-text {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 35px;
+            gap: 15px;
+            position: relative;
         }
 
-        .price {
-            font-size: 48px;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin: 15px 0;
-            animation: glow 2s ease-in-out infinite alternate;
+        .header-logo {
+            width: 65px;
+            height: 65px;
+            border-radius: 18px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px #ffd700; }
-            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        .header-logo:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
 
-        .description {
-            font-size: 18px;
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #e8ebff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 40px;
             line-height: 1.6;
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .establishment-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 30px;
         }
 
         .btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
+            padding: 20px 35px;
+            font-size: 1.15rem;
+            font-weight: 600;
             border: none;
-            padding: 15px 35px;
-            font-size: 20px;
-            border-radius: 50px;
+            border-radius: 16px;
             cursor: pointer;
-            margin-top: 25px;
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             position: relative;
             overflow: hidden;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
-            background: linear-gradient(135deg, #45a049, #4CAF50);
+            transform: translateY(0);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             width: 0;
             height: 0;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
         }
 
-        .btn:active::before {
+        .btn:active::after {
             width: 300px;
             height: 300px;
-            top: -150px;
-            left: -150px;
         }
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .feature {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .btn-heges {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 50%, #ff6b9d 100%);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
         }
 
-        .feature:hover {
-            transform: translateY(-5px);
+        .btn-heges:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.5);
         }
 
-        .feature-icon {
-            font-size: 30px;
-            margin-bottom: 10px;
+        .btn-ifsm {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #36d1dc 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
         }
 
-        /* Styles pour mobile */
-        @media screen and (max-width: 768px) {
+        .btn-ifsm:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(78, 205, 196, 0.5);
+        }
+
+        .btn-utt {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #8e44ad 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-utt:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .footer {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-weight: 300;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .footer::before {
+            content: '✨';
+            margin-right: 8px;
+            animation: twinkle 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Animations d'entrée */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 35px 25px;
+                margin: 10px;
+            }
+            
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
             .header {
-                font-size: 24px;
-                padding: 15px;
-                width: 95%;
-            }
-            
-            .promotion-container {
-                padding: 25px;
-                width: 95%;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            .offer-text {
-                font-size: 22px;
-            }
-            
-            .price {
-                font-size: 36px;
+                flex-direction: column;
+                gap: 12px;
             }
             
             .btn {
-                padding: 12px 25px;
-                font-size: 18px;
+                padding: 18px 28px;
+                font-size: 1.05rem;
             }
 
-            .features {
-                grid-template-columns: 1fr;
+            .header-logo {
+                width: 55px;
+                height: 55px;
             }
         }
 
-        .timer {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            margin: 20px 0;
-            font-weight: bold;
-            animation: urgency 2s ease-in-out infinite;
-        }
-
-        @keyframes urgency {
-            0%, 100% { box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(231, 76, 60, 0.8); }
+        @media (max-width: 400px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .header-title {
+                font-size: 1.6rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">🍔 KoLo Livraison - Repas Universitaires 🍕</div>
-
-    <div class="promotion-container">
-        <div class="promotion-icon">🚀</div>
-        
-        <div class="good-news">📢 BONNE NOUVELLE!</div>
-        
-        <h1>Groupe Express en Promotion!</h1>
-        
-        <div class="promotion-details">
-            <div class="offer-text">3 Plats pour seulement</div>
-            <div class="price">1500 FCFA</div>
-            <div class="description">
-                Profitez de notre offre exceptionnelle! Le groupe Express propose maintenant 
-                3 délicieux plats universitaires pour seulement 1500 FCFA au lieu du prix habituel.
-            </div>
-        </div>
-
-        <div class="timer">
-            ⏰ Offre limitée dans le temps - Ne ratez pas cette opportunité!
-        </div>
-
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">⚡</div>
-                <h3>Livraison Rapide</h3>
-                <p>30-45 minutes maximum</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🍽️</div>
-                <h3>3 Plats Variés</h3>
-                <p>Menu étudiant complet</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">💰</div>
-                <h3>Prix Imbattable</h3>
-                <p>Seulement 1500 FCFA</p>
-            </div>
+    <div class="container">
+        <div class="header">
+            <img src="image/logo exp.jpg" alt="Logo KoLo Express" class="header-logo">
+            <div class="header-title">KoLo Livraison</div>
         </div>
         
-        <a href="#commander" class="btn">Commander Maintenant!</a>
-        <br><br>
-        <a href="index.html" class="btn" style="background: linear-gradient(135deg, #666, #999); margin-left: 10px;">Retour à l'accueil</a>
+        <p class="subtitle">
+            🍕 Repas Universitaires - Choisissez votre établissement
+        </p>
+        
+        <div class="establishment-buttons">
+            <button class="btn btn-heges fade-in" onclick="selectEstablishment('HEGES')">
+                🏫 HEGES
+            </button>
+            
+            <button class="btn btn-ifsm fade-in" onclick="selectEstablishment('IFSM')">
+                🎓 IFSM
+            </button>
+            
+            <button class="btn btn-utt fade-in" onclick="selectEstablishment('UTT LOKO')">
+                🏛️ UTT LOKO
+            </button>
+        </div>
+        
+        <div class="footer">
+            Sélectionnez un établissement pour continuer
+        </div>
     </div>
 
     <script>
-        // Animation d'entrée
-        window.onload = function() {
-            const container = document.querySelector('.promotion-container');
-            container.style.opacity = '0';
-            container.style.transform = 'translateY(50px)';
+        function selectEstablishment(establishment) {
+            const button = event.target;
             
+            // Animation de clic avec effet de vague
+            button.style.transform = 'scale(0.95)';
+            button.style.transition = 'transform 0.1s ease';
+            
+            // Effet de vibration subtile
+            button.style.animation = 'none';
             setTimeout(() => {
-                container.style.transition = 'all 1s ease-out';
-                container.style.opacity = '1';
-                container.style.transform = 'translateY(0)';
-            }, 100);
-
-            // Effet de particules
-            createParticles();
-        };
-
-        // Création d'effets visuels
-        function createParticles() {
-            const colors = ['#ff4e00', '#ffd700', '#4CAF50', '#667eea'];
+                button.style.animation = 'pulse 0.3s ease';
+            }, 10);
             
-            setInterval(() => {
-                const particle = document.createElement('div');
-                particle.style.position = 'fixed';
-                particle.style.width = '6px';
-                particle.style.height = '6px';
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.borderRadius = '50%';
-                particle.style.left = Math.random() * window.innerWidth + 'px';
-                particle.style.top = window.innerHeight + 'px';
-                particle.style.pointerEvents = 'none';
-                particle.style.zIndex = '-1';
-                particle.style.opacity = '0.7';
+            // Redirection avec délai pour l'animation
+            setTimeout(() => {
+                // Effet de fondu de sortie
+                document.querySelector('.container').style.opacity = '0';
+                document.querySelector('.container').style.transform = 'translateY(-20px) scale(0.95)';
                 
-                document.body.appendChild(particle);
-                
-                const animation = particle.animate([
-                    { transform: 'translateY(0px)', opacity: 0.7 },
-                    { transform: `translateY(-${window.innerHeight + 100}px)`, opacity: 0 }
-                ], {
-                    duration: 3000 + Math.random() * 2000,
-                    easing: 'linear'
-                });
-                
-                animation.onfinish = () => particle.remove();
-            }, 300);
+                setTimeout(() => {
+                    switch(establishment) {
+                        case 'HEGES':
+                            window.location.href = 'higes.html';
+                            break;
+                        case 'IFSM':
+                            window.location.href = 'isfm.html';
+                            break;
+                        case 'UTT LOKO':
+                            window.location.href = 't.html';
+                            break;
+                        default:
+                            console.error('Établissement non reconnu');
+                    }
+                }, 300);
+            }, 200);
         }
 
-        // Effet de clic sur les boutons
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                let ripple = document.createElement('span');
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255,255,255,0.6)';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s linear';
-                ripple.style.left = (e.offsetX - 25) + 'px';
-                ripple.style.top = (e.offsetY - 25) + 'px';
-                ripple.style.width = ripple.style.height = '50px';
-                
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
+        // Animation d'entrée améliorée
+        window.addEventListener('load', () => {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(50px) scale(0.9)';
+            container.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0) scale(1)';
+            }, 100);
+
+            // Animation séquentielle des boutons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach((btn, index) => {
+                btn.style.opacity = '0';
+                btn.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    btn.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                }, 300 + (index * 150));
             });
+        });
+
+        // Ajout d'une animation de pulsation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Effet de parallaxe subtil sur le mouvement de la souris
+        document.addEventListener('mousemove', (e) => {
+            const container = document.querySelector('.container');
+            const x = (e.clientX / window.innerWidth) * 2 - 1;
+            const y = (e.clientY / window.innerHeight) * 2 - 1;
+            
+            container.style.transform = `translate(${x * 3}px, ${y * 3}px)`;
         });
     </script>
 </body>
