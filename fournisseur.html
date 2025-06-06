@@ -245,6 +245,55 @@
                 text-align: center;
             }
         }
+
+        /* Modal styles */
+        #order-details-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.4);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        #order-details-modal.active {
+            display: flex;
+        }
+        #order-details-content {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 95vw;
+            width: 400px;
+            padding: 30px 24px 20px;
+            box-shadow: 0 6px 48px #0002;
+            position: relative;
+            animation: popin .25s cubic-bezier(.17,.67,.83,.67);
+        }
+        @keyframes popin {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        #order-details-content button.close-btn {
+            position: absolute;
+            top: 10px;
+            right: 16px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #764ba2;
+        }
+        #order-details-body h2 {
+            margin-bottom: 10px;
+            font-size: 21px;
+            color: #764ba2;
+        }
+        #order-details-body p, #order-details-body ul {
+            margin-bottom: 7px;
+        }
+        #order-details-body ul {
+            padding-left: 20px;
+        }
     </style>
 </head>
 <body>
@@ -255,6 +304,14 @@
     <div class="container" id="main-container">
         <div style="text-align: center; padding: 60px; color: rgba(255,255,255,0.8); font-size: 18px;">
             ⏳ Chargement des commandes...
+        </div>
+    </div>
+
+    <!-- Modal pour les détails de commande -->
+    <div id="order-details-modal">
+        <div id="order-details-content">
+            <button class="close-btn" onclick="hideOrderDetails()">×</button>
+            <div id="order-details-body"></div>
         </div>
     </div>
 
@@ -278,7 +335,6 @@
 
         function getOrganization(customerName, location, details) {
             const fullText = `${customerName} ${location} ${details}`.toLowerCase();
-            
             if (fullText.includes('heges') || fullText.includes('hèges')) {
                 return 'heges';
             }
@@ -318,6 +374,9 @@
             if (status === 'en_cours') return '<span class="status status-en_cours">En cours</span>';
             return '<span class="status status-nouveau">Nouveau</span>';
         }
+
+        // Pour stocker les commandes en mémoire pour accès rapide
+        let latestOrders = {};
 
         function renderOrdersGrouped(orders) {
             const container = document.getElementById('main-container');
@@ -391,6 +450,7 @@
                                         <td>${date}</td>
                                         <td>${statusLabel(order.status)}</td>
                                         <td>
+                                            <button class="btn-update" onclick="showOrderDetails('${order.id}')">Détails</button>
                                             <button class="btn-update" onclick="updateOrderStatus('${order.id}','en_cours')">En cours</button>
                                             <button class="btn-update" onclick="updateOrderStatus('${order.id}','livré')">Livré</button>
                                         </td>
@@ -439,6 +499,35 @@
                 .catch(e => alert('Erreur: ' + e.message));
         };
 
+        // Détails commande modal
+        window.showOrderDetails = function(orderId) {
+            const order = latestOrders[orderId];
+            if (!order) return alert("Commande introuvable !");
+            const items = (order.items || []).map(i => `<li>${i.name} (${i.qty || 1})</li>`).join('');
+            const html = `
+                <h2>Commande ${order.code || ''}</h2>
+                <p><strong>Client :</strong> ${order.customer?.name || ''}</p>
+                <p><strong>Téléphone :</strong> ${order.customer?.phone || ''}</p>
+                <p><strong>Lieu :</strong> ${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</p>
+                <p><strong>Articles :</strong></p>
+                <ul>${items}</ul>
+                <p><strong>Total :</strong> ${order.total ? order.total + ' FCFA' : ''}</p>
+                <p><strong>Date :</strong> ${order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : ''}</p>
+                <p><strong>Status :</strong> ${order.status || ''}</p>
+            `;
+            document.getElementById('order-details-body').innerHTML = html;
+            document.getElementById('order-details-modal').classList.add('active');
+        };
+
+        window.hideOrderDetails = function() {
+            document.getElementById('order-details-modal').classList.remove('active');
+        };
+
+        // Fermer la modale si on clique en dehors
+        document.getElementById('order-details-modal').addEventListener('click', function(e) {
+            if (e.target === this) hideOrderDetails();
+        });
+
         function listenOrders() {
             const ordersRef = ref(database, 'orders');
             onValue(ordersRef, (snapshot) => {
@@ -446,6 +535,7 @@
                 snapshot.forEach(child => {
                     orders[child.key] = { id: child.key, ...child.val() };
                 });
+                latestOrders = orders;
                 renderOrdersGrouped(orders);
             });
         }
