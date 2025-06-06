@@ -16,7 +16,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: #2d3748;
             min-height: 100vh;
-            padding: 20px 0;
+            padding: 10px 0;
         }
         
         .header {
@@ -24,44 +24,36 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #2d3748;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
             letter-spacing: -0.5px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border-radius: 20px;
-            margin: 0 20px 30px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            border-radius: 16px;
+            margin: 0 10px 20px;
+            max-width: calc(100% - 20px);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 10px;
         }
         
         .organization-group {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            margin-bottom: 40px;
+            border-radius: 16px;
+            margin-bottom: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .organization-group:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
         .organization-header {
-            padding: 25px 30px;
-            font-size: 24px;
+            padding: 20px 15px;
+            font-size: 18px;
             font-weight: 700;
             color: #fff;
             text-align: center;
@@ -85,73 +77,97 @@
             background: linear-gradient(135deg, #96ceb4, #85c1a8);
         }
         
-        .organization-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .organization-group:hover .organization-header::before {
-            left: 100%;
-        }
-        
         .orders-count {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 16px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
             font-weight: 600;
-            margin-left: 15px;
+            margin-top: 8px;
             display: inline-block;
         }
         
+        /* Mobile-first table approach - cards for mobile */
         .commands-table {
+            display: none; /* Hidden on mobile by default */
             width: 100%;
             border-collapse: collapse;
         }
         
-        .commands-table th {
-            background: rgba(0, 0, 0, 0.02);
-            color: #4a5568;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 20px 15px;
-            text-align: left;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* Mobile card layout */
+        .mobile-orders {
+            display: block;
         }
         
-        .commands-table td {
-            padding: 20px 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            vertical-align: middle;
+        .order-card {
+            background: #fff;
+            margin: 0 0 15px 0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
         }
         
-        .commands-table td.code {
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .order-code {
+            font-size: 18px;
             font-weight: 700;
             color: #667eea;
+        }
+        
+        .order-date {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .order-info {
+            margin-bottom: 15px;
+        }
+        
+        .order-info-row {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+        
+        .order-info-label {
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 80px;
+            font-size: 14px;
+        }
+        
+        .order-info-value {
+            flex: 1;
+            font-size: 14px;
+            color: #2d3748;
+            word-break: break-word;
+        }
+        
+        .order-total {
+            font-weight: 700;
+            color: #2d3748;
             font-size: 16px;
         }
         
-        .commands-table tr:hover {
-            background: rgba(102, 126, 234, 0.02);
-        }
-        
         .status {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             display: inline-block;
+            margin-bottom: 15px;
         }
         
         .status-nouveau { 
@@ -169,35 +185,52 @@
             color: white;
         }
         
+        /* Mobile action buttons */
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
         .btn-update {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 10px 16px;
+            border-radius: 10px;
+            padding: 14px 20px;
             cursor: pointer;
             font-weight: 600;
-            margin: 0 4px;
-            font-size: 13px;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            min-height: 48px; /* Minimum touch target size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .btn-update:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        .btn-details {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+        
+        .btn-progress {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+        }
+        
+        .btn-delivered {
+            background: linear-gradient(135deg, #00b894, #00cec9);
         }
         
         .btn-update:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
         
         .empty-state {
             text-align: center;
-            padding: 60px 30px;
-            color: #a0aec0;
-            font-size: 18px;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 16px;
         }
         
         .empty-state::before {
@@ -206,93 +239,193 @@
             display: block;
             margin-bottom: 20px;
         }
-        
-        @media screen and (max-width: 768px) {
-            .header {
-                font-size: 24px;
-                padding: 20px;
-                margin: 0 10px 20px;
-            }
-            
-            .container {
-                padding: 0 10px;
-            }
-            
-            .organization-group {
-                margin-bottom: 20px;
-            }
-            
-            .organization-header {
-                font-size: 20px;
-                padding: 20px;
-            }
-            
-            .commands-table th, 
-            .commands-table td {
-                font-size: 12px;
-                padding: 12px 8px;
-            }
-            
-            .btn-update {
-                padding: 8px 12px;
-                font-size: 12px;
-                margin: 2px;
-            }
-            
-            .orders-count {
-                display: block;
-                margin: 10px 0 0 0;
-                text-align: center;
-            }
-        }
 
-        /* Modal styles */
+        /* Modal styles - optimized for mobile */
         #order-details-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
+        
         #order-details-modal.active {
             display: flex;
         }
+        
         #order-details-content {
             background: #fff;
             border-radius: 16px;
-            max-width: 95vw;
-            width: 400px;
-            padding: 30px 24px 20px;
-            box-shadow: 0 6px 48px #0002;
+            max-width: 100%;
+            width: 100%;
+            max-width: 400px;
+            padding: 25px 20px 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
             position: relative;
             animation: popin .25s cubic-bezier(.17,.67,.83,.67);
+            max-height: 90vh;
+            overflow-y: auto;
         }
+        
         @keyframes popin {
             from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
+        
         #order-details-content button.close-btn {
             position: absolute;
-            top: 10px;
-            right: 16px;
-            font-size: 24px;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
             background: none;
             border: none;
             cursor: pointer;
             color: #764ba2;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
         }
+        
+        #order-details-content button.close-btn:active {
+            background-color: rgba(118, 75, 162, 0.1);
+        }
+        
         #order-details-body h2 {
-            margin-bottom: 10px;
-            font-size: 21px;
+            margin-bottom: 15px;
+            font-size: 20px;
             color: #764ba2;
+            padding-right: 40px;
         }
+        
         #order-details-body p, #order-details-body ul {
-            margin-bottom: 7px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.5;
         }
+        
         #order-details-body ul {
             padding-left: 20px;
+        }
+        
+        #order-details-body strong {
+            color: #2d3748;
+        }
+        
+        /* Tablet and Desktop styles */
+        @media screen and (min-width: 768px) {
+            .header {
+                font-size: 32px;
+                padding: 30px;
+                margin: 0 20px 30px;
+            }
+            
+            .container {
+                max-width: 1200px;
+                padding: 0 20px;
+            }
+            
+            .organization-group {
+                margin-bottom: 40px;
+                border-radius: 24px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .organization-group:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            }
+            
+            .organization-header {
+                padding: 25px 30px;
+                font-size: 24px;
+            }
+            
+            .organization-header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+            
+            .organization-group:hover .organization-header::before {
+                left: 100%;
+            }
+            
+            .orders-count {
+                margin-left: 15px;
+                margin-top: 0;
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            
+            /* Show table on desktop, hide mobile cards */
+            .commands-table {
+                display: table;
+                width: 100%;
+                border-collapse: collapse;
+            }
+            
+            .mobile-orders {
+                display: none;
+            }
+            
+            .commands-table th {
+                background: rgba(0, 0, 0, 0.02);
+                color: #4a5568;
+                font-weight: 600;
+                font-size: 14px;
+                padding: 20px 15px;
+                text-align: left;
+                border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            .commands-table td {
+                padding: 20px 15px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                vertical-align: middle;
+            }
+            
+            .commands-table td.code {
+                font-weight: 700;
+                color: #667eea;
+                font-size: 16px;
+            }
+            
+            .commands-table tr:hover {
+                background: rgba(102, 126, 234, 0.02);
+            }
+            
+            .commands-table .btn-update {
+                padding: 10px 16px;
+                margin: 0 4px;
+                font-size: 13px;
+                min-height: auto;
+            }
+            
+            .commands-table .btn-update:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            }
+        }
+        
+        /* Large screens */
+        @media screen and (min-width: 1024px) {
+            body {
+                padding: 20px 0;
+            }
         }
     </style>
 </head>
@@ -375,6 +508,11 @@
             return '<span class="status status-nouveau">Nouveau</span>';
         }
 
+        // Detect if mobile
+        function isMobile() {
+            return window.innerWidth < 768;
+        }
+
         // Pour stocker les commandes en mémoire pour accès rapide
         let latestOrders = {};
 
@@ -416,50 +554,106 @@
                     (b.timestamp || '').localeCompare(a.timestamp || '')
                 );
                 
-                orgDiv.innerHTML = `
-                    <div class="organization-header ${config.class}">
-                        ${config.name}
-                        <span class="orders-count">${sortedOrders.length} commande${sortedOrders.length > 1 ? 's' : ''}</span>
-                    </div>
-                    <table class="commands-table">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Client</th>
-                                <th>Téléphone</th>
-                                <th>Lieu</th>
-                                <th>Articles</th>
-                                <th>Total</th>
-                                <th>Date/Heure</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                if (isMobile()) {
+                    // Mobile card layout
+                    orgDiv.innerHTML = `
+                        <div class="organization-header ${config.class}">
+                            ${config.name}
+                            <span class="orders-count">${sortedOrders.length} commande${sortedOrders.length > 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="mobile-orders">
                             ${sortedOrders.map(order => {
                                 const items = (order.items || []).map(i => i.name).join(', ');
                                 const date = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : '';
                                 return `
-                                    <tr>
-                                        <td class="code">${order.code || ""}</td>
-                                        <td>${order.customer?.name || ''}</td>
-                                        <td>${order.customer?.phone || ''}</td>
-                                        <td>${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</td>
-                                        <td>${items}</td>
-                                        <td><strong>${order.total ? order.total + ' FCFA' : ''}</strong></td>
-                                        <td>${date}</td>
-                                        <td>${statusLabel(order.status)}</td>
-                                        <td>
-                                            <button class="btn-update" onclick="showOrderDetails('${order.id}')">Détails</button>
-                                            <button class="btn-update" onclick="updateOrderStatus('${order.id}','en_cours')">En cours</button>
-                                            <button class="btn-update" onclick="updateOrderStatus('${order.id}','livré')">Livré</button>
-                                        </td>
-                                    </tr>
+                                    <div class="order-card">
+                                        <div class="order-card-header">
+                                            <div class="order-code">${order.code || ""}</div>
+                                            <div class="order-date">${date}</div>
+                                        </div>
+                                        
+                                        ${statusLabel(order.status)}
+                                        
+                                        <div class="order-info">
+                                            <div class="order-info-row">
+                                                <div class="order-info-label">Client:</div>
+                                                <div class="order-info-value">${order.customer?.name || ''}</div>
+                                            </div>
+                                            <div class="order-info-row">
+                                                <div class="order-info-label">Tél:</div>
+                                                <div class="order-info-value">${order.customer?.phone || ''}</div>
+                                            </div>
+                                            <div class="order-info-row">
+                                                <div class="order-info-label">Lieu:</div>
+                                                <div class="order-info-value">${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</div>
+                                            </div>
+                                            <div class="order-info-row">
+                                                <div class="order-info-label">Articles:</div>
+                                                <div class="order-info-value">${items}</div>
+                                            </div>
+                                            <div class="order-info-row">
+                                                <div class="order-info-label">Total:</div>
+                                                <div class="order-info-value order-total">${order.total ? order.total + ' FCFA' : ''}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mobile-actions">
+                                            <button class="btn-update btn-details" onclick="showOrderDetails('${order.id}')">📋 Voir Détails</button>
+                                            <button class="btn-update btn-progress" onclick="updateOrderStatus('${order.id}','en_cours')">🚀 Marquer En Cours</button>
+                                            <button class="btn-update btn-delivered" onclick="updateOrderStatus('${order.id}','livré')">✅ Marquer Livré</button>
+                                        </div>
+                                    </div>
                                 `;
                             }).join('')}
-                        </tbody>
-                    </table>
-                `;
+                        </div>
+                    `;
+                } else {
+                    // Desktop table layout
+                    orgDiv.innerHTML = `
+                        <div class="organization-header ${config.class}">
+                            ${config.name}
+                            <span class="orders-count">${sortedOrders.length} commande${sortedOrders.length > 1 ? 's' : ''}</span>
+                        </div>
+                        <table class="commands-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Client</th>
+                                    <th>Téléphone</th>
+                                    <th>Lieu</th>
+                                    <th>Articles</th>
+                                    <th>Total</th>
+                                    <th>Date/Heure</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sortedOrders.map(order => {
+                                    const items = (order.items || []).map(i => i.name).join(', ');
+                                    const date = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : '';
+                                    return `
+                                        <tr>
+                                            <td class="code">${order.code || ""}</td>
+                                            <td>${order.customer?.name || ''}</td>
+                                            <td>${order.customer?.phone || ''}</td>
+                                            <td>${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</td>
+                                            <td>${items}</td>
+                                            <td><strong>${order.total ? order.total + ' FCFA' : ''}</strong></td>
+                                            <td>${date}</td>
+                                            <td>${statusLabel(order.status)}</td>
+                                            <td>
+                                                <button class="btn-update" onclick="showOrderDetails('${order.id}')">Détails</button>
+                                                <button class="btn-update" onclick="updateOrderStatus('${order.id}','en_cours')">En cours</button>
+                                                <button class="btn-update" onclick="updateOrderStatus('${order.id}','livré')">Livré</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
                 
                 container.appendChild(orgDiv);
             });
@@ -526,6 +720,13 @@
         // Fermer la modale si on clique en dehors
         document.getElementById('order-details-modal').addEventListener('click', function(e) {
             if (e.target === this) hideOrderDetails();
+        });
+
+        // Re-render on window resize
+        window.addEventListener('resize', () => {
+            if (Object.keys(latestOrders).length > 0) {
+                renderOrdersGrouped(latestOrders);
+            }
         });
 
         function listenOrders() {
