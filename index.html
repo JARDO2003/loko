@@ -3,19 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOKO EXPRESS - Repas Universitaires</title>
-    <!-- Ajout de Font Awesome pour les icônes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Promotion Express - KoLo Livraison</title>
     <style>
-        /* Styles généraux avec les couleurs rouge, bleu et blanc */
-        :root {
-            --primary-red: #e63946;
-            --primary-blue: #1d3557;
-            --light-blue: #457b9d;
-            --white: #ffffff;
-            --light-gray: #f1faee;
-        }
-        
+        /* Styles généraux */
         * {
             margin: 0;
             padding: 0;
@@ -23,1290 +13,423 @@
         }
 
         body {
-            background-color: var(--light-gray);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+            color: white;
             text-align: center;
-            padding: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Navigation et Header */
-        .navbar {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            position: sticky;
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: absolute;
             top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo img {
-            height: 50px;
-        }
-
-        .logo-text {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--white);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
-        .nav-links li {
-            margin: 0 15px;
-        }
-
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .nav-links a:hover {
-            color: #ff9a56;
-        }
-
-        .mobile-menu-icon {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
 
         .header {
             font-size: 32px;
             font-weight: bold;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff4e00, #ff9a56, #ffd700);
+            background-size: 200% 200%;
             color: white;
-            padding: 15px;
-            text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            margin: 20px auto;
-            max-width: 90%;
-        }
-
-        .welcome-section {
-            background-color: var(--white);
             padding: 20px;
-            margin: 20px auto;
-            border-radius: 10px;
-            max-width: 1000px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 0 20px;
-        }
-
-        /* Style des boîtes */
-        .box {
-            border: 3px solid var(--primary-blue);
-            padding: 15px;
-            margin: 20px 0;
-            background-color: var(--white);
-            border-radius: 15px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 800px;
+            animation: gradient 3s ease infinite;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .box h2 {
-            color: var(--primary-red);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        /* Style du slider */
-        .slider-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            width: 100%;
-            padding: 12px;
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-            margin: 10px 0;
+        .header::before {
+            content: '🎉';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 40px;
+            animation: bounce 2s infinite;
         }
 
-        .slider-container::-webkit-scrollbar {
-            height: 6px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 3px;
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
 
-        .slider-container::-webkit-scrollbar-thumb {
-            background: var(--light-blue);
-            border-radius: 3px;
+        .promotion-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 20px auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            color: #333;
+            max-width: 700px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
         }
 
-        .slider {
-            display: flex;
-            gap: 20px;
-            transition: transform 0.5s ease-in-out;
-            padding: 5px 0;
+        .promotion-container:hover {
+            transform: translateY(-5px);
         }
 
-        /* Style des cartes produits */
-        .card {
-            background: var(--white);
-            border: 2px solid var(--light-blue);
-            border-radius: 12px;
-            width: 220px;
-            padding: 12px;
-            text-align: center;
-            flex: 0 0 auto;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .promotion-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
         }
 
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            border-color: var(--primary-red);
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-        .card img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .card h3 {
-            margin: 8px 0;
-            color: var(--primary-blue);
-        }
-
-        .card p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .card .price {
-            font-weight: bold;
-            color: var(--primary-red);
-            font-size: 18px;
-            margin: 5px 0;
-        }
-
-        .card button {
-            background: linear-gradient(to right, var(--primary-red), var(--light-blue));
+        .good-news {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 8px;
-            border: none;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 8px;
-            border-radius: 8px;
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 30px;
             font-weight: bold;
-            transition: background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            animation: slideIn 1s ease-out;
         }
 
-        .card button:hover {
-            background: linear-gradient(to right, #c1121f, #14213d);
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Style de la boîte de commande */
-        .order-box {
-            background: var(--white);
+        h1 {
+            color: #ff4e00;
+            margin-bottom: 25px;
+            font-size: 36px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .promotion-details {
+            background: linear-gradient(135deg, #ff4e00, #ff9a56);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 0 10px 25px rgba(255, 78, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promotion-details::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .offer-text {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .price {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 15px 0;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        .description {
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 25px;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
             padding: 20px;
             border-radius: 15px;
-            margin: 30px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            color: #333;
-            border: 2px solid var(--primary-blue);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
         }
 
-        .order-box h2 {
-            color: var(--primary-red);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        .feature:hover {
+            transform: translateY(-5px);
         }
 
-        .order-items {
-            text-align: left;
-            margin: 15px 0;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background: var(--light-gray);
-            border-radius: 8px;
-        }
-
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .remove-btn {
-            color: var(--primary-red);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .order-total {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px 0;
-            text-align: right;
-            color: var(--primary-blue);
-        }
-
-        /* Payment info */
-        .payment-info {
-            background-color: var(--light-gray);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-        }
-
-        .payment-info h3 {
-            color: var(--primary-blue);
+        .feature-icon {
+            font-size: 30px;
             margin-bottom: 10px;
         }
 
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .payment-method {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Formulaire */
-        .form-group {
-            margin: 15px 0;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .btn-submit {
-            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 0 auto;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(to right, #c1121f, #14213d);
-        }
-
-        /* FAQ Section */
-        .faq-section {
-            margin: 30px 0;
-        }
-
-        .faq-item {
-            margin-bottom: 15px;
-            text-align: left;
-            background: var(--white);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .faq-question {
-            font-weight: bold;
-            color: var(--primary-blue);
-            margin-bottom: 5px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .faq-answer {
-            color: #666;
-            display: none;
-            padding-top: 10px;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            padding: 20px 0;
-            margin-top: 30px;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-section {
-            flex: 1;
-            min-width: 200px;
-            margin: 10px;
-            text-align: left;
-        }
-
-        .footer-section h3 {
-            margin-bottom: 15px;
-            color: var(--white);
-        }
-
-        .footer-section p, .footer-section a {
-            color: var(--light-gray);
-            margin-bottom: 5px;
-            display: block;
-            text-decoration: none;
-        }
-
-        .footer-section a:hover {
-            color: var(--primary-red);
-        }
-
-        .social-media {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .social-media a {
-            color: var(--white);
-            font-size: 20px;
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            font-size: 14px;
-            color: var(--light-gray);
-        }
-
-        /* Filter section */
-        .filter-section {
-            background: var(--white);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .filter-section label {
-            margin: 0;
-            margin-right: 5px;
-        }
-
-        .filter-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .filter-item select, .filter-item input {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 5px;
-        }
-
-        .search-box input {
-            flex: 1;
-        }
-
-        .search-box button {
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-
-        /* Breadcrumb */
-        .breadcrumb {
-            display: flex;
-            padding: 10px 0;
-            margin: 10px 0;
-            list-style: none;
-            background-color: transparent;
-        }
-
-        .breadcrumb li {
-            display: flex;
-            align-items: center;
-            color: #666;
-        }
-
-        .breadcrumb li:not(:last-child)::after {
-            content: "›";
-            margin: 0 10px;
-            color: #999;
-        }
-
-        .breadcrumb a {
-            color: var(--primary-blue);
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        /* Styles spécifiques pour mobile */
+        /* Styles pour mobile */
         @media screen and (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                padding: 10px;
-            }
-            
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                margin-top: 10px;
-            }
-            
-            .nav-links.show {
-                display: flex;
-            }
-            
-            .nav-links li {
-                margin: 5px 0;
-            }
-            
-            .mobile-menu-icon {
-                display: block;
-                position: absolute;
-                right: 20px;
-                top: 25px;
-            }
-            
             .header {
                 font-size: 24px;
-                padding: 12px;
+                padding: 15px;
                 width: 95%;
             }
             
-            .container {
-                padding: 0 10px;
+            .promotion-container {
+                padding: 25px;
+                width: 95%;
             }
             
-            .box {
-                padding: 12px;
-                margin: 15px 0;
+            h1 {
+                font-size: 28px;
             }
             
-            .slider-container {
-                padding: 8px;
+            .offer-text {
+                font-size: 22px;
             }
             
-            .card {
-                width: 160px;
-                padding: 8px;
+            .price {
+                font-size: 36px;
             }
             
-            .card img {
-                height: 100px;
+            .btn {
+                padding: 12px 25px;
+                font-size: 18px;
             }
-            
-            .footer-content {
-                flex-direction: column;
-            }
-            
-            .payment-methods {
+
+            .features {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Styles pour très petits écrans */
-        @media screen and (max-width: 400px) {
-            .card {
-                width: 140px;
-            }
-            
-            .card img {
-                height: 80px;
-            }
-            
-            .header {
-                font-size: 20px;
-                padding: 10px;
-            }
+        .timer {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: bold;
+            animation: urgency 2s ease-in-out infinite;
         }
-        .logo img {
-    height: 60px;
-    width: auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
+
+        @keyframes urgency {
+            0%, 100% { box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(231, 76, 60, 0.8); }
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-<nav class="navbar">
-    <div class="logo">
-        <!-- Image logo à remplacer avec votre propre URL d'image -->
-        <img src="image/logo exp.jpg" alt="LOKO EXPRESS Logo">
-        <div class="logo-text">LOKO EXPRESS</div>
-    </div>
-    
-    <ul class="nav-links" id="navLinks">
-        <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-        <li><a href="#menu"><i class="fas fa-utensils"></i> Menu</a></li>
-        <li><a href="#" onclick="if(prompt('Entré le code fournisseur :')==='marcio@')location.href='fournisseur.html';else alert('Code incorrect');"><i class="fas fa-utensils"></i> Accès fournisseur</a></li>   
-    </ul>
-    
-    <div class="mobile-menu-icon" onclick="toggleMenu()">
-        <i class="fas fa-bars"></i>
-    </div>
-</nav>
+    <div class="header">🍔 KoLo Livraison - Repas Universitaires 🍕</div>
+
+    <div class="promotion-container">
+        <div class="promotion-icon">🚀</div>
         
+        <div class="good-news">📢 BONNE NOUVELLE!</div>
+        
+        <h1>Groupe Express en Promotion!</h1>
+        
+        <div class="promotion-details">
+            <div class="offer-text">3 Plats pour seulement</div>
+            <div class="price">1500 FCFA</div>
+            <div class="description">
+                Profitez de notre offre exceptionnelle! Le groupe Express propose maintenant 
+                3 délicieux plats universitaires pour seulement 1500 FCFA au lieu du prix habituel.
+            </div>
+        </div>
 
+        <div class="timer">
+            ⏰ Offre limitée dans le temps - Ne ratez pas cette opportunité!
+        </div>
 
-    <div class="header">
-        <i class="fas fa-hamburger"></i> LOKO EXPRESS - Repas Universitaires <i class="fas fa-pizza-slice"></i>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Livraison Rapide</h3>
+                <p>30-45 minutes maximum</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🍽️</div>
+                <h3>3 Plats Variés</h3>
+                <p>Menu étudiant complet</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h3>Prix Imbattable</h3>
+                <p>Seulement 1500 FCFA</p>
+            </div>
+        </div>
+        
+        <a href="#commander" class="btn">Commander Maintenant!</a>
+        <br><br>
+        <a href="index.html" class="btn" style="background: linear-gradient(135deg, #666, #999); margin-left: 10px;">Retour à l'accueil</a>
     </div>
 
-    <div class="container">
-        <!-- Fil d'Ariane -->
-        <ul class="breadcrumb">
-            <li><a href="#">Accueil</a></li>
+    <script>
+        // Animation d'entrée
+        window.onload = function() {
+            const container = document.querySelector('.promotion-container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(50px)';
             
-        </ul>
+            setTimeout(() => {
+                container.style.transition = 'all 1s ease-out';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
 
-        <!-- Section de bienvenue -->
-        <div class="welcome-section">
-            <h2><i class="fas fa-star"></i> Bienvenue chez LOKO Express</h2>
-            <p>Votre adresse gourmande sur le Campus ! Découvrez nos plats savoureux, préparés avec amour et livrés gratuitement.</p>
-            <button class="btn-submit" style="max-width: 300px; margin: 15px auto;" onclick="document.getElementById('order').scrollIntoView()">
-                <i class="fas fa-shopping-cart"></i> Commander directement par appel au 05 54 55 95 33
-            </button>
-        </div>
+            // Effet de particules
+            createParticles();
+        };
 
-        <!-- Section filtres -->
-        <div class="filter-section">
-            <div class="filter-item">
-                <label for="category-filter"><i class="fas fa-filter"></i> Catégorie:</label>
-                <select id="category-filter" onchange="filterByCategory()">
-                    <option value="all">Tous les plats</option>
-                    <option value="category-a">Pâtes & Petit pois</option>
-                    <option value="category-b">Tchèpe</option>
-                    <option value="category-c">Attieke / Alloco / Igname</option>
-                    <option value="category-d">Riz sauce</option>
-                    <option value="category-e">Garba</option>
-                    <option value="category-f">Porc au four</option>
-                    <option value="category-g">Plats traditionnels</option>
-                    <option value="category-h">Desserts</option>
-                </select>
-            </div>
-            <div class="filter-item">
-                <label for="price-filter"><i class="fas fa-money-bill-wave"></i> Prix:</label>
-                <select id="price-filter" onchange="filterByPrice()">
-                    <option value="all">Tous les prix</option>
-                    <option value="0-500">Moins de 500 FCFA</option>
-                    <option value="500-1000">500 - 1000 FCFA</option>
-                    <option value="1000+">Plus de 1000 FCFA</option>
-                </select>
-            </div>
-            <div class="filter-item search-box">
-               
-                <button onclick="searchPlats()"><i class="fas fa-search"></i></button>
-            </div>
-        </div>
-
-        <!-- Menu des plats -->
-        <section id="menu">
-            <!-- Catégorie A - Spaghetti et Petit pois -->
-            <div class="box category-a">
-                <h2><i class="fas fa-utensils"></i> Pâtes & Petit pois</h2>
-                <div class="slider-container" id="category-a-food">
-                    <div class="slider">
-                        <div class="card">
-                            <img src="image/spaghetti rognon.jpg" alt="Spaghetti rognon">
-                            <h3>Spaghetti rognon</h3>
-                            <p>Spaghetti préparé avec du rognon</p>
-                            <div class="price">500 FCFA</div>
-                            <button onclick="addToCart('Spaghetti rognon', 500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/spaghet foi.jpg" alt="Spaghetti foi">
-                            <h3>Spaghetti foi</h3>
-                            <p>Spaghetti préparé avec du foie</p>
-                            <div class="price">500 FCFA</div>
-                            <button onclick="addToCart('Spaghetti foi', 500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/spagheti oeuf grilll.jpg" alt="Spaghetti rognon + œuf">
-                            <h3>Spaghetti rognon + œuf</h3>
-                            <p>Spaghetti avec rognon et œuf grillé</p>
-                            <div class="price">750 FCFA</div>
-                            <button onclick="addToCart('Spaghetti rognon + œuf grillé', 750)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/spaghet foi.jpg" alt="Spaghetti foi + œuf">
-                            <h3>Spaghetti foi + œuf</h3>
-                            <p>Spaghetti avec foi et œuf grillé</p>
-                            <div class="price">750 FCFA</div>
-                            <button onclick="addToCart('Spaghetti foi + œuf grillé', 750)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/spaghetti viande.jpg" alt="Spaghetti viande">
-                            <h3>Spaghetti viande</h3>
-                            <p>Spaghetti préparé avec de la viande</p>
-                            <div class="price">500 FCFA</div>
-                            <button onclick="addToCart('Spaghetti viande', 500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/petit poid rogno,.jpg" alt="Petit pois rognon">
-                            <h3>Petit pois rognon</h3>
-                            <p>Petit pois préparé avec du rognon</p>
-                            <div class="price">1000 FCFA</div>
-                            <button onclick="addToCart('Petit pois rognon', 1000)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/petit poid oeuf.jpg" alt="Petit pois œuf">
-                            <h3>Petit pois œuf</h3>
-                            <p>Petit pois préparé avec des œufs</p>
-                            <div class="price">1000 FCFA</div>
-                            <button onclick="addToCart('Petit pois œuf', 1000)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/petit poid viande.jpg" alt="Petit pois viande">
-                            <h3>Petit pois viande</h3>
-                            <p>Petit pois préparé avec de la viande</p>
-                            <div class="price">1500 FCFA</div>
-                            <button onclick="addToCart('Petit pois viande', 1500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Catégorie B - Tchèpe au poisson -->
-            <div class="box category-b">
-                <h2><i class="fas fa-fish"></i> Tchèpe</h2>
-                <div class="slider-container" id="category-b-food">
-                    <div class="slider">
-                        <div class="card">
-                            <img src="image/tchep poisson.jpg" alt="Tchèpe au poisson">
-                            <h3>Tchèpe au poisson</h3>
-                            <p>Riz sauce tomate avec poisson frais</p>
-                            <div class="price">500 FCFA</div>
-                            <button onclick="addToCart('Tchèpe au poisson', 500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        // Création d'effets visuels
+        function createParticles() {
+            const colors = ['#ff4e00', '#ffd700', '#4CAF50', '#667eea'];
             
-            <!-- Catégorie C - Attieke, Alloco, Igname et Panini -->
-            <div class="box category-c">
-                <h2><i class="fas fa-drumstick-bite"></i> Attieke / Alloco / Igname / Panini</h2>
-                <div class="slider-container" id="category-c-food">
-                    <div class="slider">
-                        <div class="card">
-                            <img src="image/atieke poulet.jpg" alt="Attieke patte de poulet">
-                            <h3>Attieke patte de poulet</h3>
-                            <p>Attieke servi avec patte de poulet</p>
-                            <div class="price">1000 FCFA</div>
-                            <button onclick="addToCart('Attieke patte de poulet', 1000)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/atieke poulet.jpg" alt="Attieke dindon">
-                            <h3>Attieke dindon</h3>
-                            <p>Attieke servi avec du dindon</p>
-                            <div class="price">1000 FCFA</div>
-                            <button onclick="addToCart('Attieke dindon', 1000)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/atieke poulet.jpg" alt="Attieke poulet">
-                            <h3>Attieke poulet</h3>
-                            <p>Attieke servi avec du poulet</p>
-                            <div class="price">1000 FCFA</div>
-                            <button onclick="addToCart('Attieke poulet', 1000)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/atieke alloko.jpg" alt="Attieke poisson">
-                            <h3>Attieke poisson</h3>
-                            <p>Attieke servi avec du poisson</p>
-                            <div class="price">1000 FCFA</div>
-                            <button onclick="addToCart('Attieke poisson', 1000)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/panini pain rond.jpg" alt="Panini pain rond">
-                            <h3>Panini pain rond</h3>
-                            <p>Sandwich panini avec pain rond</p>
-                            <div class="price">500 FCFA</div>
-                            <button onclick="addToCart('Panini pain rond', 500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/panini pain sucre.jpg" alt="Panini pain sucré">
-                            <h3>Panini pain sucré</h3>
-                            <p>Sandwich panini avec pain sucré</p>
-                            <div class="price">500 FCFA</div>
-                            <button onclick="addToCart('Panini pain sucré', 500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                        <div class="card">
-                            <img src="image/charwama.jpg" alt="Charwama">
-                            <h3>Charwama</h3>
-                            <p>Sandwich kebab à la viande avec légumes</p>
-                            <div class="price">1500 FCFA</div>
-                            <button onclick="addToCart('Charwama', 1500)"><i class="fas fa-cart-plus"></i> Commander</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        <!-- Catégorie D - Tchèpe et Riz sauce -->
-        <div class="box category-d">
-            <h2>Catégorie D - Tchèpe et Riz sauce</h2>
-            <div class="slider-container" id="category-d-food">
-                <div class="slider">
-                    <div class="card">
-                        <img src="image/tchep poisson.jpg" alt="Tchèpe avec poisson">
-                        <h3>Tchèpe avec poisson</h3>
-                        <p>Tchèpe traditionnel préparé avec du poisson</p>
-                        <div class="price">800 FCFA</div>
-                        <button onclick="addToCart('Tchèpe avec poisson', 800)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/tchep poulet.jpg" alt="Tchèpe avec poulet">
-                        <h3>Tchèpe avec poulet</h3>
-                        <p>Tchèpe traditionnel préparé avec du poulet</p>
-                        <div class="price">800 FCFA</div>
-                        <button onclick="addToCart('Tchèpe avec poulet', 800)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/riz  arachide.jpg" alt="Riz sauce arachide">
-                        <h3>Riz sauce arachide</h3>
-                        <p>Riz blanc servi avec sauce arachide</p>
-                        <div class="price">800 FCFA</div>
-                        <button onclick="addToCart('Riz sauce arachide', 800)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/riz souce feuille.jpg" alt="Riz sauce feuille">
-                        <h3>Riz sauce feuille</h3>
-                        <p>Riz blanc servi avec sauce feuille</p>
-                        <div class="price">800 FCFA</div>
-                        <button onclick="addToCart('Riz sauce feuille', 800)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/riz sauc e.jpg" alt="Riz sauce tomate">
-                        <h3>Riz sauce tomate</h3>
-                        <p>Riz blanc servi avec sauce tomate</p>
-                        <div class="price">800 FCFA</div>
-                        <button onclick="addToCart('Riz sauce tomate', 800)">Commander</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Catégorie E - Garba -->
-        <div class="box category-e">
-            <h2>Catégorie E - Garba</h2>
-            <div class="slider-container" id="category-e-food">
-                <div class="slider">
-                    <div class="card">
-                        <img src="image/garba.jpg" alt="Garba">
-                        <h3>Garba</h3>
-                        <p>Attiéké avec poisson thon et légumes</p>
-                        <div class="price">Prix personnalisé</div>
-                        <button onclick="addToCart('Garba', 1000)">Commander</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Catégorie F - Porc au four -->
-        <div class="box category-f">
-            <h2>Catégorie F - Porc au four</h2>
-            <div class="slider-container" id="category-f-food">
-                <div class="slider">
-                    <div class="card">
-                        <img src="image/porc au .jpg" alt="Porc au four + Attiéké">
-                        <h3>Porc au four + Attiéké</h3>
-                        <p>Porc au four servi avec Attiéké</p>
-                        <div class="price">1000 FCFA</div>
-                        <button onclick="addToCart('Porc au four + Attiéké', 1000)">Commander</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Catégorie G - Plats traditionnels -->
-        <div class="box category-g">
-            <h2>Catégorie G - Plats traditionnels</h2>
-            <div class="slider-container" id="category-g-food">
-                <div class="slider">
-                    <div class="card">
-                        <img src="image/foutou poisson.jpg" alt="Foufou sauce claire poisson frais">
-                        <h3>Foufou sauce claire</h3>
-                        <p>Foufou avec sauce claire et poisson frais</p>
-                        <div class="price">1000 FCFA</div>
-                        <button onclick="addToCart('Foufou sauce claire poisson frais', 1000)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/placali kope.jpg" alt="Placali sauce kôpè">
-                        <h3>Placali sauce kôpè</h3>
-                        <p>Placali traditionnel avec sauce kôpè</p>
-                        <div class="price">500 FCFA</div>
-                        <button onclick="addToCart('Placali sauce kôpè', 500)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/riz auberg.jpg" alt="Riz sauce aubergine">
-                        <h3>Riz sauce aubergine</h3>
-                        <p>Riz blanc servi avec sauce aubergine</p>
-                        <div class="price">500 FCFA</div>
-                        <button onclick="addToCart('Riz sauce aubergine', 500)">Commander</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Catégorie H - Desserts -->
-        <div class="box category-h">
-            <h2>Catégorie H - Desserts</h2>
-            <div class="slider-container" id="category-h-food">
-                <div class="slider">
-                    <div class="card">
-                        <img src="image/pankate.jpg" alt="Pancakes">
-                        <h3>Pancakes</h3>
-                        <p>Délicieuses crêpes épaisses américaines</p>
-                        <div class="price">500 FCFA</div>
-                        <button onclick="addToCart('Pancakes', 500)">Commander</button>
-                    </div>
-                    <div class="card">
-                        <img src="image/crepes.jpg" alt="Crêpes">
-                        <h3>Crêpes</h3>
-                        <p>Fines crêpes traditionnelles</p>
-                        <div class="price">500 FCFA</div>
-                        <button onclick="addToCart('Crêpes', 500)">Commander</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Formulaire de commande -->
-<div class="order-box">
-    <h2>Votre Commande</h2>
-    <div class="order-items" id="order-items">
-        <!-- Les articles commandés apparaîtront ici -->
-        <div class="order-item" id="empty-cart">
-            Votre panier est vide
-        </div>
-    </div>
-    <div class="order-total" id="order-total">
-        Total: 0 FCFA
-    </div>
-
-    <form id="order-form">
-        <div class="form-group">
-            <label for="name">Nom et Prénom</label>
-            <input type="text" id="name" required>
-        </div>
-        <div class="form-group">
-            <label for="phone">Numéro de téléphone</label>
-            <input type="tel" id="phone" required>
-        </div>
-        <div class="form-group">
-            <label for="location">Lieu de livraison (mentionné loko)</label>
-            <input type="text" id="location" required>
-        </div>
-        <div class="form-group">
-            <label for="details">Détails supplémentaires (Pas nécessaire)</label>
-            <textarea id="details" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="payment">Mode de paiement</label>
-            <select id="payment" required>
-                <option value="">Choisir un mode de paiement</option>
-                <option value="cash">Paiement à la livraison</option>
-                <option value="mtn">MTN money 05 54 55 95 33</option>
-                <option value="moov">MOOV money 01 53 70 71 86</option>
-                <option value="wave">WAVE 07 19 98 30 44</option>
-            </select>
-        </div>
-        <button type="submit" class="btn-submit">Confirmer la commande</button>
-    </form>
-</div>
-
-<!-- Script Firebase -->
-<script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
-        authDomain: "kolo-livraison.firebaseapp.com",
-        databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
-        projectId: "kolo-livraison",
-        storageBucket: "kolo-livraison.firebasestorage.app",
-        messagingSenderId: "78667636312",
-        appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-        measurementId: "G-R79LC3XQL4"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const database = getDatabase(app);
-
-    // Rendre la fonction sendOrderToFirebase globale
-    window.sendOrderToFirebase = function(orderData) {
-        const ordersRef = ref(database, 'orders');
-        const newOrderRef = push(ordersRef);
-        set(newOrderRef, {
-            ...orderData,
-            timestamp: new Date().toISOString()
-        })
-        .then(() => {
-            alert("Votre commande a été envoyée avec succès! Nous vous contacterons bientôt.");
-            clearCart();
-            document.getElementById('order-form').reset();
-        })
-        .catch((error) => {
-            console.error("Erreur lors de l'envoi de la commande: ", error);
-            alert("Une erreur s'est produite. Veuillez réessayer.");
-        });
-    };
-</script>
-
-<!-- Script principal -->
-<script>
-// Variables globales
-let cart = [];
-let total = 0;
-
-// Fonction pour ajouter un élément au panier
-window.addToCart = function(item, price) {
-    cart.push({item, price});
-    updateCart();
-    
-    // Montrer une notification
-    const notification = document.createElement('div');
-    notification.textContent = `${item} ajouté au panier!`;
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.right = '20px';
-    notification.style.backgroundColor = '#4CAF50';
-    notification.style.color = 'white';
-    notification.style.padding = '10px 20px';
-    notification.style.borderRadius = '5px';
-    notification.style.zIndex = '1000';
-    document.body.appendChild(notification);
-    
-    // Faire disparaître la notification après 3 secondes
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.5s';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 500);
-    }, 3000);
-};
-
-// Fonction pour mettre à jour l'affichage du panier
-function updateCart() {
-    const orderItems = document.getElementById('order-items');
-    const orderTotal = document.getElementById('order-total');
-    const emptyCart = document.getElementById('empty-cart');
-    
-    // Calculer le total
-    total = cart.reduce((sum, item) => sum + item.price, 0);
-    
-    // Mettre à jour l'affichage
-    if (cart.length > 0) {
-        // Cacher le message panier vide
-        if (emptyCart) {
-            emptyCart.style.display = 'none';
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = '50%';
+                particle.style.left = Math.random() * window.innerWidth + 'px';
+                particle.style.top = window.innerHeight + 'px';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '-1';
+                particle.style.opacity = '0.7';
+                
+                document.body.appendChild(particle);
+                
+                const animation = particle.animate([
+                    { transform: 'translateY(0px)', opacity: 0.7 },
+                    { transform: `translateY(-${window.innerHeight + 100}px)`, opacity: 0 }
+                ], {
+                    duration: 3000 + Math.random() * 2000,
+                    easing: 'linear'
+                });
+                
+                animation.onfinish = () => particle.remove();
+            }, 300);
         }
-        
-        // Vider le conteneur
-        orderItems.innerHTML = '';
-        
-        // Ajouter chaque élément
-        cart.forEach((item, index) => {
-            const orderItem = document.createElement('div');
-            orderItem.className = 'order-item';
-            orderItem.innerHTML = `
-                <span>${item.item} - ${item.price} FCFA</span>
-                <button class="remove-btn" onclick="removeFromCart(${index})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
-            orderItems.appendChild(orderItem);
+
+        // Effet de clic sur les boutons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                let ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255,255,255,0.6)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.left = (e.offsetX - 25) + 'px';
+                ripple.style.top = (e.offsetY - 25) + 'px';
+                ripple.style.width = ripple.style.height = '50px';
+                
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
         });
-    } else {
-        // Afficher le message panier vide
-        orderItems.innerHTML = '<div class="order-item" id="empty-cart">Votre panier est vide</div>';
-    }
-    
-    // Mettre à jour le total
-    orderTotal.textContent = `Total: ${total} FCFA`;
-}
-
-// Fonction pour supprimer un élément du panier
-window.removeFromCart = function(index) {
-    cart.splice(index, 1);
-    updateCart();
-};
-
-// Fonction pour vider le panier
-window.clearCart = function() {
-    cart = [];
-    updateCart();
-};
-
-// Attendre que le DOM soit chargé
-document.addEventListener('DOMContentLoaded', function() {
-    // Gestionnaire d'événement pour le formulaire de commande
-    const orderForm = document.getElementById('order-form');
-    if (orderForm) {
-        orderForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Vérifier si le panier est vide
-            if (cart.length === 0) {
-                alert("Votre panier est vide. Veuillez ajouter des articles avant de commander.");
-                return;
-            }
-            
-            // Récupérer les valeurs du formulaire
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const location = document.getElementById('location').value;
-            const details = document.getElementById('details').value;
-            const payment = document.getElementById('payment').value;
-            
-            // Préparer les données de commande
-            const orderData = {
-                customerName: name,
-                customerPhone: phone,
-                deliveryLocation: location,
-                locationDetails: details,
-                paymentMethod: payment,
-                items: cart.map(item => item.item),
-                itemPrices: cart.map(item => item.price),
-                totalAmount: total,
-                status: 'new'
-            };
-            
-            // Envoyer la commande à Firebase
-            window.sendOrderToFirebase(orderData);
-        });
-    }
-
-    // Initialiser le panier
-    updateCart();
-});
-
-// Fonction pour filtrer par catégorie
-window.filterByCategory = function() {
-    const category = document.getElementById('category-filter').value;
-    const boxes = document.querySelectorAll('.box');
-    
-    if (category === 'all') {
-        boxes.forEach(box => {
-            box.style.display = 'block';
-        });
-    } else {
-        boxes.forEach(box => {
-            if (box.classList.contains(category)) {
-                box.style.display = 'block';
-            } else {
-                box.style.display = 'none';
-            }
-        });
-    }
-};
-
-// Fonction pour filtrer par prix
-window.filterByPrice = function() {
-    const priceRange = document.getElementById('price-filter').value;
-    const cards = document.querySelectorAll('.card');
-    
-    cards.forEach(card => {
-        const priceText = card.querySelector('.price').textContent;
-        const price = parseInt(priceText.replace(/[^0-9]/g, ''));
-        
-        if (priceRange === 'all') {
-            card.style.display = 'block';
-        } else if (priceRange === '0-500' && price <= 500) {
-            card.style.display = 'block';
-        } else if (priceRange === '500-1000' && price > 500 && price <= 1000) {
-            card.style.display = 'block';
-        } else if (priceRange === '1000+' && price > 1000) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-};
-
-// Fonction de recherche de plats
-window.searchPlats = function() {
-    const searchTerm = document.getElementById('search-input').value.toLowerCase();
-    const cards = document.querySelectorAll('.card');
-    
-    cards.forEach(card => {
-        const title = card.querySelector('h3').textContent.toLowerCase();
-        const description = card.querySelector('p').textContent.toLowerCase();
-        
-        if (title.includes(searchTerm) || description.includes(searchTerm)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-};
-
-// Toggle menu mobile
-window.toggleMenu = function() {
-    const navLinks = document.getElementById('navLinks');
-    navLinks.classList.toggle('show');
-};
-
-// Fonction pour gérer les questions fréquentes (FAQ)
-document.addEventListener('DOMContentLoaded', function() {
-    const faqQuestions = document.querySelectorAll('.faq-question');
-    
-    faqQuestions.forEach(question => {
-        question.addEventListener('click', () => {
-            const answer = question.nextElementSibling;
-            
-            // Toggle
-            if (answer.style.display === 'block') {
-                answer.style.display = 'none';
-                question.querySelector('i').className = 'fas fa-plus';
-            } else {
-                answer.style.display = 'block';
-                question.querySelector('i').className = 'fas fa-minus';
-            }
-        });
-    });
-});
-
-// Fonction pour faire défiler horizontalement les sliders avec le défilement de la souris
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.slider-container').forEach(container => {
-        container.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            container.scrollLeft += e.deltaY;
-        });
-    });
-});
-</script>
-<!-- Footer -->
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>LOKO EXPRESS</h3>
-            <p>Votre service de restauration rapide sur le campus universitaire. Des repas délicieux, frais et livrés rapidement.</p>
-        </div>
-        
-        <div class="footer-section">
-            <h3>Liens Rapides</h3>
-            <a href="#">Accueil</a>
-            <a href="#menu">Menu</a>
-            <a href="#order">Commander</a>
-            <a href="#contact">Contact</a>
-            <a href="#faq">FAQ</a>
-        </div>
-        
-        <div class="footer-section">
-            <h3>Contact</h3>
-            <p><i class="fas fa-phone"></i> +225 07 19 98 30 44</p>
-            <p><i class="fas fa-envelope"></i> contact@lokoexpress.com</p>
-            <p><i class="fas fa-map-marker-alt"></i> Campus Universitaire</p>
-        </div>
-        
-        <div class="footer-section">
-            <h3>Suivez-nous</h3>
-            <div class="social-media">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="copyright">
-        &copy; 2025 LOKO EXPRESS - Tous droits réservés
-    </div>
-</footer>
-
+    </script>
 </body>
 </html>
