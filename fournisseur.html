@@ -2,497 +2,266 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <title>Panel Fournisseur - Liste des Commandes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOKO EXPRESS - Espace Fournisseur</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary-red: #e63946;
-            --primary-blue: #1d3557;
-            --light-blue: #457b9d;
-            --white: #ffffff;
-            --light-gray: #f1faee;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            background-color: var(--light-gray);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #2d3748;
+            min-height: 100vh;
+            padding: 20px 0;
         }
-
-        .navbar {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo svg {
-            height: 40px;
-            width: 40px;
-        }
-
-        .logo-text {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--white);
-        }
-
+        
         .header {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
-            color: white;
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #2d3748;
+            padding: 30px;
             text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            margin: 20px auto;
-            max-width: 90%;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            margin: 0 20px 30px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
+        
         .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 0 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+        
+        .organization-group {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
-        .stat-card {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        
+        .organization-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
-
-        .stat-card .icon {
+        
+        .organization-header {
+            padding: 25px 30px;
             font-size: 24px;
-            color: var(--primary-blue);
-            margin-bottom: 10px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-
-        .stat-card .value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-red);
+        
+        .org-heges {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
         }
-
-        .stat-card .label {
-            color: #666;
-            font-size: 14px;
+        
+        .org-ifsm {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
         }
-
-        .filter-bar {
-            background-color: var(--white);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        
+        .org-utt-loko {
+            background: linear-gradient(135deg, #45b7d1, #2196f3);
         }
-
-        .filter-item {
-            flex: 1;
-            min-width: 140px;
+        
+        .org-autres {
+            background: linear-gradient(135deg, #96ceb4, #85c1a8);
         }
-
-        .filter-item label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-
-        .filter-item select, .filter-item input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .orders-container {
-            margin-bottom: 20px;
-        }
-
-        .order-card {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid var(--primary-blue);
-        }
-
-        .order-card.new {
-            border-left-color: var(--primary-red);
-        }
-
-        .order-card.in-progress {
-            border-left-color: #fca311;
-        }
-
-        .order-card.completed {
-            border-left-color: #2a9d8f;
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .order-id {
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-
-        .order-status {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-            color: white;
-        }
-
-        .order-status.new {
-            background-color: var(--primary-red);
-        }
-
-        .order-status.in-progress {
-            background-color: #fca311;
-        }
-
-        .order-status.completed {
-            background-color: #2a9d8f;
-        }
-
-        .order-details {
-            display: none;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed #ddd;
-        }
-
-        .order-details.show {
-            display: block;
-        }
-
-        .customer-info, .delivery-info, .order-items {
-            margin-bottom: 10px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            color: var(--primary-blue);
-            margin-bottom: 5px;
-        }
-
-        .info-row {
-            display: flex;
-            margin-bottom: 5px;
-        }
-
-        .info-label {
-            font-weight: 500;
-            width: 120px;
-        }
-
-        .info-value {
-            flex: 1;
-        }
-
-        .item-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .action-btn:active {
-            transform: scale(0.95);
-        }
-
-        .update-btn {
-            background-color: #fca311;
-            color: white;
-        }
-
-        .complete-btn {
-            background-color: #2a9d8f;
-            color: white;
-        }
-
-        .delete-btn {
-            background-color: var(--primary-red);
-            color: white;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
+        
+        .organization-header::before {
+            content: '';
+            position: absolute;
             top: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
-
-        .modal-content {
-            background-color: var(--white);
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        
+        .organization-group:hover .organization-header::before {
+            left: 100%;
         }
-
-        .modal-title {
-            color: var(--primary-blue);
-            margin-bottom: 15px;
+        
+        .orders-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-left: 15px;
+            display: inline-block;
         }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-
-        .form-group select {
+        
+        .commands-table {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border-collapse: collapse;
         }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+        
+        .commands-table th {
+            background: rgba(0, 0, 0, 0.02);
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 20px 15px;
+            text-align: left;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        .modal-btn {
-            padding: 8px 15px;
+        
+        .commands-table td {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            vertical-align: middle;
+        }
+        
+        .commands-table td.code {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .commands-table tr:hover {
+            background: rgba(102, 126, 234, 0.02);
+        }
+        
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        
+        .status-nouveau { 
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            color: #d63031;
+        }
+        
+        .status-livre { 
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+        }
+        
+        .status-en_cours { 
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+        
+        .btn-update {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
             border: none;
-            border-radius: 5px;
-            font-weight: bold;
+            border-radius: 12px;
+            padding: 10px 16px;
             cursor: pointer;
+            font-weight: 600;
+            margin: 0 4px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        .cancel-btn {
-            background-color: #ddd;
+        
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
-
-        .save-btn {
-            background-color: var(--primary-blue);
-            color: white;
+        
+        .btn-update:active {
+            transform: translateY(0);
         }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 5px;
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: #a0aec0;
+            font-size: 18px;
         }
-
-        .page-btn {
-            background-color: var(--white);
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
+        
+        .empty-state::before {
+            content: "📦";
+            font-size: 48px;
+            display: block;
+            margin-bottom: 20px;
         }
-
-        .page-btn.active {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-        .login-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        @media screen and (min-width: 768px) {
-            .dashboard {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media screen and (max-width: 600px) {
-            .action-buttons {
-                flex-direction: column;
+        
+        @media screen and (max-width: 768px) {
+            .header {
+                font-size: 24px;
+                padding: 20px;
+                margin: 0 10px 20px;
             }
             
-            .info-row {
-                flex-direction: column;
-                margin-bottom: 10px;
+            .container {
+                padding: 0 10px;
             }
             
-            .info-label {
-                width: auto;
-                margin-bottom: 2px;
+            .organization-group {
+                margin-bottom: 20px;
+            }
+            
+            .organization-header {
+                font-size: 20px;
+                padding: 20px;
+            }
+            
+            .commands-table th, 
+            .commands-table td {
+                font-size: 12px;
+                padding: 12px 8px;
+            }
+            
+            .btn-update {
+                padding: 8px 12px;
+                font-size: 12px;
+                margin: 2px;
+            }
+            
+            .orders-count {
+                display: block;
+                margin: 10px 0 0 0;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">
-            <svg width="40" height="40" viewBox="0 0 50 50">
-                <rect width="50" height="50" fill="#1d3557" rx="10" />
-                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="bold">LE</text>
-            </svg>
-            <div class="logo-text">LOKO EXPRESS - Fournisseur</div>
-        </div>
-    </nav>
-
     <div class="header">
-        <i class="fas fa-user-shield"></i> Gestion des Commandes
+        🚀 Panel Fournisseur - Commandes en Direct
     </div>
-
-    <div class="container">
-        <div class="dashboard">
-            <div class="stat-card">
-                <div class="icon"><i class="fas fa-shopping-cart"></i></div>
-                <div class="value" id="total-orders">0</div>
-                <div class="label">Commandes totales</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon"><i class="fas fa-clock"></i></div>
-                <div class="value" id="pending-orders">0</div>
-                <div class="label">En attente</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon"><i class="fas fa-truck"></i></div>
-                <div class="value" id="in-progress-orders">0</div>
-                <div class="label">En cours</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon"><i class="fas fa-check-circle"></i></div>
-                <div class="value" id="completed-orders">0</div>
-                <div class="label">Complétées</div>
-            </div>
-        </div>
-
-        <div class="filter-bar">
-            <div class="filter-item">
-                <label for="status-filter"><i class="fas fa-filter"></i> Statut</label>
-                <select id="status-filter" onchange="filterOrders()">
-                    <option value="all">Tous</option>
-                    <option value="new">Nouvelles</option>
-                    <option value="in-progress">En cours</option>
-                    <option value="completed">Complétées</option>
-                </select>
-            </div>
-            <div class="filter-item">
-                <label for="date-filter"><i class="fas fa-calendar"></i> Date</label>
-                <input type="date" id="date-filter" onchange="filterOrders()">
-            </div>
-            <div class="filter-item">
-                <label for="search-filter"><i class="fas fa-search"></i> Recherche</label>
-                <input type="text" id="search-filter" placeholder="Nom, ID..." onkeyup="filterOrders()">
-            </div>
-        </div>
-
-        <div class="orders-container" id="orders-container">
-            <!-- Les commandes seront chargées ici via JavaScript -->
-            <div class="loading">Chargement des commandes...</div>
-        </div>
-
-        <div class="pagination" id="pagination">
-            <!-- La pagination sera générée par JavaScript -->
-        </div>
-    </div>
-
-    <!-- Modal pour mettre à jour le statut -->
-    <div id="status-modal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-title">Mettre à jour le statut</h3>
-            <div class="form-group">
-                <label for="status-select">Nouveau statut</label>
-                <select id="status-select">
-                    <option value="new">Nouvelle</option>
-                    <option value="in-progress">En cours</option>
-                    <option value="completed">Complétée</option>
-                </select>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel-btn" onclick="closeModal()">Annuler</button>
-                <button class="modal-btn save-btn" onclick="updateOrderStatus()">Enregistrer</button>
-            </div>
+    
+    <div class="container" id="main-container">
+        <div style="text-align: center; padding: 60px; color: rgba(255,255,255,0.8); font-size: 18px;">
+            ⏳ Chargement des commandes...
         </div>
     </div>
 
     <script type="module">
-        // Import des fonctions Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-
-        // Configuration Firebase
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+        
         const firebaseConfig = {
             apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
             authDomain: "kolo-livraison.firebaseapp.com",
@@ -500,270 +269,188 @@
             projectId: "kolo-livraison",
             storageBucket: "kolo-livraison.firebasestorage.app",
             messagingSenderId: "78667636312",
-            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d"
+            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
+            measurementId: "G-R79LC3XQL4"
         };
-
-        // Initialisation Firebase
+        
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-        
-        // Référence à la collection "orders"
-        const ordersRef = ref(database, 'orders');
-        
-        // Variables globales
-        let allOrders = [];
-        let currentOrderId = '';
-        let ordersPerPage = 5;
-        let currentPage = 1;
-        
-        // Écoute des changements dans la base de données
-        onValue(ordersRef, (snapshot) => {
-            allOrders = [];
-            snapshot.forEach((childSnapshot) => {
-                const orderData = childSnapshot.val();
-                allOrders.push({
-                    id: childSnapshot.key,
-                    ...orderData
-                });
-            });
-            
-            // Trier les commandes par date (les plus récentes d'abord)
-            allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            // Mettre à jour les statistiques
-            updateStats();
-            
-            // Filtrer et afficher les commandes
-            filterOrders();
-        });
 
-        // Mise à jour des statistiques
-        window.updateStats = function() {
-            document.getElementById('total-orders').textContent = allOrders.length;
-            document.getElementById('pending-orders').textContent = allOrders.filter(order => order.status === 'new').length;
-            document.getElementById('in-progress-orders').textContent = allOrders.filter(order => order.status === 'in-progress').length;
-            document.getElementById('completed-orders').textContent = allOrders.filter(order => order.status === 'completed').length;
-        };
+        function getOrganization(customerName, location, details) {
+            const fullText = `${customerName} ${location} ${details}`.toLowerCase();
+            
+            if (fullText.includes('heges') || fullText.includes('hèges')) {
+                return 'heges';
+            }
+            if (fullText.includes('ifsm')) {
+                return 'ifsm';
+            }
+            if (fullText.includes('utt') && fullText.includes('loko')) {
+                return 'utt-loko';
+            }
+            return 'autres';
+        }
 
-        // Filtrer les commandes selon les critères
-        window.filterOrders = function() {
-            const statusFilter = document.getElementById('status-filter').value;
-            const dateFilter = document.getElementById('date-filter').value;
-            const searchFilter = document.getElementById('search-filter').value.toLowerCase();
-            
-            let filteredOrders = [...allOrders];
-            
-            // Filtre par statut
-            if (statusFilter !== 'all') {
-                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
-            }
-            
-            // Filtre par date
-            if (dateFilter) {
-                const selectedDate = new Date(dateFilter).toDateString();
-                filteredOrders = filteredOrders.filter(order => {
-                    const orderDate = new Date(order.timestamp).toDateString();
-                    return orderDate === selectedDate;
-                });
-            }
-            
-            // Filtre par recherche
-            if (searchFilter) {
-                filteredOrders = filteredOrders.filter(order => {
-                    return (
-                        order.id.toLowerCase().includes(searchFilter) ||
-                        order.customerName.toLowerCase().includes(searchFilter) ||
-                        order.customerPhone.toLowerCase().includes(searchFilter)
-                    );
-                });
-            }
-            
-            // Pagination
-            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-            if (currentPage > totalPages) {
-                currentPage = totalPages || 1;
-            }
-            
-            const start = (currentPage - 1) * ordersPerPage;
-            const end = start + ordersPerPage;
-            const paginatedOrders = filteredOrders.slice(start, end);
-            
-            // Afficher les commandes
-            displayOrders(paginatedOrders);
-            
-            // Mettre à jour la pagination
-            updatePagination(totalPages);
-        };
+        function getOrganizationConfig(org) {
+            const configs = {
+                'heges': {
+                    name: '🏛️ HEGES',
+                    class: 'org-heges'
+                },
+                'ifsm': {
+                    name: '🏥 IFSM',
+                    class: 'org-ifsm'
+                },
+                'utt-loko': {
+                    name: '🎓 UTT LOKO',
+                    class: 'org-utt-loko'
+                },
+                'autres': {
+                    name: '📋 AUTRES',
+                    class: 'org-autres'
+                }
+            };
+            return configs[org] || configs['autres'];
+        }
 
-        // Afficher les commandes
-        function displayOrders(orders) {
-            const container = document.getElementById('orders-container');
+        function statusLabel(status) {
+            if (status === 'livré') return '<span class="status status-livre">Livré</span>';
+            if (status === 'en_cours') return '<span class="status status-en_cours">En cours</span>';
+            return '<span class="status status-nouveau">Nouveau</span>';
+        }
+
+        function renderOrdersGrouped(orders) {
+            const container = document.getElementById('main-container');
+            container.innerHTML = '';
             
-            if (orders.length === 0) {
-                container.innerHTML = '<div class="no-results">Aucune commande trouvée</div>';
+            if (Object.keys(orders).length === 0) {
+                container.innerHTML = '<div class="empty-state">Aucune commande trouvée pour le moment</div>';
                 return;
             }
-            
-            let html = '';
-            
-            orders.forEach(order => {
-                const statusClass = order.status;
-                const statusText = order.status === 'new' ? 'Nouvelle' : order.status === 'in-progress' ? 'En cours' : 'Complétée';
-                const orderDate = new Date(order.timestamp).toLocaleString('fr-FR');
-                
-                html += `
-                    <div class="order-card ${statusClass}" id="order-${order.id}">
-                        <div class="order-header" onclick="toggleOrderDetails('${order.id}')">
-                            <div class="order-id">${order.customerName} - ${orderDate}</div>
-                            <div class="order-status ${statusClass}">${statusText}</div>
-                        </div>
-                        <div class="order-details" id="details-${order.id}">
-                            <div class="customer-info">
-                                <div class="section-title">Client</div>
-                                <div class="info-row">
-                                    <div class="info-label">Nom:</div>
-                                    <div class="info-value">${order.customerName}</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="info-label">Téléphone:</div>
-                                    <div class="info-value">${order.customerPhone}</div>
-                                </div>
-                            </div>
-                            <div class="delivery-info">
-                                <div class="section-title">Livraison</div>
-                                <div class="info-row">
-                                    <div class="info-label">Adresse:</div>
-                                    <div class="info-value">${order.deliveryLocation}</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="info-label">Détails:</div>
-                                    <div class="info-value">${order.locationDetails || 'Aucun'}</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="info-label">Paiement:</div>
-                                    <div class="info-value">${order.paymentMethod}</div>
-                                </div>
-                            </div>
-                            <div class="order-items">
-                                <div class="section-title">Articles (${order.items.length})</div>
-                                ${order.items.map((item, index) => `
-                                    <div class="item-row">
-                                        <div>${item}</div>
-                                        <div>${order.itemPrices[index]} FCFA</div>
-                                    </div>
-                                `).join('')}
-                                <div class="item-row" style="font-weight: bold; margin-top: 5px;">
-                                    <div>Total</div>
-                                    <div>${order.totalAmount} FCFA</div>
-                                </div>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="action-btn update-btn" onclick="openStatusModal('${order.id}')">
-                                    <i class="fas fa-pen"></i> Modifier
-                                </button>
-                                <button class="action-btn complete-btn" onclick="markAsCompleted('${order.id}')">
-                                    <i class="fas fa-check"></i> Terminer
-                                </button>
-                                <button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')">
-                                    <i class="fas fa-trash"></i> Supprimer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
 
-        // Mettre à jour la pagination
-        function updatePagination(totalPages) {
-            const paginationContainer = document.getElementById('pagination');
-            let html = '';
-            
-            if (totalPages > 1) {
-                // Bouton Précédent
-                html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
-                    <i class="fas fa-chevron-left"></i>
-                </button>`;
-                
-                // Pages
-                for (let i = 1; i <= totalPages; i++) {
-                    html += `<button class="page-btn ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            // Grouper les commandes par organisation
+            const groupedOrders = {};
+            Object.values(orders).forEach(order => {
+                const org = getOrganization(
+                    order.customer?.name || '', 
+                    order.customer?.location || '', 
+                    order.customer?.details || ''
+                );
+                if (!groupedOrders[org]) {
+                    groupedOrders[org] = [];
                 }
-                
-                // Bouton Suivant
-                html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
-                    <i class="fas fa-chevron-right"></i>
-                </button>`;
-            }
+                groupedOrders[org].push(order);
+            });
+
+            // Ordre d'affichage des organisations
+            const orgOrder = ['heges', 'ifsm', 'utt-loko', 'autres'];
             
-            paginationContainer.innerHTML = html;
+            orgOrder.forEach(org => {
+                if (!groupedOrders[org] || groupedOrders[org].length === 0) return;
+                
+                const config = getOrganizationConfig(org);
+                const orgDiv = document.createElement('div');
+                orgDiv.className = 'organization-group';
+                
+                // Trier les commandes par date (plus récentes en premier)
+                const sortedOrders = groupedOrders[org].sort((a, b) => 
+                    (b.timestamp || '').localeCompare(a.timestamp || '')
+                );
+                
+                orgDiv.innerHTML = `
+                    <div class="organization-header ${config.class}">
+                        ${config.name}
+                        <span class="orders-count">${sortedOrders.length} commande${sortedOrders.length > 1 ? 's' : ''}</span>
+                    </div>
+                    <table class="commands-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Client</th>
+                                <th>Téléphone</th>
+                                <th>Lieu</th>
+                                <th>Articles</th>
+                                <th>Total</th>
+                                <th>Date/Heure</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedOrders.map(order => {
+                                const items = (order.items || []).map(i => i.name).join(', ');
+                                const date = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : '';
+                                return `
+                                    <tr>
+                                        <td class="code">${order.code || ""}</td>
+                                        <td>${order.customer?.name || ''}</td>
+                                        <td>${order.customer?.phone || ''}</td>
+                                        <td>${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</td>
+                                        <td>${items}</td>
+                                        <td><strong>${order.total ? order.total + ' FCFA' : ''}</strong></td>
+                                        <td>${date}</td>
+                                        <td>${statusLabel(order.status)}</td>
+                                        <td>
+                                            <button class="btn-update" onclick="updateOrderStatus('${order.id}','en_cours')">En cours</button>
+                                            <button class="btn-update" onclick="updateOrderStatus('${order.id}','livré')">Livré</button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                container.appendChild(orgDiv);
+            });
         }
 
-        // Changer de page
-        window.changePage = function(page) {
-            currentPage = page;
-            filterOrders();
+        // Expose to window for button onclick
+        window.updateOrderStatus = function(orderId, newStatus) {
+            if (!orderId) return;
+            const orderRef = ref(database, 'orders/' + orderId);
+            update(orderRef, { status: newStatus })
+                .then(() => {
+                    // Animation de succès
+                    const notification = document.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: linear-gradient(135deg, #00b894, #00cec9);
+                        color: white;
+                        padding: 15px 25px;
+                        border-radius: 12px;
+                        font-weight: 600;
+                        z-index: 1000;
+                        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+                        transform: translateX(100%);
+                        transition: transform 0.3s ease;
+                    `;
+                    notification.textContent = '✓ Statut mis à jour avec succès!';
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+                    setTimeout(() => {
+                        notification.style.transform = 'translateX(100%)';
+                        setTimeout(() => document.body.removeChild(notification), 300);
+                    }, 3000);
+                })
+                .catch(e => alert('Erreur: ' + e.message));
         };
 
-        // Afficher/masquer les détails d'une commande
-        window.toggleOrderDetails = function(orderId) {
-            const detailsElement = document.getElementById(`details-${orderId}`);
-            detailsElement.classList.toggle('show');
-        };
-
-        // Ouvrir le modal pour changer le statut
-        window.openStatusModal = function(orderId) {
-            currentOrderId = orderId;
-            const order = allOrders.find(o => o.id === orderId);
-            document.getElementById('status-select').value = order.status;
-            document.getElementById('status-modal').style.display = 'block';
-        };
-
-        // Fermer le modal
-        window.closeModal = function() {
-            document.getElementById('status-modal').style.display = 'none';
-        };
-
-        // Mettre à jour le statut d'une commande
-        window.updateOrderStatus = function() {
-            const newStatus = document.getElementById('status-select').value;
-            
-            update(ref(database, `orders/${currentOrderId}`), {
-                status: newStatus
-            })
-            .then(() => {
-                closeModal();
-            })
-            .catch((error) => {
-                console.error("Erreur lors de la mise à jour du statut:", error);
-                alert("Une erreur s'est produite lors de la mise à jour du statut.");
+        function listenOrders() {
+            const ordersRef = ref(database, 'orders');
+            onValue(ordersRef, (snapshot) => {
+                const orders = {};
+                snapshot.forEach(child => {
+                    orders[child.key] = { id: child.key, ...child.val() };
+                });
+                renderOrdersGrouped(orders);
             });
-        };
+        }
 
-        // Marquer une commande comme terminée
-        window.markAsCompleted = function(orderId) {
-            if (confirm("Êtes-vous sûr de vouloir marquer cette commande comme terminée?")) {
-                update(ref(database, `orders/${orderId}`), {
-                    status: 'completed'
-                });
-            }
-        };
-
-        // Supprimer une commande
-        window.deleteOrder = function(orderId) {
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette commande? Cette action est irréversible.")) {
-                remove(ref(database, `orders/${orderId}`))
-                .catch((error) => {
-                    console.error("Erreur lors de la suppression:", error);
-                    alert("Une erreur s'est produite lors de la suppression.");
-                });
-            }
-        };
-
-        // Rendre les fonctions disponibles globalement
-        window.filterOrders = filterOrders;
+        listenOrders();
     </script>
 </body>
 </html>
