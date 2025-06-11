@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,7 +9,7 @@
         /* Styles généraux */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-image: url('image/bleu.jpg');
+            background-image: url('image/WhatsApp Image 2025-06-10 à 23.52.24_467459e6.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -252,6 +253,88 @@
             cursor: pointer;
             transition: background .2s, box-shadow .2s;
         }
+        .promo-popup-overlay {
+            position: fixed;
+            z-index: 9999;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.56);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .promo-popup {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+            padding: 36px 32px 28px 32px;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            animation: popupAppear 0.7s cubic-bezier(.4,2,.6,1);
+        }
+        @keyframes popupAppear {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .promo-popup .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            background: #ff4e00;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            line-height: 29px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.13);
+            transition: background 0.2s;
+        }
+        .promo-popup .close-btn:hover {
+            background: #e64600;
+        }
+        .promo-popup-sticker {
+            font-size: 46px;
+            display: inline-block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 6px #ffae0060);
+            animation: stickerBounce 1.3s infinite alternate cubic-bezier(.62,-0.1,.63,1.2);
+        }
+        @keyframes stickerBounce {
+            from { transform: translateY(0) rotate(-5deg) scale(1.03);}
+            to   { transform: translateY(-13px) rotate(7deg) scale(1.12);}
+        }
+        .promo-popup-title {
+            font-size: 1.32em;
+            font-weight: bold;
+            color: #ff4e00;
+            margin: 0 0 8px 0;
+        }
+        .promo-popup-text {
+            color: #222;
+            margin-bottom: 9px;
+            font-size: 1.09em;
+        }
+        .promo-popup-highlight {
+            display: inline-block;
+            background: linear-gradient(90deg,#fffb00,#ff9a56 90%);
+            color: #e64600;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 0 8px;
+            margin: 0 3px;
+            font-size: 1.11em;
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 6px #ffefbc60;
+        }
+        .promo-popup-footer {
+            margin-top: 6px;
+            font-size: .98em;
+            color: #888;
+        }
     </style>
     </head>
 <body>
@@ -262,11 +345,31 @@
         <button class="nav-btn" onclick="showContact()">Contact</button>
        <button class="nav-btn" onclick="showSupplierAccess()">Accès fournisseur</button>
     </div>
-
+    
     <div class="header">
     <img src="image/kolo isfm.jpg" alt="Logo LOKO EXPRESS" class="header-logo" style="vertical-align:middle; height:50px; width:50px; object-fit:contain; border-radius:12px; margin-right:15px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.13); border:2px solid #ff4e00;">
     ISFM EXPRESS - Repas Universitaires 
 </div>
+
+<div id="promo-popup-overlay" class="promo-popup-overlay" style="display:none;">
+        <div class="promo-popup">
+            <button class="close-btn" onclick="closePromoPopup()" title="Fermer">&times;</button>
+            <div class="promo-popup-sticker"></div>
+            <div class="promo-popup-title">
+                Offre spéciale GROUPE EXPRESS !
+            </div>
+            <div class="promo-popup-text">
+                <span class="promo-popup-highlight">3 plats de 500f à 1300f au lieu 1500f</span> <span class="promo-popup-sticker"></span><br>
+                <span class="promo-popup-highlight">3 plats de 1000f à 2700f au lieu 3000f</span> pour toute commande supérieure à <b>2000 FCFA</b> ! <span class="promo-popup-sticker"></span>
+                <span class="promo-popup-highlight">3 plats 2000f à 5600f au lieu 6000f</span> <span class="promo-popup-sticker"></span><br>
+                <span class="promo-popup-highlight">1 plat offert au bout de 10jours de Commande</span> pour toute commande supérieure à <b>2000 FCFA</b> ! <span class="promo-popup-sticker"></span>
+           
+            </div>
+            <div class="promo-popup-footer">
+                Profitez-en vite <span class="promo-popup-sticker"></span>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <!-- Catégorie A - Spaghetti et Petit pois -->
         <div class="box category-a">
@@ -627,7 +730,7 @@
                     document.getElementById('order-form').reset();
                     addCustomerOrderToList(order);
                     showCustomerOrdersBox();
-                    window.location.href = "confirmation.html";
+                    window.location.href = "";
                 })
                 .catch((error) => {
                     alert('Erreur: ' + error.message);
@@ -791,6 +894,20 @@ window.submitOrder(order);
         alert("Mot de passe incorrect !");
     }
 }
+function showPromoPopup() {
+            document.getElementById('promo-popup-overlay').style.display = 'flex';
+        }
+        function closePromoPopup() {
+            document.getElementById('promo-popup-overlay').style.display = 'none';
+        }
+        // Affiche la popup à l'arrivée sur le site, la première fois (ou à chaque visite si tu veux)
+        window.addEventListener('DOMContentLoaded', function() {
+            // Optionnel : pour ne pas la re-montrer dans la même session
+            if (!sessionStorage.getItem('promoPopupShown')) {
+                showPromoPopup();
+                sessionStorage.setItem('promoPopupShown', '1');
+            }
+        });
     </script>
 </body>
 </html>
