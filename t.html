@@ -1198,44 +1198,44 @@
         <div class="customer-orders-list" id="customer-orders-list"></div>
         <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
     </div>
-    <script type="module">
+      <script type="module">
     // Firebase init (comme dans ton code)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
-    const firebaseConfig = {
-        apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
-        authDomain: "kolo-livraison.firebaseapp.com",
-        databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
-        projectId: "kolo-livraison",
-        storageBucket: "kolo-livraison.firebasestorage.app",
-        messagingSenderId: "78667636312",
-        appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-        measurementId: "G-R79LC3XQL4"
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
+    authDomain: "kolo-livraison.firebaseapp.com",
+    databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
+    projectId: "kolo-livraison",
+    storageBucket: "kolo-livraison.firebasestorage.app",
+    messagingSenderId: "78667636312",
+    appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
+    measurementId: "G-R79LC3XQL4"
+};
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(app);
+
+// Fonction unique et fiable :
+window.sendMarcioComment = function(message, userProfile) {
+    const commentsRef = ref(db, 'marcio_comments');
+    const newCommentRef = push(commentsRef);
+    const commentObj = {
+        message: message,
+        user: userProfile ? {
+            lastname: userProfile.lastname,
+            firstname: userProfile.firstname,
+            email: userProfile.email || "",
+            photo: userProfile.photo || ""
+        } : {},
+        timestamp: new Date().toISOString()
     };
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const database = getDatabase(app);
-    window.submitOrder = function(order) {
-        const orderRef = ref(database, 'orders');
-        const newOrderRef = push(orderRef);
-        order.timestamp = new Date().toISOString();
-        order.status = "nouveau";
-        set(newOrderRef, order)
-            .then(() => {
-                alert('Votre commande a été envoyée avec succès! Un livreur vous contactera bientôt.');
-                cart = [];
-                updateCart();
-                document.getElementById('order-form').reset();
-                addCustomerOrderToList(order);
-                showCustomerOrdersBox();
-                window.location.href = "";
-            })
-            .catch((error) => {
-                alert('Erreur: ' + error.message);
-            });
-    };
+    return set(newCommentRef, commentObj);
+};
     </script>
+    
     <script>
     // === Gestion du profil utilisateur (localStorage) ===
     let userProfile = JSON.parse(localStorage.getItem('userProfile') || 'null');
