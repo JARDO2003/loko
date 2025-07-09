@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GROUPE EXPRESS- Repas Universitaires</title>
+    <title>GROUPE EXPRESS - Repas Universitaires</title>
     <style>
-        /* Styles généraux */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-image: url('image/bleu.jpg');
+            background-image: url('image/noir.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -16,6 +15,8 @@
             color: white;
             text-align: center;
             padding: 20px;
+            padding-top: 80px; /* Espace pour le bouton profil */
+            transition: background-image 0.4s;
         }
         h1 {
             background: rgba(0, 0, 0, 0.8);
@@ -25,11 +26,10 @@
             margin-bottom: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-        
-        /* Styles pour les boutons de navigation */
         .nav-buttons {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
             margin-bottom: 20px;
             flex-wrap: wrap;
@@ -50,6 +50,300 @@
             background: linear-gradient(to right, #e64600, #ff8033);
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            animation: bellShake 2s infinite;
+        }
+        .notification-bell:hover {
+            background: linear-gradient(to right, #e64600, #ff8033);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes bellShake {
+            0%, 50%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff0000;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Robot IA Marcio */
+        .robot-marcio {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            z-index: 1000;
+            animation: robotFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes robotFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .robot-marcio:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+        }
+        
+        .robot-marcio::before {
+            content: "🤖";
+            font-size: 28px;
+            animation: robotBlink 4s infinite;
+        }
+        
+        @keyframes robotBlink {
+            0%, 90%, 100% { opacity: 1; }
+            95% { opacity: 0.3; }
+        }
+        
+        /* Chat Modal - Stylisé */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-container {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 2px solid #e1e8ed;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .chat-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .chat-close {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) rotate(90deg);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 350px;
+            background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+            position: relative;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            position: relative;
+            animation: messageSlide 0.3s ease-out;
+        }
+        
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.bot {
+            background: linear-gradient(135deg, #e8f5e8, #d4edda);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            color: #155724;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+        }
+        
+        .message.bot::before {
+            content: "🤖";
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, #ff9a56, #ff4e00);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 2px 8px rgba(255, 78, 0, 0.3);
+        }
+        
+        .message.user::after {
+            content: "👤";
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+        
+        .chat-input-container {
+            padding: 20px;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-top: 2px solid #e1e8ed;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        .chat-send {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .chat-send:hover {
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+        
+        .chat-send:active {
+            transform: translateY(0);
         }
         
         .header {
@@ -110,6 +404,7 @@
             flex: 0 0 auto;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            color: #222;
         }
         .card:hover { transform: translateY(-3px); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); }
         .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
@@ -175,202 +470,432 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
             background: linear-gradient(to right, #e64600, #ff8033);
         }
+        
+        /* Profil overlay */
+        #profile-overlay {
+            display:none;
+            position:fixed;
+            top:0; left:0;
+            width:100vw; height:100vh;
+            background:rgba(0,0,0,0.7);
+            z-index:10000;
+            align-items:center;
+            justify-content:center;
+        }
+        #profile-overlay .profile-form-box {
+            background:#fff;
+            padding:32px 24px 22px 24px;
+            border-radius:16px;
+            min-width:300px;
+            max-width:95vw;
+            box-shadow:0 6px 32px rgba(0,0,0,0.28);
+            color:#222;
+            position:relative;
+        }
+        #profile-btn {
+            position:fixed;
+            top:18px;
+            left:18px;
+            z-index:1001;
+            background:linear-gradient(90deg,#ff4e00,#ff9a56);
+            color:#fff;
+            border:none;
+            border-radius:50px;
+            padding:11px 22px;
+            font-weight:bold;
+            box-shadow:0 3px 10px rgba(0,0,0,0.22);
+            font-size:15px;
+            cursor:pointer;
+            transition:background 0.2s;
+        }
+        #profile-btn img {
+            width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px; box-shadow:0 1px 2px #0002;
+        }
+        
+        /* Corrections pour mobile */
         @media screen and (max-width: 768px) {
-            body { padding: 15px; }
-            .header { font-size: 24px; padding: 12px; width: 95%; }
-            .container { max-width: 100%; padding: 0; }
-            .box { padding: 12px; margin: 15px 0; border-width: 2px; }
-            h1, h2 { font-size: 20px; padding: 8px 12px; }
-            .slider-container { padding: 8px; }
-            .card { width: 150px; padding: 8px; }
-            .card img { height: 100px; }
-            .order-box { padding: 15px; }
-            .nav-buttons { gap: 8px; }
-            .nav-btn { padding: 8px 16px; font-size: 12px; }
+            body { 
+                padding: 15px; 
+                padding-top: 70px;
+            }
+            .header { 
+                font-size: 24px; 
+                padding: 12px; 
+                width: 95%; 
+            }
+            .container { 
+                max-width: 100%; 
+                padding: 0; 
+            }
+            .box { 
+                padding: 12px; 
+                margin: 15px 0; 
+                border-width: 2px; 
+            }
+            h1, h2 { 
+                font-size: 20px; 
+                padding: 8px 12px; 
+            }
+            .slider-container { 
+                padding: 8px; 
+            }
+            .card { 
+                width: 150px; 
+                padding: 8px; 
+            }
+            .card img { 
+                height: 100px; 
+            }
+            .order-box { 
+                padding: 15px; 
+            }
+            .nav-buttons { 
+                gap: 8px; 
+                margin-top: 10px;
+            }
+            .nav-btn { 
+                padding: 8px 16px; 
+                font-size: 12px; 
+            }
+            
+            #profile-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .chat-container {
+                width: 95%;
+                max-height: 85vh;
+            }
         }
+        
         @media screen and (max-width: 400px) {
-            body { padding: 10px; }
-            .card { width: 130px; }
-            .card img { height: 80px; }
-            .header { font-size: 20px; padding: 10px; }
-            .slider-container { padding: 6px; }
+            body { 
+                padding: 10px; 
+                padding-top: 65px;
+            }
+            .card { 
+                width: 130px; 
+            }
+            .card img { 
+                height: 80px; 
+            }
+            .header { 
+                font-size: 20px; 
+                padding: 10px; 
+            }
+            .slider-container { 
+                padding: 6px; 
+            }
+            
+            #profile-btn {
+                top: 8px;
+                left: 8px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .nav-buttons {
+                margin-top: 15px;
+            }
         }
-        .promo-popup-overlay {
-            position: fixed;
-            z-index: 9999;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.56);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .promo-popup {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.28);
-            padding: 36px 32px 28px 32px;
-            max-width: 420px;
-            text-align: center;
-            position: relative;
-            animation: popupAppear 0.7s cubic-bezier(.4,2,.6,1);
-        }
-        @keyframes popupAppear {
-            0% { transform: scale(0.7); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .promo-popup .close-btn {
-            position: absolute;
-            top: 16px;
-            right: 18px;
-            background: #ff4e00;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 20px;
-            line-height: 29px;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.13);
-            transition: background 0.2s;
-        }
-        .promo-popup .close-btn:hover {
-            background: #e64600;
-        }
-        .promo-popup-sticker {
-            font-size: 46px;
-            display: inline-block;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 2px 6px #ffae0060);
-            animation: stickerBounce 1.3s infinite alternate cubic-bezier(.62,-0.1,.63,1.2);
-        }
-        @keyframes stickerBounce {
-            from { transform: translateY(0) rotate(-5deg) scale(1.03);}
-            to   { transform: translateY(-13px) rotate(7deg) scale(1.12);}
-        }
-        .promo-popup-title {
-            font-size: 1.32em;
-            font-weight: bold;
-            color: #ff4e00;
-            margin: 0 0 8px 0;
-        }
-        .promo-popup-text {
-            color: #222;
-            margin-bottom: 9px;
-            font-size: 1.09em;
-        }
-        .promo-popup-highlight {
-            display: inline-block;
-            background: linear-gradient(90deg,#fffb00,#ff9a56 90%);
-            color: #e64600;
-            font-weight: bold;
-            border-radius: 8px;
-            padding: 0 8px;
-            margin: 0 3px;
-            font-size: 1.11em;
-            letter-spacing: 0.5px;
-            box-shadow: 0 1px 6px #ffefbc60;
-        }
-        .promo-popup-footer {
-            margin-top: 6px;
-            font-size: .98em;
-            color: #888;
-        }
-        /* Boîte commandes client overlay */
-        .customer-orders-box {
-            background: rgba(255,255,255,0.98);
-            color: #222;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            padding: 12px 20px;
-            max-width: 390px;
-            text-align: left;
-            position: fixed;
-            top: 75px;
-            right: 32px;
-            z-index: 100;
-            display: none;
-        }
-        .customer-orders-box h3 {
-            color: #ff4e00;
-            font-size: 18px;
-            margin-bottom: 12px;
-        }
-        .customer-orders-list {
-            max-height: 185px;
-            overflow-y: auto;
-        }
-        .customer-order-entry {
-            border-bottom: 1px solid #eee;
-            padding: 6px 0;
-            font-size: 15px;
-        }
-        .customer-orders-clear {
-            background: #ff4e00;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 6px 14px;
-            margin-top: 10px;
-            cursor: pointer;
-            float: right;
-        }
-        .customer-orders-clear:hover { background: #d93c00; }
-        /* Bouton overlay */
-        #show-customer-orders-btn {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            z-index: 99;
-            background: linear-gradient(90deg,#ff4e00,#ff9a56);
-            color: #fff;
-            border: none;
-            border-radius: 50px;
-            padding: 13px 28px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.23);
-            font-size: 17px;
-            cursor: pointer;
-            transition: background .2s, box-shadow .2s;
-        }
+
+       
     </style>
-    </head>
+    <style>
+/* Nouveau style popup profil */
+#profile-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(20,20,20,0.75);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.3s;
+}
+
+.new-profile-box {
+  background: linear-gradient(120deg, #fff7f0 60%, #ffe5d0 100%);
+  border-radius: 28px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  padding: 26px 20px 18px 20px;
+  min-width: 320px;
+  max-width: 96vw;
+  width: 360px;
+  position: relative;
+  animation: profileFadeIn 0.4s;
+  text-align: center;
+}
+
+@keyframes profileFadeIn {
+  from { opacity: 0; transform: translateY(-50px);}
+  to   { opacity: 1; transform: translateY(0);}
+}
+
+.close-profile-btn {
+  position: absolute;
+  top: 10px; right: 14px;
+  background: #ff4e00;
+  color: #fff;
+  font-size: 22px;
+  border: none;
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px #0002;
+  z-index: 1;
+  transition: background 0.2s;
+}
+.close-profile-btn:hover { background: #e64600; }
+
+.profile-photo-area {
+  display: flex; flex-direction: column;
+  align-items: center; margin-bottom: 15px;
+}
+#profile-photo-big, .profile-photo-placeholder {
+  width: 85px; height: 85px; border-radius: 50%;
+  object-fit: cover; margin-bottom: 2px;
+  box-shadow: 0 3px 12px #ff4e0022;
+  background: #fff; border: 2px solid #ff4e00;
+  font-size: 54px; display: flex; align-items: center; justify-content: center;
+}
+.profile-title { margin: 0 0 14px 0; color: #ff4e00; font-weight: bold; font-size: 22px; }
+.profile-actions { margin-top: 16px; }
+.btn-contact {
+  background: linear-gradient(90deg,#ff4e00,#ff9a56);
+  color: #fff;
+  border: none;
+  border-radius: 26px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 6px 5px 8px 5px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 10px #ff4e0025;
+}
+.btn-contact:hover { background: linear-gradient(90deg,#e64600,#ff8033); transform: scale(1.05);}
+.invite-title { margin-top: 12px; color:#ff4e00;font-weight:600;}
+.invite-row { display: flex; gap: 10px; justify-content: center; margin-top: 6px;}
+.btn-invite {
+  background: #fff;
+  border: 2px solid #ff9a56;
+  border-radius: 50%;
+  width: 44px;height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  margin: 0 2px;
+  box-shadow: 0 2px 8px #ff9a5633;
+}
+.btn-invite img { width: 26px; height: 26px; }
+.btn-invite:hover { box-shadow: 0 4px 14px #ff4e0033; transform: scale(1.10);}
+@media (max-width:450px) {
+  .new-profile-box { min-width: 90vw; width:95vw; padding: 18px 2vw;}
+  #profile-photo-big, .profile-photo-placeholder { width: 62px; height: 62px; font-size: 34px;}
+  .btn-invite { width: 36px; height: 36px;}
+  .btn-invite img { width: 20px; height: 20px;}
+}
+</style>
+<style>
+/* Animation bouton GBERE universitaire */
+.gbere-btn {
+    position: relative;
+    background: linear-gradient(90deg, #ff4e00, #ff9a56);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(255, 78, 0, 0.18);
+    font-size: 14px;
+    animation: gbereFlash 1s infinite alternate;
+    outline: 2px solid #fff;
+    outline-offset: -4px;
+    z-index: 1;
+}
+@keyframes gbereFlash {
+    0% { box-shadow: 0 0 8px 2px #ffeb3b, 0 0 0 0 #ff4e00; }
+    100% { box-shadow: 0 0 20px 8px #ffeb3b, 0 0 0 4px #ff4e00; }
+}
+
+/* Style bouton Mes commandes à côté */
+.commandes-btn {
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    color: #fff;
+    margin-left: 8px;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.18);
+    font-size: 14px;
+    transition: background 0.3s, transform 0.2s;
+}
+.commandes-btn:hover {
+    background: linear-gradient(90deg,#388e3c,#4CAF50);
+    transform: translateY(-2px);
+}
+</style>
+</head>
 <body>
-    </head>
-<body>
-
-    <!-- Boutons de navigation -->
-    <div class="nav-buttons">
-        <button class="nav-btn" onclick="showAbout()">À propos</button>
-        <button class="nav-btn" onclick="showContact()">Contact</button>
-       <button class="nav-btn" onclick="showSupplierAccess()">Accès fournisseur</button>
-    </div>
-
-    <div class="header">
-    <img src="image/logo exp.jpg" alt="Logo LOKO EXPRESS" class="header-logo" style="vertical-align:middle; height:50px; width:50px; object-fit:contain; border-radius:12px; margin-right:15px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.13); border:2px solid #ff4e00;">
-    LOKO EXPRESS - Repas Universitaires 
-</div>
-
-<div id="promo-popup-overlay" class="promo-popup-overlay" style="display:none;">
-        <div class="promo-popup">
-            <button class="close-btn" onclick="closePromoPopup()" title="Fermer">&times;</button>
-            <div class="promo-popup-sticker"></div>
-            <div class="promo-popup-title">
-                Offre spéciale GROUPE EXPRESS !
+<!-- Overlay profil utilisateur avec onglets et fonctions demandées -->
+<div id="profile-overlay">
+    <div class="profile-form-box">
+        <div class="profile-header">
+            <h2>👤 Mon Profil</h2>
+            <button class="profile-close" onclick="closeProfile()">×</button>
+        </div>
+        <div class="profile-content">
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="showTab('profile-tab')">Profil</button>
+                <button class="profile-tab" onclick="showTab('contact-tab')">Contact</button>
+                <button class="profile-tab" onclick="showTab('share-tab')">Partager</button>
             </div>
-            <div class="promo-popup-text">
-                <span class="promo-popup-highlight">3 plats de 500f à 1300f au lieu 1500f</span> <span class="promo-popup-sticker"></span><br>
-                <span class="promo-popup-highlight">3 plats de 1000f à 2700f au lieu 3000f</span> pour toute commande supérieure à <b>2000 FCFA</b> ! <span class="promo-popup-sticker"></span>
-                <span class="promo-popup-highlight">3 plats 2000f à 5600f au lieu 6000f</span> <span class="promo-popup-sticker"></span><br>
-                <span class="promo-popup-highlight">1 plat offert au bout de 10jours de Commande</span> pour toute commande supérieure à <b>2000 FCFA</b> ! <span class="promo-popup-sticker"></span>
-           
+            <!-- Onglet Profil -->
+            <div id="profile-tab" class="tab-content active">
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" id="profile-lastname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom</label>
+                        <input type="text" id="profile-firstname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email ou WhatsApp</label>
+                        <input type="text" id="profile-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Photo de profil</label>
+                        <input type="file" id="profile-photo" accept="image/*" onchange="previewPhoto()">
+                        <img id="profile-photo-preview" class="photo-preview">
+                    </div>
+                    <div class="form-group">
+                        <label>Fond d'écran personnalisé</label>
+                        <input type="file" id="profile-bg" accept="image/*" onchange="previewBg()">
+                        <img id="profile-bg-preview" class="bg-preview">
+                    </div>
+                    <button type="submit" class="btn-submit">✅ Sauvegarder mon profil</button>
+                </form>
             </div>
-            <div class="promo-popup-footer">
-                Profitez-en vite <span class="promo-popup-sticker"></span>
+            <!-- Onglet Contact -->
+            <div id="contact-tab" class="tab-content">
+                <h3 style="color: #ff4e00; margin-bottom: 20px; text-align: center;">📞 Contactez-nous</h3>
+                <div class="contact-options">
+                    <a class="contact-btn whatsapp-btn" href="https://wa.me/2250719983044?text=Bonjour%20ISFM%20Express%20!" target="_blank">
+                        💬 WhatsApp
+                    </a>
+                    <a class="contact-btn call-btn" href="tel:0719983044">
+                        📞 Appeler
+                    </a>
+                </div>
+                <div style="text-align:center; color:#444; font-size:14px; margin-top:10px;">
+                    Numéro WhatsApp et appel : <b>0719983044</b>
+                </div>
+            </div>
+            <!-- Onglet Partager -->
+            <div id="share-tab" class="tab-content">
+                <h3 style="color: #ff4e00; margin-bottom: 16px; text-align: center;">🎉 Inviter un ami</h3>
+                <div class="social-share">
+                    <a class="social-btn share-whatsapp-btn" href="https://wa.me/?text=Rejoins%20ISFM%20Express%20ici%20:%20https://loko-blush.vercel.app/" target="_blank">
+                        💚 WhatsApp
+                    </a>
+                    <a class="social-btn facebook-btn" href="https://www.facebook.com/sharer/sharer.php?u=https://loko-blush.vercel.app/" target="_blank">
+                        👍 Facebook
+                    </a>
+                    <a class="social-btn instagram-btn" href="https://www.instagram.com/?url=https://loko-blush.vercel.app/" target="_blank">
+                        📸 Instagram
+                    </a>
+                </div>
+                <div style="text-align:center; margin-top:15px; color:#888; font-size:13px;">
+                    <b>https://loko-blush.vercel.app/</b>
+                </div>
             </div>
         </div>
     </div>
+</div>
+<button id="profile-btn">👤 Mon profil</button>
+    </div>
+    <div class="header">
+        <img src="image/logo exp.jpg" alt="Logo LOKO EXPRESS" class="header-logo" style="vertical-align:middle; height:120px; width:120px; object-fit:contain; border-radius:12px; margin-right:15px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.13); border:2px solid #ff4e00;">
+        LOKO EXPRESS 
+    </div>
+
+    <!-- Boutons de navigation (bouton "Mes commandes" retiré) -->
+   <div class="nav-buttons">
+    <button class="nav-btn" onclick="location.href='apropos.html'">À propos</button>
+    <button class="nav-btn" onclick="location.href='actualité.html'">Actualité</button>
+    <button class="nav-btn" onclick="location.href='fournisseur.html'">Accès fournisseur</button>
+    <button class="nav-btn gbere-btn" onclick="location.href='gbere.html'">GBERE universitaire</button>
+    <button id="show-customer-orders-btn">🧾 Mes commandes</button>
+    <div class="customer-orders-box" id="customer-orders-box" style="display:none;">
+        <h3>Mes Commandes récentes</h3>
+        <div class="customer-orders-list" id="customer-orders-list"></div>
+        <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
+        
+        
+    
+    <!-- Robot Marcio IA -->
+    <div class="robot-marcio" onclick="openMarcioChat()"></div>
+    
+    <!-- Chat Modal pour Marcio (Stylisé) -->
+    <div class="chat-modal" id="marcio-chat">
+        <div class="chat-container">
+            <div class="chat-header">
+                🤖 Marcio IA - Assistant ISFM EXPRESS
+                <button class="chat-close" onclick="closeMarcioChat()">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot">
+                    Salut ! Je suis Marcio, votre assistant IA. Je suis là pour recueillir vos commentaires et suggestions pour améliorer notre service. Comment puis-je vous aider aujourd'hui ?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Tapez votre message..." onkeypress="handleChatKeyPress(event)">
+                <button class="chat-send" onclick="sendMessage()">Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <img src="image/kolo isfm.jpg" alt="Logo LOKO EXPRESS" class="header-logo" style="vertical-align:middle; height:50px; width:50px; object-fit:contain; border-radius:12px; margin-right:15px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.13); border:2px solid #ff4e00;">
+        ISFM EXPRESS - Repas Universitaires
+    </div>
+    <div class="container">
+        <!-- Catégorie E - Garba -->
+        <div class="box category-e">
+            <h2>Catégorie E - Garba</h2>
+            <div class="slider-container" id="category-e-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/garba.jpg" alt="Garba">
+                        <h3>Garba</h3>
+                        <p>Attiéké avec poisson thon et légumes</p>
+                        <div class="price" id="garba-price">Prix personnalisé</div>
+                        <button onclick="showGarbaOptions()">Commander</button>
+                        <!-- Menu choix prix Garba (popup caché) -->
+                        <div id="garba-options-popup" style="display:none;position:absolute;top:60px;left:10px;background:white;color:#222;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:20;padding:14px;min-width:170px;">
+                            <div style="font-weight:bold;margin-bottom:7px;">Choisissez le prix :</div>
+                            <button style="width:100%;margin:5px 0;" onclick="hideGarbaOptions(); setTimeout(() => promptAddToCart('Garba', 500, 'E'), 200);">Garba 500 FCFA</button>
+                            <button style="width:100%;margin:5px 0;" onclick="hideGarbaOptions(); setTimeout(() => promptAddToCart('Garba', 1000, 'E'), 200);">Garba 1000 FCFA</button>
+                            <button style="width:100%;margin:5px 0;" onclick="hideGarbaOptions(); setTimeout(() => promptAddToCart('Garba', 2000, 'E'), 200);">Garba 2000 FCFA</button>
+                            <button style="width:100%;margin:5px 0;background:#eee;color:#e64600;" onclick="hideGarbaOptions();">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
     <div class="container">
         <!-- Catégorie A - Spaghetti et Petit pois -->
         <div class="box category-a">
@@ -521,7 +1046,7 @@
                         <h3>Tchèpe avec poisson</h3>
                         <p>Tchèpe traditionnel préparé avec du poisson</p>
                         <div class="price">800 FCFA</div>
-                        <button onclick="addToCart('Tchèpe avec poisson', 800, 'D')">Commander</button>
+                        <button onclick="addToCart('Tchèpe traditionnel préparé avec poisson', 800, 'D')">Commander</button>
                     </div>
                     <div class="card">
                         <img src="image/tchep poulet.jpg" alt="Tchèpe avec poulet">
@@ -554,26 +1079,17 @@
                 </div>
             </div>
         </div>
-
-        <!-- Catégorie E - Garba -->
-        <div class="box category-e">
-            <h2>Catégorie E - Garba</h2>
-            <div class="slider-container" id="category-e-food">
+        <!-- Catégorie E - Coque -->
+        <div class="box category-f">
+            <h2>Catégorie E - Coque</h2>
+            <div class="slider-container" id="category-f-food">
                 <div class="slider">
                     <div class="card">
-                        <img src="image/garba.jpg" alt="Garba">
-                        <h3>Garba</h3>
-                        <p>Attiéké avec poisson thon et légumes</p>
-                        <div class="price" id="garba-price">Prix personnalisé</div>
-                        <button onclick="showGarbaOptions()">Commander</button>
-                        <!-- Menu choix prix Garba (popup caché) -->
-                        <div id="garba-options-popup" style="display:none;position:absolute;top:60px;left:10px;background:white;color:#222;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:20;padding:14px;min-width:170px;">
-                            <div style="font-weight:bold;margin-bottom:7px;">Choisissez le prix :</div>
-                            <button style="width:100%;margin:5px 0;" onclick="addToCart('Garba', 500, 'E');hideGarbaOptions();">Garba 500 FCFA</button>
-                            <button style="width:100%;margin:5px 0;" onclick="addToCart('Garba', 1000, 'E');hideGarbaOptions();">Garba 1000 FCFA</button>
-                            <button style="width:100%;margin:5px 0;" onclick="addToCart('Garba', 2000, 'E');hideGarbaOptions();">Garba 2000 FCFA</button>
-                            <button style="width:100%;margin:5px 0;background:#eee;color:#e64600;" onclick="hideGarbaOptions();">Annuler</button>
-                        </div>
+                        <img src="image/porc au .jpg" alt="Porc au four + Attiéké">
+                        <h3>Porc au four + Attiéké</h3>
+                        <p>Porc au four servi avec Attiéké</p>
+                        <div class="price">10000 FCFA</div>
+                        <button onclick="addToCart('Porc au four + Attiéké', 10000, 'F')">Commander</button>
                     </div>
                 </div>
             </div>
@@ -647,19 +1163,18 @@
                 </div>
             </div>
         </div>
+            </div>
+        </div>
 
         <!-- Case de commandes du client -->
         <div class="customer-orders-box" id="customer-orders-box" style="display:none;">
-            <h3>Mes Commandes récentes</h3>
+            <h2>Mes Commandes récentes</h2>
             <div class="customer-orders-list" id="customer-orders-list"></div>
             <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
         </div>
-
-        <!-- Formulaire de commande -->
         <div class="order-box">
             <h2>Votre Commande</h2>
             <div class="order-items" id="order-items">
-                <!-- Les articles commandés apparaîtront ici -->
                 <div class="order-item" id="empty-cart">
                     Votre panier est vide
                 </div>
@@ -667,249 +1182,540 @@
             <div class="order-total" id="order-total">
                 Total: 0 FCFA
             </div>
-
+            <!-- Formulaire de commande : champ email supprimé -->
             <form id="order-form">
                 <div class="form-group">
-                    <label for="name">Nom et Prénom</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Numéro de téléphone</label>
-                    <input type="tel" id="phone" required>
+                    
+                    <input type="text" id="name"  readonly>
                 </div>
                 <button type="submit" class="btn-submit">Confirmer la commande</button>
             </form>
         </div>
     </div>
-<body>
-    <!-- Bouton d'affichage des commandes client -->
-    <button id="show-customer-orders-btn">
-        🧾 Mes commandes
-    </button>
-    <!-- Boîte overlay affichant la liste des commandes client -->
-    <div class="customer-orders-box" id="customer-orders-box">
+    <button id="show-customer-orders-btn">🧾 Mes commandes</button>
+    <div class="customer-orders-box" id="customer-orders-box" style="display:none;">
         <h3>Mes Commandes récentes</h3>
         <div class="customer-orders-list" id="customer-orders-list"></div>
         <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
     </div>
-
-   
-
-    <div class="container">
-        <!-- ... tout le reste de ton HTML inchangé ... -->
-        <!-- Catégories, sliders, formulaire, etc. (voir ton code d'origine) -->
-        <!-- ... -->
-    </div>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
-            authDomain: "kolo-livraison.firebaseapp.com",
-            databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
-            projectId: "kolo-livraison",
-            storageBucket: "kolo-livraison.firebasestorage.app",
-            messagingSenderId: "78667636312",
-            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-            measurementId: "G-R79LC3XQL4"
-        };
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const database = getDatabase(app);
-        window.submitOrder = function(order) {
-            const orderRef = ref(database, 'orders');
-            const newOrderRef = push(orderRef);
-            order.timestamp = new Date().toISOString();
-            order.status = "nouveau";
-            set(newOrderRef, order)
-                .then(() => {
-                    alert('Votre commande a été envoyée avec succès! Un livreur vous contactera bientôt.');
-                    cart = [];
-                    updateCart();
-                    document.getElementById('order-form').reset();
-                    addCustomerOrderToList(order);
-                    showCustomerOrdersBox();
-                    window.location.href = "";
-                })
-                .catch((error) => {
-                    alert('Erreur: ' + error.message);
-                });
-        };
+    // Firebase init (comme dans ton code)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
+        authDomain: "kolo-livraison.firebaseapp.com",
+        databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
+        projectId: "kolo-livraison",
+        storageBucket: "kolo-livraison.firebasestorage.app",
+        messagingSenderId: "78667636312",
+        appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
+        measurementId: "G-R79LC3XQL4"
+    };
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+    window.submitOrder = function(order) {
+        const orderRef = ref(database, 'orders');
+        const newOrderRef = push(orderRef);
+        order.timestamp = new Date().toISOString();
+        order.status = "nouveau";
+        set(newOrderRef, order)
+            .then(() => {
+                alert('Votre commande a été envoyée avec succès! Un livreur vous contactera bientôt.');
+                cart = [];
+                updateCart();
+                document.getElementById('order-form').reset();
+                addCustomerOrderToList(order);
+                showCustomerOrdersBox();
+                window.location.href = "";
+            })
+            .catch((error) => {
+                alert('Erreur: ' + error.message);
+            });
+    };
     </script>
     <script>
-        let cart = [];
-        let total = 0;
-        let customerOrders = JSON.parse(localStorage.getItem('customerOrders') || '[]');
-        let orderCountByCategory = JSON.parse(localStorage.getItem('orderCountByCategory') || '{}');
-        function generateOrderCode(category) {
-            if (!orderCountByCategory[category]) orderCountByCategory[category] = 0;
-            orderCountByCategory[category]++;
-            localStorage.setItem('orderCountByCategory', JSON.stringify(orderCountByCategory));
-            let countStr = String(orderCountByCategory[category]).padStart(3, '0');
-            return `#${countStr}${category}`;
-        }
-        function showGarbaOptions() {
-            document.getElementById('garba-options-popup').style.display = 'block';
-        }
-        function hideGarbaOptions() {
-            document.getElementById('garba-options-popup').style.display = 'none';
-        }
-        function addToCart(name, price, category) {
-            cart.push({name: name, price: price, category: category});
-            updateCart();
-            alert(`${name} ajouté au panier!`);
-        }
-        function updateCart() {
-            const orderItems = document.getElementById('order-items');
-            const orderTotal = document.getElementById('order-total');
-            orderItems.innerHTML = '';
-            total = 0;
-            if (cart.length === 0) {
-                orderItems.innerHTML = '<div class="order-item" id="empty-cart">Votre panier est vide</div>';
-            } else {
-                cart.forEach((item, index) => {
-                    const orderItem = document.createElement('div');
-                    orderItem.className = 'order-item';
-                    orderItem.innerHTML = `
-                        <span>${item.name}</span>
-                        <span>${item.price} FCFA</span>
-                        <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
-                    `;
-                    orderItems.appendChild(orderItem);
-                    total += item.price;
-                });
+    // === Gestion du profil utilisateur (localStorage) ===
+    let userProfile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+    function showProfileForm() {
+        document.getElementById('profile-overlay').style.display = 'flex';
+        if (userProfile) {
+            document.getElementById('profile-lastname').value = userProfile.lastname || '';
+            document.getElementById('profile-firstname').value = userProfile.firstname || '';
+            document.getElementById('profile-email').value = userProfile.email || '';
+            if (userProfile.photo) {
+                document.getElementById('profile-photo-preview').src = userProfile.photo;
+                document.getElementById('profile-photo-preview').style.display = "inline";
             }
-            orderTotal.textContent = `Total: ${total} FCFA`;
+            if (userProfile.bg) {
+                document.getElementById('profile-bg-preview').src = userProfile.bg;
+                document.getElementById('profile-bg-preview').style.display = "inline";
+            }
         }
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-        }
-        function addCustomerOrderToList(order) {
-            let mainCategory = order.items.length > 0 ? order.items[0].category : 'A';
-            let code = generateOrderCode(mainCategory) + " utt loko";
-            let summary = order.items.map(i => i.name).join(', ');
-            let entry = {
-                code: code,
-                summary: summary,
-                total: order.total,
-                date: new Date().toLocaleString()
+    }
+    function hideProfileForm() {
+        document.getElementById('profile-overlay').style.display = 'none';
+    }
+    document.getElementById('profile-btn').onclick = showProfileForm;
+    document.getElementById('profile-overlay').addEventListener('click', function(e){
+        if(e.target === this) hideProfileForm();
+    });
+    document.getElementById('profile-photo').addEventListener('change', function(){
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profile-photo-preview').src = e.target.result;
+                document.getElementById('profile-photo-preview').style.display = "inline";
             };
-            customerOrders.push(entry);
+            reader.readAsDataURL(file);
+        }
+    });
+    document.getElementById('profile-bg').addEventListener('change', function(){
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profile-bg-preview').src = e.target.result;
+                document.getElementById('profile-bg-preview').style.display = "inline";
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    document.getElementById('profile-form').onsubmit = function(e) {
+        e.preventDefault();
+        const photo = document.getElementById('profile-photo-preview').src || null;
+        const bg = document.getElementById('profile-bg-preview').src || null;
+        userProfile = {
+            lastname: document.getElementById('profile-lastname').value,
+            firstname: document.getElementById('profile-firstname').value,
+            email: document.getElementById('profile-email').value,
+            photo: (photo && photo.startsWith('data')) ? photo : null,
+            bg: (bg && bg.startsWith('data')) ? bg : null
+        };
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        hideProfileForm();
+        applyUserProfile();
+        fillOrderFormWithProfile();
+    };
+    function applyUserProfile() {
+        if (userProfile) {
+            if (userProfile.bg) {
+                document.body.style.backgroundImage = `url('${userProfile.bg}')`;
+            } else {
+                document.body.style.backgroundImage = `url('image/WhatsApp Image 2025-06-10 à 23.52.24_467459e6.jpg')`;
+            }
+            // Affiche la photo dans le bouton profil
+            if (userProfile.photo) {
+                document.getElementById('profile-btn').innerHTML = `<img src="${userProfile.photo}" style="width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px;"> Mon profil`;
+            } else {
+                document.getElementById('profile-btn').innerHTML = '👤 Mon profil';
+            }
+        }
+    }
+    function fillOrderFormWithProfile() {
+        if (userProfile) {
+            document.getElementById('name').value = (userProfile.firstname || "") + ' ' + (userProfile.lastname || "");
+        }
+    }
+    window.addEventListener('DOMContentLoaded', function() {
+        if (!userProfile) {
+            showProfileForm();
+        } else {
+            applyUserProfile();
+            fillOrderFormWithProfile();
+        }
+    });
+    // === Gestion panier et quantité ===
+    let cart = [];
+    let total = 0;
+    let customerOrders = JSON.parse(localStorage.getItem('customerOrders') || '[]');
+    let orderCountByCategory = JSON.parse(localStorage.getItem('orderCountByCategory') || '{}');
+    function generateOrderCode(category) {
+        if (!orderCountByCategory[category]) orderCountByCategory[category] = 0;
+        orderCountByCategory[category]++;
+        localStorage.setItem('orderCountByCategory', JSON.stringify(orderCountByCategory));
+        let countStr = String(orderCountByCategory[category]).padStart(3, '0');
+        return `#${countStr}${category}`;
+    }
+    function showGarbaOptions() {
+        document.getElementById('garba-options-popup').style.display = 'block';
+    }
+    function hideGarbaOptions() {
+        document.getElementById('garba-options-popup').style.display = 'none';
+    }
+    function promptAddToCart(name, price, category) {
+        let qte = prompt("Choisir la quantité (ex: 1, 2, 3...)", "1");
+        qte = parseInt(qte, 10);
+        if (!isNaN(qte) && qte > 0) {
+            addToCart(name, price, category, qte);
+        }
+    }
+    function addToCart(name, price, category, qty=1) {
+        cart.push({name: name, price: price, category: category, qty: qty});
+        updateCart();
+        alert(`${qty} ${name} ajouté(s) au panier!`);
+    }
+    function updateCart() {
+        const orderItems = document.getElementById('order-items');
+        const orderTotal = document.getElementById('order-total');
+        orderItems.innerHTML = '';
+        total = 0;
+        if (cart.length === 0) {
+            orderItems.innerHTML = '<div class="order-item" id="empty-cart">Votre panier est vide</div>';
+        } else {
+            cart.forEach((item, index) => {
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+                    <span>${item.qty} x ${item.name}</span>
+                    <span>${item.price * item.qty} FCFA</span>
+                    <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
+                `;
+                orderItems.appendChild(orderItem);
+                total += item.price * item.qty;
+            });
+        }
+        orderTotal.textContent = `Total: ${total} FCFA`;
+    }
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCart();
+    }
+    function addCustomerOrderToList(order) {
+        let mainCategory = order.items.length > 0 ? order.items[0].category : 'A';
+        let code = generateOrderCode(mainCategory) + " utt loko";
+        let summary = order.items.map(i => (i.qty ? i.qty + "x " : "") + i.name).join(', ');
+        let entry = {
+            code: code,
+            summary: summary,
+            total: order.total,
+            date: new Date().toLocaleString()
+        };
+        customerOrders.push(entry);
+        localStorage.setItem('customerOrders', JSON.stringify(customerOrders));
+        updateCustomerOrdersBox();
+    }
+    function updateCustomerOrdersBox() {
+        let listDiv = document.getElementById('customer-orders-list');
+        listDiv.innerHTML = '';
+        if (!customerOrders.length) {
+            listDiv.innerHTML = '<div style="color:#888;">Aucune commande récente</div>';
+        } else {
+            customerOrders.slice().reverse().forEach(entry => {
+                let div = document.createElement('div');
+                div.className = 'customer-order-entry';
+                div.innerHTML = `
+                    <span style="font-weight:bold;color:#ff4e00;">${entry.code}</span> 
+                    <span>${entry.summary} <b>(${entry.total} FCFA)</b><br>
+                    <span style="color:#888;font-size:13px;">${entry.date}</span></span>`;
+                listDiv.appendChild(div);
+            });
+        }
+    }
+    function clearCustomerOrders() {
+        if (confirm("Vider la liste de vos commandes récentes ?")) {
+            customerOrders = [];
             localStorage.setItem('customerOrders', JSON.stringify(customerOrders));
             updateCustomerOrdersBox();
         }
-        function updateCustomerOrdersBox() {
-            let listDiv = document.getElementById('customer-orders-list');
-            listDiv.innerHTML = '';
-            if (!customerOrders.length) {
-                listDiv.innerHTML = '<div style="color:#888;">Aucune commande récente</div>';
+    }
+    function showCustomerOrdersBox() {
+        document.getElementById('customer-orders-box').style.display = 'block';
+        updateCustomerOrdersBox();
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById("show-customer-orders-btn");
+        const box = document.getElementById("customer-orders-box");
+        btn.onclick = function() {
+            if (box.style.display === "none" || box.style.display === "") {
+                showCustomerOrdersBox();
             } else {
-                customerOrders.slice().reverse().forEach(entry => {
-                    let div = document.createElement('div');
-                    div.className = 'customer-order-entry';
-                    div.innerHTML = `
-                        <span style="font-weight:bold;color:#ff4e00;">${entry.code}</span> 
-                        <span>${entry.summary} <b>(${entry.total} FCFA)</b><br>
-                        <span style="color:#888;font-size:13px;">${entry.date}</span></span>`;
-                    listDiv.appendChild(div);
-                });
-            }
-        }
-        function clearCustomerOrders() {
-            if (confirm("Vider la liste de vos commandes récentes ?")) {
-                customerOrders = [];
-                localStorage.setItem('customerOrders', JSON.stringify(customerOrders));
-                updateCustomerOrdersBox();
-            }
-        }
-        function showCustomerOrdersBox() {
-            document.getElementById('customer-orders-box').style.display = 'block';
-            updateCustomerOrdersBox();
-        }
-        // Affichage/fermeture du panneau commandes
-        document.addEventListener("DOMContentLoaded", function() {
-            const btn = document.getElementById("show-customer-orders-btn");
-            const box = document.getElementById("customer-orders-box");
-            btn.onclick = function() {
-                if (box.style.display === "none" || box.style.display === "") {
-                    showCustomerOrdersBox();
-                } else {
-                    box.style.display = "none";
-                }
-            };
-            document.addEventListener("click", function(e) {
-                if (
-                    box.style.display === "block" &&
-                    !box.contains(e.target) &&
-                    e.target !== btn
-                ) {
-                    box.style.display = "none";
-                }
-            });
-            updateCustomerOrdersBox();
-        });
-        window.onload = () => {
-            // Gestionnaire d'événement pour la soumission du formulaire
-            const orderForm = document.getElementById('order-form');
-            if(orderForm){
-                orderForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (cart.length === 0) {
-                        alert("Votre panier est vide! Veuillez ajouter des articles avant de commander.");
-                        return;
-                    }
-                    let mainCategory = cart.length > 0 ? cart[0].category : 'A';
-let code = generateOrderCode(mainCategory) + "utt loko";
-const order = {
-    code: code, // <-- Ajoute ce champ
-    customer: {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-    },
-    items: cart,
-    total: total
-};
-window.submitOrder(order);
-                });
+                box.style.display = "none";
             }
         };
-        // Pour fermer popup Garba si clic en dehors
-        document.addEventListener('click', function(e) {
-            const popup = document.getElementById('garba-options-popup');
-            if (popup && popup.style.display === 'block') {
-                if (!popup.contains(e.target) && e.target.innerText !== 'Commander') {
-                    popup.style.display = 'none';
-                }
+        document.addEventListener("click", function(e) {
+            if (
+                box.style.display === "block" &&
+                !box.contains(e.target) &&
+                e.target !== btn
+            ) {
+                box.style.display = "none";
             }
         });
+        updateCustomerOrdersBox();
+    });
+    window.onload = () => {
+        fillOrderFormWithProfile();
+        const orderForm = document.getElementById('order-form');
+        if(orderForm){
+            orderForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (cart.length === 0) {
+                    alert("Votre panier est vide! Veuillez ajouter des articles avant de commander.");
+                    return;
+                }
+                if (!userProfile) {
+                    alert("Veuillez créer votre profil avant de commander.");
+                    showProfileForm();
+                    return;
+                }
+                let mainCategory = cart.length > 0 ? cart[0].category : 'A';
+                let code = generateOrderCode(mainCategory) + "utt loko";
+                const order = {
+                    code: code,
+                    customer: { ...userProfile },
+                    items: cart,
+                    total: total
+                };
+                window.submitOrder(order);
+            });
+        }
+    };
+    document.addEventListener('click', function(e) {
+        const popup = document.getElementById('garba-options-popup');
+        if (popup && popup.style.display === 'block') {
+            if (!popup.contains(e.target) && e.target.innerText !== 'Commander') {
+                popup.style.display = 'none';
+            }
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.card button').forEach(btn => {
+            let oldClick = btn.getAttribute('onclick');
+            if (oldClick && oldClick.startsWith("addToCart")) {
+                let args = oldClick.substring(10, oldClick.length - 1);
+                btn.setAttribute('onclick', `promptAddToCart(${args})`);
+            }
+        });
+    });
+    function showSupplierAccess() {
+        const pwd = prompt("Entrez le mot de passe d'accès fournisseur :");
+        if (pwd === "marcio200@") {
+            window.location.href = "fournisseur.html";
+        } else if (pwd !== null) {
+            alert("Mot de passe incorrect !");
+        }
+    }
+    function showAbout() {
+        alert("Bienvenue ! Repas ISFM Express, la solution repas rapide et bon marché pour les étudiants.");
+    }
+    function showContact() {
+        alert("Contact WhatsApp : +225 XX XX XX XX\nEmail : contact@isfmexpress.com");
+    }
     </script>
     <script>
-        function showSupplierAccess() {
-    const pwd = prompt("Entrez le mot de passe d'accès fournisseur :");
-    if (pwd === "marcio200@") {
-        window.location.href = "fournisseur.html";
-    } else if (pwd !== null) {
-        alert("Mot de passe incorrect !");
+        // === Robot Marcio - Système de commentaires à la base de données ===
+window.sendMarcioComment = function(message, userProfile) {
+    const commentsRef = ref(database, 'marcio_comments');
+    const newCommentRef = push(commentsRef);
+    const commentObj = {
+        message: message,
+        user: userProfile ? {
+            lastname: userProfile.lastname,
+            firstname: userProfile.firstname,
+            email: userProfile.email || "",
+            photo: userProfile.photo || ""
+        } : {},
+        timestamp: new Date().toISOString()
+    };
+    return set(newCommentRef, commentObj);
+};
+// --- Robot Marcio Chat Logic ---
+function openMarcioChat() {
+    document.getElementById("marcio-chat").style.display = "flex";
+    setTimeout(() => {
+        document.getElementById("chat-input").focus();
+    }, 300);
+}
+function closeMarcioChat() {
+    document.getElementById("marcio-chat").style.display = "none";
+}
+function appendMessage(content, isBot = false) {
+    const chat = document.getElementById("chat-messages");
+    const div = document.createElement("div");
+    div.className = "message" + (isBot ? " bot" : " user");
+    div.textContent = content;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+function handleChatKeyPress(e) {
+    if (e.key === "Enter") sendMessage();
+}
+function sendMessage() {
+    const input = document.getElementById("chat-input");
+    const msg = input.value.trim();
+    if (!msg) return;
+    appendMessage(msg, false);
+    input.value = "";
+    // Envoi à la base de données (Firebase)
+    let userProfile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+    if (typeof window.sendMarcioComment === "function") {
+        window.sendMarcioComment(msg, userProfile).then(() => {
+            appendMessage("Merci pour votre message ! Nous avons bien reçu votre commentaire. 👍", true);
+        }).catch(() => {
+            appendMessage("Erreur lors de l'envoi du commentaire. Veuillez réessayer plus tard.", true);
+        });
+    } else {
+        appendMessage("Erreur technique. Réessayez plus tard.", true);
     }
 }
- // --- Promotion Popup ---
-        function showPromoPopup() {
-            document.getElementById('promo-popup-overlay').style.display = 'flex';
-        }
-        function closePromoPopup() {
-            document.getElementById('promo-popup-overlay').style.display = 'none';
-        }
-        // Affiche la popup à l'arrivée sur le site, la première fois (ou à chaque visite si tu veux)
-        window.addEventListener('DOMContentLoaded', function() {
-            // Optionnel : pour ne pas la re-montrer dans la même session
-            if (!sessionStorage.getItem('promoPopupShown')) {
-                showPromoPopup();
-                sessionStorage.setItem('promoPopupShown', '1');
-            }
-        });
+
+// Pour ouvrir/fermer la boîte commandes client
+function toggleCustomerOrders() {
+    const box = document.getElementById("customer-orders-box");
+    if (box.style.display === "none" || box.style.display === "") {
+        showCustomerOrdersBox();
+    } else {
+        box.style.display = "none";
+    }
+}
+
+function showProfileForm() {
+  document.getElementById('profile-overlay').style.display = 'flex';
+  if (userProfile) {
+    document.getElementById('profile-lastname').value = userProfile.lastname || '';
+    document.getElementById('profile-firstname').value = userProfile.firstname || '';
+    document.getElementById('profile-email').value = userProfile.email || '';
+    if (userProfile.photo) {
+      document.getElementById('profile-photo-big').src = userProfile.photo;
+      document.getElementById('profile-photo-big').style.display = "block";
+      document.getElementById('profile-photo-placeholder').style.display = "none";
+    } else {
+      document.getElementById('profile-photo-big').style.display = "none";
+      document.getElementById('profile-photo-placeholder').style.display = "flex";
+    }
+  }
+}
+function hideProfileForm() {
+  document.getElementById('profile-overlay').style.display = 'none';
+}
+document.getElementById('profile-btn').onclick = showProfileForm;
+document.getElementById('profile-overlay').addEventListener('click', function(e){
+  if(e.target === this) hideProfileForm();
+});
+document.getElementById('profile-photo').addEventListener('change', function(){
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profile-photo-big').src = e.target.result;
+      document.getElementById('profile-photo-big').style.display = "block";
+      document.getElementById('profile-photo-placeholder').style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+});
+document.getElementById('profile-bg').addEventListener('change', function(){
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      userProfile = userProfile || {};
+      userProfile.bg = e.target.result;
+      localStorage.setItem('userProfile', JSON.stringify(userProfile));
+      applyUserProfile();
+    };
+    reader.readAsDataURL(file);
+  }
+});
+document.getElementById('profile-form').onsubmit = function(e) {
+  e.preventDefault();
+  const photo = document.getElementById('profile-photo-big').src || null;
+  const bg = userProfile && userProfile.bg ? userProfile.bg : null;
+  userProfile = {
+    lastname: document.getElementById('profile-lastname').value,
+    firstname: document.getElementById('profile-firstname').value,
+    email: document.getElementById('profile-email').value,
+    photo: (photo && photo.startsWith('data')) ? photo : null,
+    bg: (bg && bg.startsWith('data')) ? bg : null
+  };
+  localStorage.setItem('userProfile', JSON.stringify(userProfile));
+  hideProfileForm();
+  applyUserProfile();
+  fillOrderFormWithProfile();
+};
+function applyUserProfile() {
+  if (userProfile) {
+    if (userProfile.bg) {
+      document.body.style.backgroundImage = `url('${userProfile.bg}')`;
+    } else {
+      document.body.style.backgroundImage = `url('image/WhatsApp Image 2025-06-10 à 23.52.24_467459e6.jpg')`;
+    }
+    // Photo dans le bouton profil
+    if (userProfile.photo) {
+      document.getElementById('profile-btn').innerHTML = `<img src="${userProfile.photo}" style="width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px;"> Mon profil`;
+    } else {
+      document.getElementById('profile-btn').innerHTML = '👤 Mon profil';
+    }
+  }
+}
+function fillOrderFormWithProfile() {
+  if (userProfile) {
+    document.getElementById('name').value = (userProfile.firstname || "") + ' ' + (userProfile.lastname || "");
+  }
+}
+// Fonctions contact/invitation
+function contactWhatsApp() {
+  window.open("https://wa.me/2250719983044?text=Bonjour%20ISFM%20Express%20!", "_blank");
+}
+function callPhone() {
+  window.open("tel:0719983044");
+}
+function inviteWhatsApp() {
+  window.open("https://wa.me/?text=Rejoins%20ISFM%20Express%20ici%20:%20https://loko-blush.vercel.app/", "_blank");
+}
+function inviteFacebook() {
+  window.open("https://www.facebook.com/sharer/sharer.php?u=https://loko-blush.vercel.app/", "_blank");
+}
+function inviteInstagram() {
+  window.open("https://www.instagram.com/?url=https://loko-blush.vercel.app/", "_blank");
+}
+// Chargement initial
+window.addEventListener('DOMContentLoaded', function() {
+  if (!userProfile) {
+    showProfileForm();
+  } else {
+    applyUserProfile();
+    fillOrderFormWithProfile();
+  }
+});
+
     </script>
 </body>
 </html>
+<a href="index.html" class="btn-retour-bas">⬅ Retour à l'accueil</a>
+
+<style>
+  .btn-retour-bas {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, #ff4e00, #ff9a56);
+    color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 30px;
+    text-decoration: none;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .btn-retour-bas:hover {
+    background: linear-gradient(to right, #e64600, #ff8033);
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  @media screen and (max-width: 480px) {
+    .btn-retour-bas {
+      font-size: 14px;
+      padding: 12px 24px;
+    }
+  }
+</style>
