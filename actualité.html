@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actualités - Gberè Universitaire</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      color: #222;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 28px auto 0 auto;
+      padding: 0 12px 24px 12px;
+    }
+    .header {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 22px;
+      text-shadow: 0 2px 12px #2226;
+    }
+    .header h1 {
+      margin: 0 0 5px 0;
+      font-size: 2em;
+      letter-spacing: 0.03em;
+    }
+    .feed {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .publication {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px #764ba222;
+      padding: 13px 15px 10px 15px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pub-header {
+      font-size: 0.95em;
+      color: #888;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .pub-text {
+      font-size: 1.13em;
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .pub-photo {
+      max-width: 95%;
+      max-height: 320px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: block;
+      box-shadow: 0 2px 8px #2222;
+      border: 1.5px solid #eee;
+    }
+    .pub-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 4px;
+    }
+    .like-btn, .comment-btn {
+      background: none;
+      border: none;
+      color: #764ba2;
+      font-size: 1.15em;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.18s;
+    }
+    .like-btn.liked { color: #e74c3c;}
+    .like-btn:hover, .comment-btn:hover { color: #ff4e00;}
+    .pub-likes, .pub-comments-count {
+      font-size: 0.97em;
+      color: #999;
+      margin-left: 3px;
+    }
+    .comments {
+      margin-top: 10px;
+      padding-left: 5px;
+      border-left: 2px solid #eee;
+    }
+    .comment {
+      background: #f7f7fc;
+      border-radius: 8px;
+      padding: 7px 10px 5px 10px;
+      font-size: 0.98em;
+      margin-bottom: 6px;
+      box-shadow: 0 1px 7px #764ba211;
+    }
+    .comment-header {
+      color: #667eea;
+      font-weight: bold;
+      font-size: 0.98em;
+      margin-bottom: 2px;
+    }
+    .comment-time {
+      color: #aaa;
+      font-weight: 400;
+      font-size: 0.89em;
+      float: right;
+    }
+    @media (max-width: 700px) {
+      .container { max-width: 99vw;}
+      .pub-photo { max-width: 99vw; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 2vw 20px 2vw;}
+      .header h1 { font-size: 1.2em; }
+      .pub-photo { max-width: 99vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Actualités 📢</h1>
+      <div>Retrouve ici toutes les publications de GROUPE EXPRESS</div>
+    </div>
+    <div class="feed" id="feed"></div>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    // Firebase config pour data-gbre
+    const firebaseConfig = {
+      apiKey: "AIzaSyAocBTsHd-A9OJ7RAagxwxtZd0pdW6TX3I",
+      authDomain: "data-gbre.firebaseapp.com",
+      databaseURL: "https://data-gbre-default-rtdb.firebaseio.com",
+      projectId: "data-gbre",
+      storageBucket: "data-gbre.appspot.com",
+      messagingSenderId: "293732235454",
+      appId: "1:293732235454:web:c0b0f4a7b6c9b5d12f46ef",
+      measurementId: "G-XD01FS1SPG"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // --- Affichage du feed uniquement ---
+    const feedDiv = document.getElementById("feed");
+    function escapeHtml(text) {
+      if (!text) return "";
+      return text.replace(/[&<>"']/g, function (m) {
+        return ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[m];
+      });
+    }
+    function formatTime(ts) {
+      if (!ts) return "";
+      const d = new Date(ts);
+      return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    }
+
+    // Affiche une publication (avec likes et commentaires, lecture seule)
+    function renderPublication(pub, pubId) {
+      // Like info
+      const likesObj = pub.likes || {};
+      const likeCount = Object.keys(likesObj).length;
+      // Commentaires
+      const comments = pub.comments ? Object.values(pub.comments) : [];
+
+      // Publication bloc
+      const div = document.createElement("div");
+      div.className = "publication";
+      div.innerHTML = `
+        <div class="pub-header">${escapeHtml(pub.username)} · ${formatTime(pub.timestamp)}</div>
+        <div class="pub-text">${escapeHtml(pub.text)}</div>
+        ${pub.photo ? `<img src="${pub.photo}" class="pub-photo" alt="photo publication">` : ""}
+        <div class="pub-actions">
+          <span class="like-btn" title="Nombre de J'aime">❤️ <span class="pub-likes">${likeCount}</span></span>
+          <span class="comment-btn" title="Commentaires">💬 <span class="pub-comments-count">${comments.length}</span></span>
+        </div>
+        <div class="comments" id="comments-${pubId}" style="display:${comments.length>0?'block':'none'}"></div>
+      `;
+      // Rendu des commentaires
+      const commentsDiv = div.querySelector(`#comments-${pubId}`);
+      for (const c of comments) {
+        const cDiv = document.createElement("div");
+        cDiv.className = "comment";
+        cDiv.innerHTML = `
+          <div class="comment-header">${escapeHtml(c.username)}<span class="comment-time">${formatTime(c.timestamp)}</span></div>
+          <div>${escapeHtml(c.text)}</div>
+        `;
+        commentsDiv.appendChild(cDiv);
+      }
+      return div;
+    }
+
+    // Rafraîchit tout le feed (lecture seule)
+    onValue(ref(db, "publications"), snapshot => {
+      const publications = snapshot.val() || {};
+      feedDiv.innerHTML = "";
+      const keys = Object.keys(publications);
+      // Trier par date décroissante
+      keys.sort((a,b) => (publications[b].timestamp||0)-(publications[a].timestamp||0));
+      for (const pubId of keys) {
+        const pub = publications[pubId];
+        const pubDiv = renderPublication(pub, pubId);
+        feedDiv.appendChild(pubDiv);
+      }
+    });
+  </script>
+</body>
+</html>
+<a href="index.html" class="btn-retour-bas">⬅ Retour à l'accueil</a>
+
+<style>
+  .btn-retour-bas {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, #ff4e00, #ff9a56);
+    color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 30px;
+    text-decoration: none;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .btn-retour-bas:hover {
+    background: linear-gradient(to right, #e64600, #ff8033);
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  @media screen and (max-width: 480px) {
+    .btn-retour-bas {
+      font-size: 14px;
+      padding: 12px 24px;
+    }
+  }
+</style>
