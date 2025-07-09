@@ -2,746 +2,296 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Fournisseur - Liste des Commandes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KoLo Livraison - Repas Universitaires</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --main-bg: linear-gradient(120deg, #485563 0%, #29323c 100%);
+            --accent1: #667eea;
+            --accent2: #764ba2;
+            --accent3: #f093fb;
+            --card-bg: rgba(255,255,255,0.10);
+            --glass: blur(30px) saturate(1.6);
+            --border-glow: 0 0 0 3px #fff3, 0 2px 16px #764ba245;
         }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: #2d3748;
+            font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
-            padding: 10px 0;
-        }
-        
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #2d3748;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border-radius: 16px;
-            margin: 0 10px 20px;
-            max-width: calc(100% - 20px);
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 10px;
-        }
-        
-        .organization-group {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .organization-header {
-            padding: 20px 15px;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .org-heges {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        }
-        
-        .org-ifsm {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        }
-        
-        .org-utt-loko {
-            background: linear-gradient(135deg, #45b7d1, #2196f3);
-        }
-        
-        .org-autres {
-            background: linear-gradient(135deg, #96ceb4, #85c1a8);
-        }
-        
-        .orders-count {
-            background: rgba(255, 255, 255, 0.25);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 8px;
-            display: inline-block;
-        }
-        
-        /* Mobile-first table approach - cards for mobile */
-        .commands-table {
-            display: none; /* Hidden on mobile by default */
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        /* Mobile card layout */
-        .mobile-orders {
-            display: block;
-        }
-        
-        .order-card {
-            background: #fff;
-            margin: 0 0 15px 0;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 4px solid #667eea;
-        }
-        
-        .order-card-header {
+            background: var(--main-bg);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
         }
-        
-        .order-code {
-            font-size: 18px;
-            font-weight: 700;
-            color: #667eea;
+        /* Animated, blurred, colored bokeh blobs as background */
+        .bokeh-bg {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0; left: 0; z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
         }
-        
-        .order-date {
-            font-size: 12px;
-            color: #718096;
+        .bokeh {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.5;
+            animation: bokehMove 22s infinite alternate cubic-bezier(.5,.1,.1,1.0);
+            mix-blend-mode: lighten;
         }
-        
-        .order-info {
-            margin-bottom: 15px;
+        .bokeh1 { background: #667eea; width: 420px; height: 420px; left: -5vw; top: -7vh; animation-delay: 0s;}
+        .bokeh2 { background: #f093fb; width: 320px; height: 320px; right: -5vw; top: 5vh; animation-delay: 5s;}
+        .bokeh3 { background: #ff9a56; width: 350px; height: 350px; left: 40vw; bottom: -12vh; animation-delay: 10s;}
+        @keyframes bokehMove {
+            0% { transform: scale(1) translateY(0);}
+            100% { transform: scale(1.12) translateY(-40px);}
         }
-        
-        .order-info-row {
+        .container {
+            position: relative;
+            z-index: 1;
+            background: var(--card-bg);
+            -webkit-backdrop-filter: var(--glass);
+            backdrop-filter: var(--glass);
+            border-radius: 32px;
+            box-shadow: var(--border-glow);
+            padding: 54px 40px 44px 40px;
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            border: 2px solid rgba(255,255,255,0.13);
+            overflow: hidden;
+            transition: box-shadow 0.4s;
+            margin: 18px 10px;
+            animation: popIn 1.2s cubic-bezier(.5,0,.1,1.0) 0.15s both;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(.95) translateY(30px);}
+            to { opacity: 1; transform: scale(1) translateY(0);}
+        }
+        .header {
             display: flex;
-            margin-bottom: 8px;
-            align-items: flex-start;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 34px;
+            gap: 22px;
         }
-        
-        .order-info-label {
-            font-weight: 600;
-            color: #4a5568;
-            min-width: 80px;
-            font-size: 14px;
+        .header-logo {
+            width: 75px;
+            height: 75px;
+            border-radius: 21px;
+            object-fit: cover;
+            border: 4px solid #fff9;
+            box-shadow: 0 0px 32px #764ba2aa, 0 3px 18px #0002;
+            background: #fff;
+            transition: box-shadow 0.3s, transform 0.2s;
         }
-        
-        .order-info-value {
-            flex: 1;
-            font-size: 14px;
-            color: #2d3748;
-            word-break: break-word;
+        .header-logo:hover {
+            box-shadow: 0 0 0 7px #f093fb66, 0 10px 30px #764ba2aa;
+            transform: scale(1.075) rotate(4deg);
         }
-        
-        .order-total {
-            font-weight: 700;
-            color: #2d3748;
-            font-size: 16px;
+        .header-title {
+            font-size: 2.3rem;
+            font-weight: 900;
+            background: linear-gradient(120deg, #fff 0%, #f093fb 70%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px #764ba242, 0 2px 8px #fff7;
+            letter-spacing: -1px;
         }
-        
-        .status {
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-            margin-bottom: 15px;
+        .subtitle {
+            color: #fff;
+            font-size: 1.18rem;
+            font-weight: 400;
+            margin-bottom: 42px;
+            line-height: 1.6;
+            text-shadow: 0 1px 3px #2224;
+            opacity: 0.89;
         }
-        
-        .status-nouveau { 
-            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
-            color: #d63031;
-        }
-        
-        .status-livre { 
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: white;
-        }
-        
-        .status-en_cours { 
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            color: white;
-        }
-        
-        /* Mobile action buttons */
-        .mobile-actions {
+        .establishment-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 22px;
+            margin-bottom: 24px;
         }
-        
-        .btn-update {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        .btn {
+            padding: 22px 35px;
+            font-size: 1.18rem;
+            font-weight: 700;
             border: none;
-            border-radius: 10px;
-            padding: 14px 20px;
+            border-radius: 17px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-height: 48px; /* Minimum touch target size */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-details {
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-        }
-        
-        .btn-progress {
-            background: linear-gradient(135deg, #fdcb6e, #e17055);
-        }
-        
-        .btn-delivered {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-        }
-        
-        .btn-update:active {
-            transform: scale(0.98);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: rgba(255,255,255,0.8);
-            font-size: 16px;
-        }
-        
-        .empty-state::before {
-            content: "📦";
-            font-size: 48px;
-            display: block;
-            margin-bottom: 20px;
-        }
-
-        /* Modal styles - optimized for mobile */
-        #order-details-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        #order-details-modal.active {
-            display: flex;
-        }
-        
-        #order-details-content {
-            background: #fff;
-            border-radius: 16px;
-            max-width: 100%;
-            width: 100%;
-            max-width: 400px;
-            padding: 25px 20px 20px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            letter-spacing: 0.7px;
             position: relative;
-            animation: popin .25s cubic-bezier(.17,.67,.83,.67);
-            max-height: 90vh;
-            overflow-y: auto;
+            overflow: hidden;
+            background: #fff;
+            color: #222;
+            box-shadow: 0 7px 28px #764ba238;
+            transition: all .35s cubic-bezier(.5,0,.1,1.0);
+            border: 2.5px solid #fff7;
+            outline: none;
         }
-        
-        @keyframes popin {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        
-        #order-details-content button.close-btn {
+        .btn::before {
+            content: '';
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #764ba2;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.2s;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+            transition: left 0.65s cubic-bezier(.5,0,.1,1.0);
+            z-index: 1;
         }
-        
-        #order-details-content button.close-btn:active {
-            background-color: rgba(118, 75, 162, 0.1);
+        .btn:hover::before { left: 100%; }
+        .btn:active { transform: scale(.97) translateY(2px);}
+        .btn-heges {
+            background: linear-gradient(90deg, #ff8e53 0%, #ff6b6b 90%);
+            color: #fff;
+            border: 2.5px solid #ffb0b0;
+            box-shadow: 0 7px 16px #ff8e532e;
         }
-        
-        #order-details-body h2 {
-            margin-bottom: 15px;
-            font-size: 20px;
-            color: #764ba2;
-            padding-right: 40px;
+        .btn-heges:hover {
+            transform: scale(1.045) translateY(-6px);
+            box-shadow: 0 13px 38px #ff6b9d56;
+            filter: brightness(1.06);
         }
-        
-        #order-details-body p, #order-details-body ul {
-            margin-bottom: 10px;
-            font-size: 14px;
-            line-height: 1.5;
+        .btn-ifsm {
+            background: linear-gradient(90deg, #4ecdc4 0%, #36d1dc 90%);
+            color: #fff;
+            border: 2.5px solid #a3fff7;
+            box-shadow: 0 7px 16px #4ecdc44d;
         }
-        
-        #order-details-body ul {
-            padding-left: 20px;
+        .btn-ifsm:hover {
+            transform: scale(1.045) translateY(-6px);
+            box-shadow: 0 13px 38px #36d1dc56;
+            filter: brightness(1.06);
         }
-        
-        #order-details-body strong {
-            color: #2d3748;
+        .btn-utt {
+            background: linear-gradient(90deg, #667eea 0%, #8e44ad 90%);
+            color: #fff;
+            border: 2.5px solid #d2d0ff;
+            box-shadow: 0 7px 16px #667eea3d;
         }
-        
-        /* Tablet and Desktop styles */
-        @media screen and (min-width: 768px) {
-            .header {
-                font-size: 32px;
-                padding: 30px;
-                margin: 0 20px 30px;
-            }
-            
-            .container {
-                max-width: 1200px;
-                padding: 0 20px;
-            }
-            
-            .organization-group {
-                margin-bottom: 40px;
-                border-radius: 24px;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            
-            .organization-group:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            }
-            
-            .organization-header {
-                padding: 25px 30px;
-                font-size: 24px;
-            }
-            
-            .organization-header::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-                transition: left 0.5s;
-            }
-            
-            .organization-group:hover .organization-header::before {
-                left: 100%;
-            }
-            
-            .orders-count {
-                margin-left: 15px;
-                margin-top: 0;
-                font-size: 16px;
-                padding: 8px 16px;
-            }
-            
-            /* Show table on desktop, hide mobile cards */
-            .commands-table {
-                display: table;
-                width: 100%;
-                border-collapse: collapse;
-            }
-            
-            .mobile-orders {
-                display: none;
-            }
-            
-            .commands-table th {
-                background: rgba(0, 0, 0, 0.02);
-                color: #4a5568;
-                font-weight: 600;
-                font-size: 14px;
-                padding: 20px 15px;
-                text-align: left;
-                border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            
-            .commands-table td {
-                padding: 20px 15px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                vertical-align: middle;
-            }
-            
-            .commands-table td.code {
-                font-weight: 700;
-                color: #667eea;
-                font-size: 16px;
-            }
-            
-            .commands-table tr:hover {
-                background: rgba(102, 126, 234, 0.02);
-            }
-            
-            .commands-table .btn-update {
-                padding: 10px 16px;
-                margin: 0 4px;
-                font-size: 13px;
-                min-height: auto;
-            }
-            
-            .commands-table .btn-update:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            }
+        .btn-utt:hover {
+            transform: scale(1.045) translateY(-6px);
+            box-shadow: 0 13px 38px #667eea56;
+            filter: brightness(1.06);
         }
-        
-        /* Large screens */
-        @media screen and (min-width: 1024px) {
-            body {
-                padding: 20px 0;
+        .footer {
+            color: #c1c2e2;
+            font-size: 1.02rem;
+            font-weight: 400;
+            margin-top: 12px;
+            text-shadow: 0 1px 2px #2223;
+            position: relative;
+        }
+        .footer::before {
+            content: '✨';
+            margin-right: 8px;
+            animation: twinkle 2s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.5; transform: scale(1);}
+            100% { opacity: 1; transform: scale(1.13);}
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 32px 6vw 28px 6vw; }
+            .header-title { font-size: 1.35rem; }
+            .header { flex-direction: column; gap: 9px;}
+            .btn { padding: 15px 10px; font-size: 1rem;}
+            .header-logo { width: 48px; height: 48px; }
+        }
+        @media (max-width: 400px) {
+            .container { padding: 10px 2vw; }
+            .header-title { font-size: 1.03rem; }
+        }
+        /* Retour accueil bouton */
+        .btn-retour-bas {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .btn-retour-bas:hover {
+            background: linear-gradient(to right, #e64600, #ff8033);
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4);
+        }
+        @media screen and (max-width: 480px) {
+            .btn-retour-bas {
+              font-size: 14px;
+              padding: 12px 24px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        🚀 Panel Fournisseur - Commandes en Direct
+    <!-- Bokeh blobs -->
+    <div class="bokeh-bg">
+        <div class="bokeh bokeh1"></div>
+        <div class="bokeh bokeh2"></div>
+        <div class="bokeh bokeh3"></div>
     </div>
-    
-    <div class="container" id="main-container">
-        <div style="text-align: center; padding: 60px; color: rgba(255,255,255,0.8); font-size: 18px;">
-            ⏳ Chargement des commandes...
+    <div class="container">
+        <div class="header">
+            <img src="image/groupe ex.jpg" alt="Logo KoLo Express" class="header-logo">
+            <div class="header-title">GROUPE EXPRESS</div>
+        </div>
+        <p class="subtitle">
+            GROUPE Express, accès reservé aux fournisseurs veillez vous retourner a la page d'acceil
+        </p>
+        <div class="establishment-buttons">
+            <button class="btn btn-heges" onclick="accessSupplier('hegesfournisseur.html')">
+                🏫 HEGES
+            </button>
+            <button class="btn btn-ifsm" onclick="accessSupplier('isfmfournisseur.html')">
+                🎓 IFSM
+            </button>
+            <button class="btn btn-utt" onclick="accessSupplier('uttfournisseur.html')">
+                🏛️ UTT LOKO
+            </button>
+        </div>
+        <div class="footer">
+            Sélectionnez un établissement pour continuer
         </div>
     </div>
-
-    <!-- Modal pour les détails de commande -->
-    <div id="order-details-modal">
-        <div id="order-details-content">
-            <button class="close-btn" onclick="hideOrderDetails()">×</button>
-            <div id="order-details-body"></div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
-            authDomain: "kolo-livraison.firebaseapp.com",
-            databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
-            projectId: "kolo-livraison",
-            storageBucket: "kolo-livraison.firebasestorage.app",
-            messagingSenderId: "78667636312",
-            appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-            measurementId: "G-R79LC3XQL4"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        function getOrganization(customerName, location, details) {
-            const fullText = `${customerName} ${location} ${details}`.toLowerCase();
-            if (fullText.includes('heges') || fullText.includes('hèges')) {
-                return 'heges';
+    <a href="index.html" class="btn-retour-bas">⬅ Retour à l'accueil</a>
+    <script>
+        function accessSupplier(destination) {
+            const code = prompt("Veuillez entrer le code d'accès fournisseur :");
+            if (code === "express200@") {
+                // Effet de fondu de sortie
+                document.querySelector('.container').style.opacity = '0';
+                document.querySelector('.container').style.transform = 'translateY(-20px) scale(0.95)';
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 350);
+            } else if (code !== null) {
+                alert("Code incorrect !");
             }
-            if (fullText.includes('ifsm')) {
-                return 'ifsm';
-            }
-            if (fullText.includes('utt') && fullText.includes('loko')) {
-                return 'utt-loko';
-            }
-            return 'autres';
         }
-
-        function getOrganizationConfig(org) {
-            const configs = {
-                'heges': {
-                    name: '🏛️ HEGES',
-                    class: 'org-heges'
-                },
-                'ifsm': {
-                    name: '🏥 IFSM',
-                    class: 'org-ifsm'
-                },
-                'utt-loko': {
-                    name: '🎓 UTT LOKO',
-                    class: 'org-utt-loko'
-                },
-                'autres': {
-                    name: '📋 AUTRES',
-                    class: 'org-autres'
-                }
-            };
-            return configs[org] || configs['autres'];
-        }
-
-        function statusLabel(status) {
-            if (status === 'livré') return '<span class="status status-livre">Livré</span>';
-            if (status === 'en_cours') return '<span class="status status-en_cours">En cours</span>';
-            return '<span class="status status-nouveau">Nouveau</span>';
-        }
-
-        // Detect if mobile
-        function isMobile() {
-            return window.innerWidth < 768;
-        }
-
-        // Pour stocker les commandes en mémoire pour accès rapide
-        let latestOrders = {};
-
-        function renderOrdersGrouped(orders) {
-            const container = document.getElementById('main-container');
-            container.innerHTML = '';
-            
-            if (Object.keys(orders).length === 0) {
-                container.innerHTML = '<div class="empty-state">Aucune commande trouvée pour le moment</div>';
-                return;
-            }
-
-            // Grouper les commandes par organisation
-            const groupedOrders = {};
-            Object.values(orders).forEach(order => {
-                const org = getOrganization(
-                    order.customer?.name || '', 
-                    order.customer?.location || '', 
-                    order.customer?.details || ''
-                );
-                if (!groupedOrders[org]) {
-                    groupedOrders[org] = [];
-                }
-                groupedOrders[org].push(order);
-            });
-
-            // Ordre d'affichage des organisations
-            const orgOrder = ['heges', 'ifsm', 'utt-loko', 'autres'];
-            
-            orgOrder.forEach(org => {
-                if (!groupedOrders[org] || groupedOrders[org].length === 0) return;
-                
-                const config = getOrganizationConfig(org);
-                const orgDiv = document.createElement('div');
-                orgDiv.className = 'organization-group';
-                
-                // Trier les commandes par date (plus récentes en premier)
-                const sortedOrders = groupedOrders[org].sort((a, b) => 
-                    (b.timestamp || '').localeCompare(a.timestamp || '')
-                );
-                
-                if (isMobile()) {
-                    // Mobile card layout
-                    orgDiv.innerHTML = `
-                        <div class="organization-header ${config.class}">
-                            ${config.name}
-                            <span class="orders-count">${sortedOrders.length} commande${sortedOrders.length > 1 ? 's' : ''}</span>
-                        </div>
-                        <div class="mobile-orders">
-                            ${sortedOrders.map(order => {
-                                const items = (order.items || []).map(i => i.name).join(', ');
-                                const date = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : '';
-                                return `
-                                    <div class="order-card">
-                                        <div class="order-card-header">
-                                            <div class="order-code">${order.code || ""}</div>
-                                            <div class="order-date">${date}</div>
-                                        </div>
-                                        
-                                        ${statusLabel(order.status)}
-                                        
-                                        <div class="order-info">
-                                            <div class="order-info-row">
-                                                <div class="order-info-label">Client:</div>
-                                                <div class="order-info-value">${order.customer?.name || ''}</div>
-                                            </div>
-                                            <div class="order-info-row">
-                                                <div class="order-info-label">Tél:</div>
-                                                <div class="order-info-value">${order.customer?.phone || ''}</div>
-                                            </div>
-                                            <div class="order-info-row">
-                                                <div class="order-info-label">Lieu:</div>
-                                                <div class="order-info-value">${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</div>
-                                            </div>
-                                            <div class="order-info-row">
-                                                <div class="order-info-label">Articles:</div>
-                                                <div class="order-info-value">${items}</div>
-                                            </div>
-                                            <div class="order-info-row">
-                                                <div class="order-info-label">Total:</div>
-                                                <div class="order-info-value order-total">${order.total ? order.total + ' FCFA' : ''}</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mobile-actions">
-                                            <button class="btn-update btn-details" onclick="showOrderDetails('${order.id}')">📋 Voir Détails</button>
-                                            <button class="btn-update btn-progress" onclick="updateOrderStatus('${order.id}','en_cours')">🚀 Marquer En Cours</button>
-                                            <button class="btn-update btn-delivered" onclick="updateOrderStatus('${order.id}','livré')">✅ Marquer Livré</button>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    `;
-                } else {
-                    // Desktop table layout
-                    orgDiv.innerHTML = `
-                        <div class="organization-header ${config.class}">
-                            ${config.name}
-                            <span class="orders-count">${sortedOrders.length} commande${sortedOrders.length > 1 ? 's' : ''}</span>
-                        </div>
-                        <table class="commands-table">
-                            <thead>
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Client</th>
-                                    <th>Téléphone</th>
-                                    <th>Lieu</th>
-                                    <th>Articles</th>
-                                    <th>Total</th>
-                                    <th>Date/Heure</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${sortedOrders.map(order => {
-                                    const items = (order.items || []).map(i => i.name).join(', ');
-                                    const date = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : '';
-                                    return `
-                                        <tr>
-                                            <td class="code">${order.code || ""}</td>
-                                            <td>${order.customer?.name || ''}</td>
-                                            <td>${order.customer?.phone || ''}</td>
-                                            <td>${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</td>
-                                            <td>${items}</td>
-                                            <td><strong>${order.total ? order.total + ' FCFA' : ''}</strong></td>
-                                            <td>${date}</td>
-                                            <td>${statusLabel(order.status)}</td>
-                                            <td>
-                                                <button class="btn-update" onclick="showOrderDetails('${order.id}')">Détails</button>
-                                                <button class="btn-update" onclick="updateOrderStatus('${order.id}','en_cours')">En cours</button>
-                                                <button class="btn-update" onclick="updateOrderStatus('${order.id}','livré')">Livré</button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                }
-                
-                container.appendChild(orgDiv);
-            });
-        }
-
-        // Expose to window for button onclick
-        window.updateOrderStatus = function(orderId, newStatus) {
-            if (!orderId) return;
-            const orderRef = ref(database, 'orders/' + orderId);
-            update(orderRef, { status: newStatus })
-                .then(() => {
-                    // Animation de succès
-                    const notification = document.createElement('div');
-                    notification.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: linear-gradient(135deg, #00b894, #00cec9);
-                        color: white;
-                        padding: 15px 25px;
-                        border-radius: 12px;
-                        font-weight: 600;
-                        z-index: 1000;
-                        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
-                        transform: translateX(100%);
-                        transition: transform 0.3s ease;
-                    `;
-                    notification.textContent = '✓ Statut mis à jour avec succès!';
-                    document.body.appendChild(notification);
-                    
-                    setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-                    setTimeout(() => {
-                        notification.style.transform = 'translateX(100%)';
-                        setTimeout(() => document.body.removeChild(notification), 300);
-                    }, 3000);
-                })
-                .catch(e => alert('Erreur: ' + e.message));
-        };
-
-        // Détails commande modal
-        window.showOrderDetails = function(orderId) {
-            const order = latestOrders[orderId];
-            if (!order) return alert("Commande introuvable !");
-            const items = (order.items || []).map(i => `<li>${i.name} (${i.qty || 1})</li>`).join('');
-            const html = `
-                <h2>Commande ${order.code || ''}</h2>
-                <p><strong>Client :</strong> ${order.customer?.name || ''}</p>
-                <p><strong>Téléphone :</strong> ${order.customer?.phone || ''}</p>
-                <p><strong>Lieu :</strong> ${order.customer?.location || ''}${order.customer?.details ? ' (' + order.customer.details + ')' : ''}</p>
-                <p><strong>Articles :</strong></p>
-                <ul>${items}</ul>
-                <p><strong>Total :</strong> ${order.total ? order.total + ' FCFA' : ''}</p>
-                <p><strong>Date :</strong> ${order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : ''}</p>
-                <p><strong>Status :</strong> ${order.status || ''}</p>
-            `;
-            document.getElementById('order-details-body').innerHTML = html;
-            document.getElementById('order-details-modal').classList.add('active');
-        };
-
-        window.hideOrderDetails = function() {
-            document.getElementById('order-details-modal').classList.remove('active');
-        };
-
-        // Fermer la modale si on clique en dehors
-        document.getElementById('order-details-modal').addEventListener('click', function(e) {
-            if (e.target === this) hideOrderDetails();
+        // Parallaxe subtil
+        document.addEventListener('mousemove', (e) => {
+            const container = document.querySelector('.container');
+            const x = (e.clientX / window.innerWidth) * 2 - 1;
+            const y = (e.clientY / window.innerHeight) * 2 - 1;
+            container.style.transform = `translate(${x * 3}px, ${y * 3}px)`;
         });
-
-        // Re-render on window resize
-        window.addEventListener('resize', () => {
-            if (Object.keys(latestOrders).length > 0) {
-                renderOrdersGrouped(latestOrders);
-            }
-        });
-
-        function listenOrders() {
-            const ordersRef = ref(database, 'orders');
-            onValue(ordersRef, (snapshot) => {
-                const orders = {};
-                snapshot.forEach(child => {
-                    orders[child.key] = { id: child.key, ...child.val() };
-                });
-                latestOrders = orders;
-                renderOrdersGrouped(orders);
-            });
-        }
-
-        listenOrders();
     </script>
 </body>
 </html>
