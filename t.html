@@ -1199,7 +1199,7 @@
         <div class="customer-orders-list" id="customer-orders-list"></div>
         <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
     </div>
-      <script type="module">
+        <script type="module">
     // Firebase init (comme dans ton code)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
@@ -1234,6 +1234,27 @@ window.sendMarcioComment = function(message, userProfile) {
         timestamp: new Date().toISOString()
     };
     return set(newCommentRef, commentObj);
+};
+
+// --- FONCTION POUR ENVOYER UNE COMMANDE ---
+window.submitOrder = function(order) {
+    const orderRef = ref(db, 'orders');
+    const newOrderRef = push(orderRef);
+    order.timestamp = new Date().toISOString();
+    order.status = "nouveau";
+    set(newOrderRef, order)
+        .then(() => {
+            alert('Votre commande a été envoyée avec succès! Un livreur vous contactera bientôt.');
+            cart = [];
+            updateCart();
+            document.getElementById('order-form').reset();
+            addCustomerOrderToList(order);
+            showCustomerOrdersBox();
+            window.location.href = ""; // recharge la page
+        })
+        .catch((error) => {
+            alert('Erreur: ' + error.message);
+        });
 };
     </script>
     
