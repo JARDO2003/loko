@@ -5,128 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Express Exchange - Réseau Social Étudiant</title>
   <style>
-    /* --- Ton CSS habituel (voir messages précédents) --- */
-    body {
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-      min-height: 100vh;
-      color: #222;
-      overflow-x: hidden;
-    }
-    .video-background {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
-    }
-    .video-background video {
-      width: 100%; height: 100%; object-fit: cover; opacity: 0.7;
-    }
-    .video-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.6) 100%);
-      z-index: -1;
-    }
-    .particles {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: -1;
-    }
-    .particle {
-      position: absolute; width: 4px; height: 4px; background: rgba(255,255,255,0.6);
-      border-radius: 50%; animation: float 6s infinite ease-in-out;
-    }
-    @keyframes float {
-      0%,100% { transform: translateY(0) rotate(0deg); opacity: 0; }
-      50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
-    }
-    .registration-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000;
-      backdrop-filter: blur(10px);
-    }
-    .registration-form {
-      background: rgba(255,255,255,0.95); padding: 40px; border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 400px; width: 90%;
-      text-align: center; backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .registration-form h2 { color: #764ba2; margin-bottom: 10px; font-size: 1.8em; }
-    .registration-form p { color: #666; margin-bottom: 30px; }
-    .form-group { margin-bottom: 20px; text-align: left; }
-    .form-group label { display: block; margin-bottom: 5px; color: #333; font-weight: 600; }
-    .form-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px;
-      font-size: 16px; transition: border-color 0.3s; background: rgba(255,255,255,0.9); }
-    .form-group input:focus { outline: none; border-color: #667eea; background: rgba(255,255,255,1);}
-    .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
-      cursor: pointer; transition: transform 0.3s;}
-    .submit-btn:hover { transform: translateY(-2px);}
-    .main-app { display: none; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px;}
-    .header { text-align: center; color: #fff; margin-bottom: 30px;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.3);}
-    .header h1 { font-size: 2.5em; margin-bottom: 10px; letter-spacing: 0.03em;}
-    .user-info { background: rgba(255,255,255,0.15); padding: 10px 20px; border-radius: 25px;
-      margin-bottom: 20px; text-align: center; color: white; backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);}
-    .status-indicator { display: inline-block; padding: 5px 15px; border-radius: 15px; font-size: 14px; margin-left: 10px;}
-    .status-connected { background: rgba(34,197,94,0.2); color: #22c55e;}
-    .status-disconnected { background: rgba(239,68,68,0.2); color: #ef4444;}
-    .post-form { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 20px;
-      margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);}
-    .post-textarea { width: 100%; min-height: 100px; padding: 15px; border: 2px solid #eee; border-radius: 10px;
-      font-size: 16px; resize: vertical; font-family: inherit; background: rgba(255,255,255,0.9);}
-    .post-textarea:focus {outline:none; border-color:#667eea; background:rgba(255,255,255,1);}
-    .file-input-wrapper { margin: 15px 0;}
-    .file-input { display: none;}
-    .file-input-label { display: inline-block; padding: 10px 20px; background: rgba(240,240,240,0.9);
-      border-radius: 25px; cursor: pointer; transition: background 0.3s;}
-    .file-input-label:hover {background:rgba(224,224,224,0.9);}
-    .post-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px;}
-    .post-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none;
-      padding: 12px 30px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer;
-      transition: transform 0.3s;}
-    .post-btn:hover { transform: translateY(-2px);}
-    .post-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none;}
-    .feed { display: flex; flex-direction: column; gap: 20px;}
-    .publication { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1); animation: fadeIn 0.5s; backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);}
-    @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);}}
-    .pub-header { display: flex; align-items: center; margin-bottom: 15px;}
-    .pub-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2);
-      display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; margin-right: 10px;}
-    .pub-info { flex: 1;}
-    .pub-username { font-weight: bold; color: #333; margin-bottom: 2px;}
-    .pub-time { color: #666; font-size: 14px;}
-    .pub-text { margin-bottom: 15px; line-height: 1.6; white-space: pre-wrap;}
-    .image-link { cursor: pointer; display: inline-block; max-width: 100%;}
-    .image-link img { max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 1px 8px rgba(0,0,0,0.09); transition: transform 0.2s;}
-    .image-link img:hover { transform: scale(1.04);}
-    .modal-image-view { display: none; position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.92); z-index: 4000; justify-content: center; align-items: center;}
-    .modal-image-view img { max-width: 98vw; max-height: 96vh; border-radius: 12px; box-shadow: 0 2px 32px #0008;}
-    .close-modal-image { position: absolute; top: 24px; right: 40px; color: #fff; font-size: 40px; cursor:pointer; z-index: 4050;}
-    .pub-actions { display: flex; gap: 20px; margin-bottom: 15px; padding: 10px 0; border-top: 1px solid #eee;}
-    .action-btn { background: none; border: none; color: #666; cursor: pointer; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: color 0.3s;}
-    .action-btn:hover { color: #667eea;}
-    .action-btn.liked { color: #e74c3c;}
-    .comments-section { border-top:1px solid #eee; padding-top:15px;}
-    .comment { background: rgba(248,249,250,0.8); padding: 10px 15px; border-radius: 10px; margin-bottom: 10px;}
-    .comment-header { display: flex; align-items: center; margin-bottom: 8px;}
-    .comment-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; margin-right: 8px;}
-    .comment-username { font-weight: bold; color: #333; font-size: 14px;}
-    .comment-time { color: #666; font-size: 12px; margin-left: auto;}
-    .comment-text { font-size: 14px; line-height: 1.4;}
-    .comment-form { display: flex; gap: 10px; margin-top: 10px;}
-    .comment-input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; background: rgba(255,255,255,0.9);}
-    .comment-input:focus { outline: none; border-color: #667eea; background: rgba(255,255,255,1);}
-    .comment-btn { background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px;}
-    .comment-btn:hover { background: #5a67d8;}
-    @media (max-width: 768px) {
-      .container { padding: 10px;}
-      .header h1 { font-size: 2em;}
-      .registration-form { padding: 30px 20px;}
-      .modal-image-view img { max-width:95vw; max-height:95vh;}
-    }
-  </style>
- <style>
     body { font-family: 'Segoe UI',sans-serif; background: #f0f2f5; color: #222; margin:0; }
     .video-background { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-2; overflow:hidden;}
     .video-background video { width:100vw; height:100vh; object-fit:cover; opacity:0.7; }
@@ -161,10 +39,11 @@
     .file-input-label { display:inline-block; padding:7px 20px; background:#f0f0f7; border-radius:20px; cursor:pointer; }
     .file-input-label:hover { background:#e5e5ef; }
     .post-actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
-    .post-btn { background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; border:none; padding:9px 20px; border-radius:18px; font-size:15px; font-weight:500;}
-    .post-btn:disabled { opacity:0.5; cursor:not-allowed;}
+    .post-btn { background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; border:none; padding:9px 20px; border-radius:18px; font-size:15px; font-weight:500; transition:all 0.2s;}
+    .post-btn:disabled { opacity:0.7; cursor:not-allowed; transform:scale(0.98);}
     .feed { display:flex; flex-direction:column; gap:16px;}
-    .publication { background:#fff; border-radius:13px; padding:17px; box-shadow:0 2px 12px #0001;}
+    .publication { background:#fff; border-radius:13px; padding:17px; box-shadow:0 2px 12px #0001; animation:slideIn 0.3s ease-out;}
+    @keyframes slideIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);}}
     .pub-header { display:flex; align-items:center; margin-bottom:10px;}
     .pub-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:16px; margin-right:9px;}
     .pub-info { flex:1;}
@@ -193,79 +72,8 @@
     .comment-input:focus { outline:none; border-color:#667eea;}
     .comment-btn { background:#667eea; color:#fff; border:none; padding:6px 13px; border-radius:16px; font-size:13px;}
     .comment-btn:hover { background:#5a67d8;}
-    @media (max-width:680px) { .container{padding:4px;} .header h1{font-size:1.4em;} .registration-form{padding:18px 4px;} }
-  </style>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Express Exchange - Réseau Social Étudiant</title>
-  <style>
-    body { font-family: 'Segoe UI',sans-serif; background: #f0f2f5; color: #222; margin:0; }
-    .video-background { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-2; overflow:hidden;}
-    .video-background video { width:100vw; height:100vh; object-fit:cover; opacity:0.7; }
-    .video-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-1;
-      background:linear-gradient(135deg,rgba(102,126,234,0.6) 0%,rgba(118,75,162,0.6) 100%);}
-    .particles { position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:0;}
-    .particle { position:absolute; width:4px; height:4px; background:rgba(255,255,255,0.6); border-radius:50%; animation:float 6s infinite ease-in-out;}
-    @keyframes float { 0%,100% {transform:translateY(0) rotate(0); opacity:0;} 50%{transform:translateY(-100px) rotate(180deg); opacity:1;} }
-    .registration-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1000; display:flex; align-items:center; justify-content:center;
-      background:rgba(0,0,0,0.8);}
-    .registration-form { background:rgba(255,255,255,0.97); border-radius:15px; padding:40px; box-shadow:0 8px 40px #0003; min-width:320px; max-width:95vw;}
-    .registration-form h2 { color:#764ba2; margin-bottom:10px; }
-    .form-group { margin-bottom:18px; }
-    .form-group label { font-weight:600; display:block; margin-bottom:5px;}
-    .form-group input { width:100%; padding:10px; border-radius:7px; border:2px solid #ddd; font-size:15px;}
-    .form-group input:focus { outline:none; border-color:#667eea;}
-    .submit-btn { width:100%; padding:12px; border-radius:8px; border:none; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; font-weight:bold; font-size:16px;}
-    .submit-btn:hover { filter:brightness(1.1);}
-    .main-app { display:none;}
-    .container { max-width:580px; margin:0 auto; background:none; padding:18px;}
-    .header { text-align:center; color:#fff; margin-bottom:18px; text-shadow:0 2px 10px #0003;}
-    .header h1 { font-size:2.2em; margin-bottom:8px;}
-    .user-info { background:rgba(255,255,255,0.13); padding:7px 18px; border-radius:20px; color:#fff; margin-bottom:20px; display:inline-block;}
-    .status-indicator { margin-left:10px; border-radius:12px; padding:2px 12px; font-size:13px;}
-    .status-connected { background:rgba(34,197,94,0.15); color:#22c55e;}
-    .status-disconnected { background:rgba(239,68,68,0.16); color:#ef4444;}
-    .post-form { background:rgba(255,255,255,0.99); border-radius:13px; padding:18px; margin-bottom:18px; box-shadow:0 3px 14px #0001;}
-    .post-textarea { width:100%; min-height:70px; padding:11px; border:2px solid #eee; border-radius:8px; font-size:15px; background:#fcfcfe;}
-    .post-textarea:focus { outline:none; border-color:#667eea;}
-    .file-input-wrapper { margin:11px 0;}
-    .file-input { display:none;}
-    .file-input-label { display:inline-block; padding:7px 20px; background:#f0f0f7; border-radius:20px; cursor:pointer; }
-    .file-input-label:hover { background:#e5e5ef; }
-    .post-actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
-    .post-btn { background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; border:none; padding:9px 20px; border-radius:18px; font-size:15px; font-weight:500;}
-    .post-btn:disabled { opacity:0.5; cursor:not-allowed;}
-    .feed { display:flex; flex-direction:column; gap:16px;}
-    .publication { background:#fff; border-radius:13px; padding:17px; box-shadow:0 2px 12px #0001;}
-    .pub-header { display:flex; align-items:center; margin-bottom:10px;}
-    .pub-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:16px; margin-right:9px;}
-    .pub-info { flex:1;}
-    .pub-username { font-weight:bold; color:#333;}
-    .pub-time { color:#666; font-size:13px;}
-    .pub-text { margin-bottom:11px; white-space:pre-wrap; }
-    .image-link { cursor:pointer; display:inline-block; max-width:100%; margin-bottom:12px;}
-    .image-link img { max-width:100%; max-height:270px; border-radius:7px; box-shadow:0 1px 6px #0002; transition:transform 0.18s;}
-    .image-link img:hover { transform:scale(1.04);}
-    .modal-image-view { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.90); z-index:4000; justify-content:center; align-items:center;}
-    .modal-image-view img { max-width:98vw; max-height:96vh; border-radius:12px; box-shadow:0 2px 32px #0008;}
-    .close-modal-image { position:absolute; top:24px; right:40px; color:#fff; font-size:40px; cursor:pointer; z-index:4050;}
-    .pub-actions { display:flex; gap:16px; margin-bottom:11px; padding:7px 0; border-top:1px solid #eee;}
-    .action-btn { background:none; border:none; color:#666; cursor:pointer; font-size:15px; display:flex; align-items:center; gap:6px;}
-    .action-btn:hover { color:#667eea;}
-    .action-btn.liked { color:#e74c3c;}
-    .comments-section { border-top:1px solid #eee; padding-top:10px;}
-    .comment { background:#f7f7fb; padding:8px 14px; border-radius:8px; margin-bottom:7px;}
-    .comment-header { display:flex; align-items:center; margin-bottom:4px;}
-    .comment-avatar { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg, #667eea, #764ba2); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:12px; margin-right:8px;}
-    .comment-username { font-weight:bold; color:#333; font-size:13px;}
-    .comment-time { color:#666; font-size:11px; margin-left:auto;}
-    .comment-text { font-size:13px;}
-    .comment-form { display:flex; gap:8px; margin-top:7px;}
-    .comment-input { flex:1; padding:7px 12px; border:1px solid #ddd; border-radius:17px; font-size:13px; background:#fff;}
-    .comment-input:focus { outline:none; border-color:#667eea;}
-    .comment-btn { background:#667eea; color:#fff; border:none; padding:6px 13px; border-radius:16px; font-size:13px;}
-    .comment-btn:hover { background:#5a67d8;}
+    .processing-indicator { position:absolute; top:10px; right:10px; background:rgba(102,126,234,0.1); color:#667eea; padding:4px 8px; border-radius:12px; font-size:11px; opacity:0; transition:opacity 0.3s;}
+    .processing-indicator.show { opacity:1;}
     @media (max-width:680px) { .container{padding:4px;} .header h1{font-size:1.4em;} .registration-form{padding:18px 4px;} }
   </style>
 </head>
@@ -291,11 +99,13 @@
   </div>
   <div class="video-overlay"></div>
   <div class="particles" id="particles"></div>
+
   <!-- Modal image agrandie -->
   <div class="modal-image-view" id="modalImageView">
     <span class="close-modal-image" onclick="closeImageModal()">&times;</span>
     <img id="modalImageBig" src="" alt="Image publication">
   </div>
+
   <!-- Formulaire d'inscription -->
   <div class="registration-overlay" id="registrationOverlay">
     <div class="registration-form">
@@ -318,6 +128,7 @@
       </form>
     </div>
   </div>
+
   <!-- Interface principale -->
   <div class="main-app" id="mainApp">
     <div class="container">
@@ -328,7 +139,8 @@
           <span class="status-indicator" id="statusIndicator">🔄 Connexion...</span>
         </div>
       </div>
-      <div class="post-form">
+      <div class="post-form" style="position:relative;">
+        <div class="processing-indicator" id="processingIndicator">🔄 Optimisation...</div>
         <textarea class="post-textarea" id="postText" placeholder="Que voulez-vous partager ?"></textarea>
         <div class="file-input-wrapper">
           <input type="file" id="fileInput" class="file-input" accept="image/*">
@@ -345,7 +157,8 @@
       <div class="feed" id="feed"></div>
     </div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 <script>
   // --- CONFIG FIREBASE ---
@@ -366,6 +179,7 @@
   let posts = [];
   let postsListener = null;
   let isConnected = false;
+  let processingQueue = new Map(); // Queue pour les traitements en arrière-plan
 
   // Nettoyage de tous les undefined dans les objets envoyés à Firebase
   function removeUndefinedDeep(obj) {
@@ -412,38 +226,47 @@
     }, 60000);
   });
 
-  // Compression ULTRA RAPIDE - version minimale
-  function quickResize(file, callback) {
+  // ========= COMPRESSION ULTRA-RAPIDE EN ARRIÈRE-PLAN =========
+  function ultraFastCompress(file, callback) {
     const reader = new FileReader();
     reader.onload = function(event) {
       const img = new Image();
       img.onload = function() {
-        let { width, height } = img;
-        
-        // Réduction agressive mais rapide
-        const maxSize = 400; // Très petit pour être rapide
-        if (width > maxSize || height > maxSize) {
-          const ratio = Math.min(maxSize / width, maxSize / height);
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
-        }
+        // Utilisation de requestAnimationFrame pour éviter de bloquer l'UI
+        requestAnimationFrame(() => {
+          let { width, height } = img;
+          
+          // Compression agressive pour la rapidité
+          const maxSize = 600;
+          if (width > maxSize || height > maxSize) {
+            const ratio = Math.min(maxSize / width, maxSize / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
 
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        
-        // Pas de lissage pour plus de rapidité
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // Compression unique à 70% - pas de boucle
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        callback(dataUrl);
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          
+          // Désactivation du lissage pour plus de rapidité
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compression optimale
+          const compressedUrl = canvas.toDataURL('image/jpeg', 0.8);
+          callback(compressedUrl);
+        });
       };
       img.src = event.target.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  function showProcessingIndicator() {
+    const indicator = document.getElementById('processingIndicator');
+    indicator.classList.add('show');
+    setTimeout(() => indicator.classList.remove('show'), 2000);
   }
 
   document.getElementById('registrationForm').addEventListener('submit', function(e) {
@@ -488,7 +311,7 @@
     });
   }
 
-  // PUBLICATION INSTANTANÉE - Affiche l'image originale immédiatement
+  // ========= PUBLICATION INSTANTANÉE OPTIMISÉE =========
   document.getElementById('publishBtn').addEventListener('click', function() {
     const text = document.getElementById('postText').value.trim();
     const fileInput = document.getElementById('fileInput');
@@ -504,51 +327,56 @@
       return;
     }
 
+    // Animation du bouton (feedback instantané)
     publishBtn.disabled = true;
-    publishBtn.textContent = 'Publication...';
+    publishBtn.style.transform = 'scale(0.95)';
+    setTimeout(() => publishBtn.style.transform = 'scale(1)', 100);
 
     const postId = Date.now().toString();
     const file = fileInput.files[0];
     
-    // Si il y a une image, on l'affiche IMMÉDIATEMENT sans traitement
     if (file) {
+      // Lecture instantanée du fichier pour affichage immédiat
       const reader = new FileReader();
       reader.onload = function(event) {
         const originalImageUrl = event.target.result;
         
-        // Création du post avec l'image originale
+        // ✨ PUBLICATION INSTANTANÉE ✨
         const post = {
           id: postId,
           author: userData.fullName,
           authorId: userData.id,
           avatar: userData.avatar,
           text: text,
-          imageUrl: originalImageUrl, // Image originale non compressée
+          imageUrl: originalImageUrl,
           timestamp: new Date().toISOString()
         };
 
-        // Sauvegarde IMMÉDIATE avec l'image originale
-        database.ref('posts/' + postId).set(removeUndefinedDeep(post))
-          .then(() => {
-            clearPostForm();
-            resetPublishButton();
+        // Ajout instantané au feed local (0ms)
+        posts.unshift(post);
+        renderPosts();
+        clearPostForm();
+        resetPublishButton();
+
+        // Sauvegarde Firebase en parallèle (non-bloquant)
+        database.ref('posts/' + postId).set(removeUndefinedDeep(post));
+
+        // 🔄 COMPRESSION EN ARRIÈRE-PLAN (invisible)
+        showProcessingIndicator();
+        setTimeout(() => {
+          ultraFastCompress(file, function(compressedUrl) {
+            // Mise à jour silencieuse avec l'image optimisée
+            database.ref('posts/' + postId + '/imageUrl').set(compressedUrl);
             
-            // Compression en arrière-plan (optionnelle)
-            setTimeout(() => {
-              quickResize(file, function(compressedUrl) {
-                // Mise à jour discrète avec l'image compressée
-                database.ref('posts/' + postId + '/imageUrl').set(compressedUrl);
-              });
-            }, 100);
-          })
-          .catch(() => {
-            alert('Erreur lors de la publication.');
-            resetPublishButton();
+            // Mise à jour locale discrète
+            const localPost = posts.find(p => p.id === postId);
+            if (localPost) localPost.imageUrl = compressedUrl;
           });
+        }, 50); // Délai minimal pour ne pas bloquer l'UI
       };
       reader.readAsDataURL(file);
     } else {
-      // Pas d'image, publication immédiate
+      // Publication texte seul - INSTANTANÉ
       const post = {
         id: postId,
         author: userData.fullName,
@@ -559,15 +387,14 @@
         timestamp: new Date().toISOString()
       };
 
-      database.ref('posts/' + postId).set(removeUndefinedDeep(post))
-        .then(() => {
-          clearPostForm();
-          resetPublishButton();
-        })
-        .catch(() => {
-          alert('Erreur lors de la publication.');
-          resetPublishButton();
-        });
+      // Ajout instantané au feed
+      posts.unshift(post);
+      renderPosts();
+      clearPostForm();
+      resetPublishButton();
+
+      // Sauvegarde Firebase (non-bloquant)
+      database.ref('posts/' + postId).set(removeUndefinedDeep(post));
     }
   });
 
@@ -575,6 +402,7 @@
     const publishBtn = document.getElementById('publishBtn');
     publishBtn.disabled = false;
     publishBtn.textContent = 'Publier';
+    publishBtn.style.transform = 'scale(1)';
   }
 
   document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -584,6 +412,7 @@
     
     if (file) {
       fileName.textContent = file.name;
+      // Prévisualisation instantanée
       const reader = new FileReader();
       reader.onload = function(event) {
         preview.innerHTML = `<img src="${event.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px;">`;
@@ -622,35 +451,70 @@
     if(e.key === 'Escape'){ closeImageModal(); }
   });
 
-  // --- Likes et commentaires synchronisés dans une autre branche ---
+  // --- Likes et commentaires avec mises à jour instantanées ---
   function listenLikesAndComments(postId) {
-    // Likes
     database.ref('likes/' + postId).on('value', snap => {
       const likes = snap.val() || {};
       const cleanedLikes = removeUndefinedDeep(likes);
       const post = posts.find(p => p.id === postId);
       if (post) {
         post.likes = cleanedLikes;
-        renderPosts();
+        // Mise à jour instantanée de l'UI
+        updateLikeButton(postId, cleanedLikes);
       }
     });
-    // Comments
+
     database.ref('comments/' + postId).on('value', snap => {
       const comments = snap.val() || {};
       const cleanedComments = removeUndefinedDeep(comments);
       const post = posts.find(p => p.id === postId);
       if (post) {
         post.comments = cleanedComments;
-        renderPosts();
+        updateCommentsSection(postId, cleanedComments);
       }
     });
+  }
+
+  function updateLikeButton(postId, likes) {
+    const btn = document.getElementById('like-btn-' + postId);
+    if (btn) {
+      const likesCount = Object.keys(likes).length;
+      const isLiked = likes[userData.id];
+      btn.innerHTML = `${isLiked ? '❤️' : '🤍'} ${likesCount}`;
+      btn.className = `action-btn ${isLiked ? 'liked' : ''}`;
+    }
+  }
+
+  function updateCommentsSection(postId, comments) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (commentsSection) {
+      const commentsList = Object.values(comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      const commentsHTML = commentsList.map(comment => `
+        <div class="comment">
+          <div class="comment-header">
+            <div class="comment-avatar">${comment.avatar}</div>
+            <div class="comment-username">${comment.author}</div>
+            <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
+          </div>
+          <div class="comment-text">${comment.text}</div>
+        </div>
+      `).join('');
+      
+      const commentForm = commentsSection.querySelector('.comment-form');
+      commentsSection.innerHTML = commentsHTML + commentForm.outerHTML;
+      
+      // Mise à jour du compteur
+      const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"]`);
+      if (commentBtn) {
+        commentBtn.innerHTML = `💬 ${Object.keys(comments).length}`;
+      }
+    }
   }
 
   function renderPosts() {
     const feed = document.getElementById('feed');
     feed.innerHTML = '';
     posts.forEach(post => {
-      // Pour chaque post, écoute likes/comments en temps réel si pas déjà fait
       if (!post._listeners) {
         listenLikesAndComments(post.id);
         post._listeners = true;
@@ -718,23 +582,41 @@
     });
   }
 
-  // --- Likes et commentaires : MAJ instantanée, synchro branchée ---
+  // ========= INTERACTIONS INSTANTANÉES =========
   window.toggleLike = function(postId) {
     const btn = document.getElementById('like-btn-' + postId);
-    if (btn) btn.disabled = true;
+    const post = posts.find(p => p.id === postId);
+    
+    if (!post) return;
+    
+    // Mise à jour instantanée de l'UI
+    if (!post.likes) post.likes = {};
+    const isCurrentlyLiked = post.likes[userData.id];
+    
+    if (isCurrentlyLiked) {
+      delete post.likes[userData.id];
+    } else {
+      post.likes[userData.id] = {
+        userId: userData.id,
+        username: userData.fullName,
+        timestamp: new Date().toISOString()
+      };
+    }
+    
+    // Mise à jour immédiate du bouton
+    updateLikeButton(postId, post.likes);
+    
+    // Synchronisation Firebase en arrière-plan
     const likeRef = database.ref('likes/' + postId + '/' + userData.id);
-    likeRef.once('value').then(snapshot => {
-      if (snapshot.exists()) {
-        likeRef.remove();
-      } else {
-        likeRef.set(removeUndefinedDeep({
-          userId: userData.id,
-          username: userData.fullName,
-          timestamp: new Date().toISOString()
-        }));
-      }
-      if (btn) btn.disabled = false;
-    });
+    if (isCurrentlyLiked) {
+      likeRef.remove();
+    } else {
+      likeRef.set(removeUndefinedDeep({
+        userId: userData.id,
+        username: userData.fullName,
+        timestamp: new Date().toISOString()
+      }));
+    }
   };
 
   window.toggleComments = function(postId) {
@@ -746,18 +628,30 @@
     const input = document.getElementById(`comment-input-${postId}`);
     const commentText = input.value.trim();
     if (!commentText) return;
-    const commentsRef = database.ref('comments/' + postId);
-    const commentId = commentsRef.push().key;
-    const comment = removeUndefinedDeep({
+    
+    const commentId = Date.now().toString();
+    const comment = {
       id: commentId,
       author: userData.fullName,
       authorId: userData.id,
       avatar: userData.avatar,
       text: commentText,
       timestamp: new Date().toISOString()
-    });
-    commentsRef.child(commentId).set(comment);
+    };
+    
+    // Ajout instantané au post local
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      if (!post.comments) post.comments = {};
+      post.comments[commentId] = comment;
+      updateCommentsSection(postId, post.comments);
+    }
+    
+    // Vider le champ immédiatement
     input.value = '';
+    
+    // Synchronisation Firebase en arrière-plan
+    database.ref('comments/' + postId + '/' + commentId).set(removeUndefinedDeep(comment));
   };
 
   document.addEventListener('keydown', function(e) {
@@ -805,6 +699,7 @@
     }
   });
 
+  // ========= GESTION DES PUBLICATIONS PERSONNELLES =========
   document.getElementById('showMyPostsBtn').addEventListener('click', function() {
     showMyPostsModal();
   });
@@ -847,15 +742,52 @@
 
   window.deleteMyPost = function(postId) {
     if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) return;
-    // Supprime le post, les likes et les commentaires associés
+    
+    // Suppression instantanée du feed local
+    posts = posts.filter(post => post.id !== postId);
+    renderPosts();
+    showMyPostsModal(); // Refresh la liste
+    
+    // Suppression Firebase en arrière-plan
     const updates = {};
     updates['/posts/' + postId] = null;
     updates['/likes/' + postId] = null;
     updates['/comments/' + postId] = null;
     firebase.database().ref().update(updates)
-      .then(() => {
-        showMyPostsModal(); // refresh la liste
-      })
-      .catch(() => alert("Erreur lors de la suppression."));
+      .catch(() => {
+        alert("Erreur lors de la suppression. La publication pourrait réapparaître.");
+        // En cas d'erreur, recharger depuis Firebase
+        loadPosts();
+      });
   };
+
+  // ========= OPTIMISATIONS PERFORMANCES =========
+  
+  // Debounce pour éviter trop de rendus
+  let renderTimeout;
+  function debouncedRender() {
+    if (renderTimeout) clearTimeout(renderTimeout);
+    renderTimeout = setTimeout(renderPosts, 100);
+  }
+  
+  // Préchargement des images pour une navigation fluide
+  function preloadImages() {
+    posts.forEach(post => {
+      if (post.imageUrl) {
+        const img = new Image();
+        img.src = post.imageUrl;
+      }
+    });
+  }
+  
+  // Appel du préchargement après le rendu
+  setTimeout(preloadImages, 1000);
+  
+  // Optimisation mémoire - nettoyage des listeners inutiles
+  window.addEventListener('beforeunload', function() {
+    if (postsListener) postsListener.off();
+  });
+
 </script>
+</body>
+</html>
