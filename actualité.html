@@ -241,22 +241,258 @@
             transform: none;
         }
 
-        .upload-progress {
+        .optimistic-post {
+            border-left: 4px solid #28a745;
+            background: rgba(40, 167, 69, 0.02);
+        }
+
+        .optimistic-indicator {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .optimization-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .opt-badge {
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-error-notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            border: 1px solid #ffeaa7;
+        }
+
+        .image-processing {
+            margin-bottom: 1rem;
+        }
+
+        .processing-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .processing-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-status {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .processing-progress {
             width: 100%;
-            height: 8px;
+            height: 6px;
             background: #e9ecef;
-            border-radius: 4px;
-            margin-top: 1rem;
+            border-radius: 3px;
             overflow: hidden;
+            margin: 0 auto;
+            max-width: 200px;
+        }
+
+        .processing-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .optimistic-post .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+
+        .optimistic-post .comment-form {
             display: none;
         }
 
-        .upload-progress-bar {
+        /* Animation douce pour le remplacement d'image */
+        .image-link img {
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+
+        /* Style pour les images en cours d'optimisation */
+        .image-link img[style*="brightness"] {
+            position: relative;
+        }
+
+        /* Responsive optimizations */
+        @media (max-width: 768px) {
+            #mainApp {
+                padding: 0.5rem;
+            }
+            
+            .compose-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .publish-btn {
+                width: 100%;
+            }
+
+            .optimization-indicator {
+                top: 5px;
+                right: 5px;
+            }
+
+            .opt-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
+
+        /* Animation de pulsation pour l'indicateur d'optimisation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .opt-badge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Style pour l'aperçu des fichiers dans le formulaire */
+        #mediaPreview {
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #mediaPreview img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease;
+        }
+
+        #mediaPreview img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Amélioration de l'UX pour les formulaires */
+        .form-group input:focus,
+        .compose-textarea:focus,
+        .comment-input:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        /* Style pour les boutons en état de chargement */
+        .publish-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .publish-btn.loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .processing-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-status {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .processing-progress {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0 auto;
+            max-width: 200px;
+        }
+
+        .processing-progress-bar {
             height: 100%;
             background: linear-gradient(90deg, #28a745, #20c997);
-            border-radius: 4px;
+            border-radius: 3px;
             transition: width 0.3s ease;
             width: 0%;
+        }
+
+        .image-error {
+            margin-bottom: 1rem;
+        }
+
+        .error-placeholder {
+            background: #f8d7da;
+            border: 2px dashed #f5c6cb;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            color: #721c24;
+            font-size: 0.9rem;
+        }
+
+        .optimistic-post .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+
+        .optimistic-post .comment-form {
+            display: none;
         }
 
         #mediaPreview {
@@ -822,13 +1058,11 @@
             });
         }
 
-        // Publication optimisée
+        // Publication avec affichage immédiat de l'image originale
         document.getElementById('publishBtn').addEventListener('click', async function() {
             const text = document.getElementById('postText').value.trim();
             const fileInput = document.getElementById('fileInput');
             const publishBtn = document.getElementById('publishBtn');
-            const progressContainer = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('uploadProgressBar');
             
             if (!text && !fileInput.files[0]) {
                 alert('Veuillez ajouter du texte ou une image');
@@ -840,62 +1074,212 @@
                 return;
             }
 
-            // Interface de chargement
-            publishBtn.disabled = true;
-            publishBtn.textContent = 'Publication...';
-            progressContainer.style.display = 'block';
-            progressBar.style.width = '10%';
+            // === ÉTAPE 1: AFFICHAGE IMMÉDIAT AVEC IMAGE ORIGINALE ===
+            const postId = Date.now().toString();
+            const hasImage = !!fileInput.files[0];
+            let originalImageUrl = null;
 
+            // Si il y a une image, on la lit immédiatement pour l'affichage
+            if (hasImage) {
+                originalImageUrl = await readFileAsDataURL(fileInput.files[0]);
+            }
+
+            // Création du post optimiste avec l'image originale
+            const optimisticPost = {
+                id: postId,
+                author: userData.fullName,
+                authorId: userData.id,
+                avatar: userData.avatar,
+                text: text,
+                imageUrl: originalImageUrl, // Image originale pour affichage immédiat
+                timestamp: new Date().toISOString(),
+                isOptimistic: true,
+                imageProcessing: hasImage, // Indique que l'image est en cours d'optimisation
+                originalImage: hasImage // Flag pour savoir qu'on a une image originale
+            };
+
+            // Ajout immédiat au fil local
+            posts.unshift(optimisticPost);
+            renderPosts();
+
+            // Nettoyage immédiat de l'interface
+            clearPostForm();
+            resetPublishButton();
+
+            // === ÉTAPE 2: OPTIMISATION EN ARRIÈRE-PLAN ===
             try {
-                const postId = Date.now().toString();
-                let post = {
-                    id: postId,
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: text,
-                    imageUrl: null,
-                    timestamp: new Date().toISOString()
-                };
+                let finalPost = { ...optimisticPost };
+                delete finalPost.isOptimistic;
+                delete finalPost.imageProcessing;
+                delete finalPost.originalImage;
 
-                // Traitement de l'image si présente
-                if (fileInput.files[0]) {
-                    progressBar.style.width = '30%';
+                // Si pas d'image, sauvegarde immédiate
+                if (!hasImage) {
+                    finalPost.imageUrl = null;
+                    await database.ref('posts/' + postId).set(removeUndefinedDeep(finalPost));
                     
-                    const imageUrl = await imageProcessor.resizeImageOptimized(
-                        fileInput.files[0], 
-                        150, // Taille réduite pour vitesse
-                        600, // Pixels max réduits
-                        (progress) => {
-                            progressBar.style.width = `${30 + (progress * 0.5)}%`;
-                        }
-                    );
-                    
-                    post.imageUrl = imageUrl;
+                    // Mise à jour du post local
+                    updateLocalPost(postId, finalPost);
+                } else {
+                    // Traitement et optimisation de l'image en arrière-plan
+                    processImageInBackground(fileInput.files[0], postId, finalPost);
                 }
 
-                progressBar.style.width = '80%';
-
-                // Sauvegarde en base
-                await database.ref('posts/' + post.id).set(removeUndefinedDeep(post));
-                
-                progressBar.style.width = '100%';
-                
-                // Nettoyage de l'interface
-                setTimeout(() => {
-                    clearPostForm();
-                    resetPublishButton();
-                    progressContainer.style.display = 'none';
-                    progressBar.style.width = '0%';
-                }, 500);
-                
             } catch (error) {
                 console.error('Erreur lors de la publication:', error);
+                
+                // Suppression du post optimiste en cas d'erreur
+                removeOptimisticPost(postId);
                 alert('Erreur lors de la publication. Vérifiez votre connexion.');
-                resetPublishButton();
-                progressContainer.style.display = 'none';
             }
         });
+
+        // Fonction pour lire un fichier comme Data URL
+        function readFileAsDataURL(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (event) => resolve(event.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Traitement d'image en arrière-plan avec remplacement progressif
+        async function processImageInBackground(file, postId, post) {
+            try {
+                // Mise à jour du statut visuel (avec indicateur discret)
+                updateImageProcessingStatus(postId, 'optimizing');
+                
+                // Compression de l'image
+                const optimizedImageUrl = await imageProcessor.resizeImageOptimized(
+                    file, 
+                    150,
+                    600,
+                    (progress) => {
+                        updateImageProcessingProgress(postId, progress);
+                    }
+                );
+
+                // Mise à jour du statut
+                updateImageProcessingStatus(postId, 'saving');
+
+                // Sauvegarde finale en base avec l'image optimisée
+                post.imageUrl = optimizedImageUrl;
+                await database.ref('posts/' + postId).set(removeUndefinedDeep(post));
+
+                // Remplacement de l'image dans le post local
+                const postIndex = posts.findIndex(p => p.id === postId);
+                if (postIndex !== -1) {
+                    posts[postIndex] = post;
+                    
+                    // Animation douce de remplacement d'image
+                    smoothImageTransition(postId, optimizedImageUrl);
+                }
+
+            } catch (error) {
+                console.error('Erreur traitement image:', error);
+                
+                // En cas d'erreur, on garde le post avec l'image originale
+                const postIndex = posts.findIndex(p => p.id === postId);
+                if (postIndex !== -1) {
+                    posts[postIndex].imageProcessing = false;
+                    posts[postIndex].processingError = true;
+                    posts[postIndex].isOptimistic = false;
+                    renderPosts();
+                    
+                    // Sauvegarde avec l'image originale (plus grande mais fonctionnelle)
+                    const fallbackPost = { ...post };
+                    fallbackPost.imageUrl = posts[postIndex].imageUrl; // Image originale
+                    database.ref('posts/' + postId).set(removeUndefinedDeep(fallbackPost));
+                }
+            }
+        }
+
+        // Animation douce pour le remplacement d'image
+        function smoothImageTransition(postId, newImageUrl) {
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (!postElement) return;
+
+            const imageElement = postElement.querySelector('.image-link img');
+            if (!imageElement) return;
+
+            // Préchargement de la nouvelle image
+            const newImg = new Image();
+            newImg.onload = () => {
+                // Transition douce
+                imageElement.style.transition = 'opacity 0.3s ease';
+                imageElement.style.opacity = '0.7';
+                
+                setTimeout(() => {
+                    imageElement.src = newImageUrl;
+                    imageElement.style.opacity = '1';
+                    
+                    // Suppression de l'indicateur d'optimisation
+                    const indicator = postElement.querySelector('.optimization-indicator');
+                    if (indicator) {
+                        indicator.style.opacity = '0';
+                        setTimeout(() => indicator.remove(), 300);
+                    }
+                }, 150);
+            };
+            newImg.src = newImageUrl;
+        }
+
+        // Mise à jour locale d'un post
+        function updateLocalPost(postId, updatedPost) {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+                posts[postIndex] = updatedPost;
+                renderPosts();
+            }
+        }
+
+        // Suppression d'un post optimiste
+        function removeOptimisticPost(postId) {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+                posts.splice(postIndex, 1);
+                renderPosts();
+            }
+        }
+
+        // Mise à jour du statut de traitement (plus discret)
+        function updateImageProcessingStatus(postId, status) {
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (!postElement) return;
+
+            let indicator = postElement.querySelector('.optimization-indicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.className = 'optimization-indicator';
+                const imageContainer = postElement.querySelector('.image-link');
+                if (imageContainer) {
+                    imageContainer.appendChild(indicator);
+                }
+            }
+
+            switch (status) {
+                case 'optimizing':
+                    indicator.innerHTML = '<div class="opt-badge">🔄 Optimisation...</div>';
+                    break;
+                case 'saving':
+                    indicator.innerHTML = '<div class="opt-badge">💾 Sauvegarde...</div>';
+                    break;
+            }
+        }
+
+        // Mise à jour de la progression (optionnel, plus discret)
+        function updateImageProcessingProgress(postId, progress) {
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (!postElement) return;
+
+            const indicator = postElement.querySelector('.optimization-indicator');
+            if (indicator && progress < 100) {
+                const badge = indicator.querySelector('.opt-badge');
+                if (badge) {
+                    badge.innerHTML = `🔄 ${Math.round(progress)}%`;
+                }
+            }
+        }
 
         function resetPublishButton() {
             const publishBtn = document.getElementById('publishBtn');
@@ -1002,7 +1386,7 @@
             };
         }
 
-        // Rendu optimisé des posts avec virtualisation basique
+        // Rendu optimisé avec affichage immédiat des images originales
         const renderPostsOptimized = debounce(renderPosts, 200);
 
         function renderPosts() {
@@ -1010,8 +1394,8 @@
             const fragment = document.createDocumentFragment();
             
             posts.forEach(post => {
-                // Configuration des listeners si nécessaire
-                if (!post._listeners) {
+                // Configuration des listeners si nécessaire (sauf pour posts optimistes)
+                if (!post._listeners && !post.isOptimistic) {
                     listenLikesAndComments(post.id);
                     post._listeners = true;
                 }
@@ -1021,29 +1405,57 @@
                 const isLiked = post.likes && post.likes[userData.id];
                 const timeAgo = getTimeAgo(post.timestamp);
 
-                // HTML optimisé avec moins de DOM
+                // Gestion des images : affichage immédiat puis optimisation
                 let imageHTML = '';
-                if (post.imageUrl) {
+                if (post.imageUrl && post.imageUrl !== 'PROCESSING') {
+                    // Image présente (originale ou optimisée)
+                    imageHTML = `
+                        <div style="position: relative;">
+                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
+                                <img src="${post.imageUrl}" alt="Image publication" loading="lazy" 
+                                     style="${post.imageProcessing ? 'filter: brightness(0.95);' : ''}">
+                            </a>
+                            ${post.imageProcessing ? '<div class="optimization-indicator"></div>' : ''}
+                        </div>
+                    `;
+                } else if (post.imageUrl === 'PROCESSING') {
+                    // Fallback si jamais on a encore l'ancien système
+                    imageHTML = `
+                        <div class="image-processing">
+                            <div class="processing-placeholder">
+                                <div class="processing-icon">🖼️</div>
+                                <div class="processing-status">🔄 Traitement de l'image...</div>
+                                <div class="processing-progress">
+                                    <div class="processing-progress-bar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (post.processingError) {
+                    // Erreur de traitement d'image (garde l'image originale)
                     imageHTML = `
                         <div>
                             <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
                                 <img src="${post.imageUrl}" alt="Image publication" loading="lazy">
                             </a>
+                            <div class="image-error-notice">
+                                ⚠️ Image non optimisée (fichier original conservé)
+                            </div>
                         </div>
                     `;
                 }
 
                 let commentsHTML = '';
-                if (post.comments) {
+                if (post.comments && !post.isOptimistic) {
                     const commentsList = Object.values(post.comments)
                         .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-                        .slice(-5); // Limite à 5 commentaires récents
+                        .slice(-5);
                     
                     commentsHTML = commentsList.map(comment => `
                         <div class="comment">
                             <div class="comment-header">
                                 <div class="comment-avatar">${comment.avatar}</div>
-                                <div class="comment-username">${comment.author}</div>
+                                <div class="comment-username">${escapeHtml(comment.author)}</div>
                                 <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
                             </div>
                             <div class="comment-text">${escapeHtml(comment.text)}</div>
@@ -1051,9 +1463,16 @@
                     `).join('');
                 }
 
+                // Indicateur plus discret pour les posts en cours d'optimisation
+                const optimisticIndicator = post.isOptimistic && post.imageProcessing ? 
+                    '<div class="optimistic-indicator">✨ Image en cours d\'optimisation...</div>' : 
+                    (post.isOptimistic ? '<div class="optimistic-indicator">📤 Publication en cours...</div>' : '');
+
                 const postElement = document.createElement('div');
-                postElement.className = 'publication';
+                postElement.className = `publication${post.isOptimistic ? ' optimistic-post' : ''}`;
+                postElement.setAttribute('data-post-id', post.id);
                 postElement.innerHTML = `
+                    ${optimisticIndicator}
                     <div class="pub-header">
                         <div class="pub-avatar">${post.avatar}</div>
                         <div class="pub-info">
@@ -1064,19 +1483,26 @@
                     <div class="pub-text">${escapeHtml(post.text)}</div>
                     ${imageHTML}
                     <div class="pub-actions">
-                        <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}">
+                        <button class="action-btn ${isLiked ? 'liked' : ''}" 
+                                onclick="toggleLike('${post.id}')" 
+                                id="like-btn-${post.id}"
+                                ${post.isOptimistic ? 'disabled' : ''}>
                             ${isLiked ? '❤️' : '🤍'} ${likesCount}
                         </button>
-                        <button class="action-btn" onclick="toggleComments('${post.id}')">
+                        <button class="action-btn" 
+                                onclick="toggleComments('${post.id}')"
+                                ${post.isOptimistic ? 'disabled' : ''}>
                             💬 ${commentsCount}
                         </button>
                     </div>
                     <div class="comments-section" id="comments-${post.id}" style="display: none;">
                         ${commentsHTML}
-                        <div class="comment-form">
-                            <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-                            <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-                        </div>
+                        ${!post.isOptimistic ? `
+                            <div class="comment-form">
+                                <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
+                                <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
                 
@@ -1407,4 +1833,3 @@
     </script>
 </body>
 </html>
-
