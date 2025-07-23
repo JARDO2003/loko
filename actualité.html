@@ -346,412 +346,473 @@
     </div>
   </div>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-  <script>
-    // --- CONFIG FIREBASE ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
-      authDomain: "data-com-a94a8.firebaseapp.com",
-      databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
-      projectId: "data-com-a94a8",
-      storageBucket: "data-com-a94a8.appspot.com",
-      messagingSenderId: "276904640935",
-      appId: "1:276904640935:web:9cd805aeba6c34c767f682",
-      measurementId: "G-FYQCWY5G4S"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+<script>
+  // --- CONFIG FIREBASE ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
+    authDomain: "data-com-a94a8.firebaseapp.com",
+    databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
+    projectId: "data-com-a94a8",
+    storageBucket: "data-com-a94a8.appspot.com",
+    messagingSenderId: "276904640935",
+    appId: "1:276904640935:web:9cd805aeba6c34c767f682",
+    measurementId: "G-FYQCWY5G4S"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
-    let userData = null;
-    let posts = [];
-    let postsListener = null;
-    let isConnected = false;
+  let userData = null;
+  let posts = [];
+  let postsListener = null;
+  let isConnected = false;
 
-    // Nettoyage de tous les undefined dans les objets envoyés à Firebase
-    function removeUndefinedDeep(obj) {
-      if (Array.isArray(obj)) {
-        return obj.map(removeUndefinedDeep);
-      } else if (obj && typeof obj === 'object') {
-        const cleaned = {};
-        for (const key in obj) {
-          if (obj[key] !== undefined) {
-            cleaned[key] = removeUndefinedDeep(obj[key]);
-          }
+  // Nettoyage de tous les undefined dans les objets envoyés à Firebase
+  function removeUndefinedDeep(obj) {
+    if (Array.isArray(obj)) {
+      return obj.map(removeUndefinedDeep);
+    } else if (obj && typeof obj === 'object') {
+      const cleaned = {};
+      for (const key in obj) {
+        if (obj[key] !== undefined) {
+          cleaned[key] = removeUndefinedDeep(obj[key]);
         }
-        return cleaned;
       }
-      return obj;
+      return cleaned;
     }
+    return obj;
+  }
 
-    function updateConnectionStatus() {
-      const statusIndicator = document.getElementById('statusIndicator');
-      if (statusIndicator) {
-        statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
-        statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
-      }
+  function updateConnectionStatus() {
+    const statusIndicator = document.getElementById('statusIndicator');
+    if (statusIndicator) {
+      statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
+      statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
     }
-    database.ref(".info/connected").on("value", (snap) => {
-      isConnected = snap.val() === true;
-      updateConnectionStatus();
+  }
+
+  database.ref(".info/connected").on("value", (snap) => {
+    isConnected = snap.val() === true;
+    updateConnectionStatus();
+  });
+
+  function checkUserRegistration() {
+    const stored = localStorage.getItem('expressExchangeUser');
+    if (stored) {
+      userData = JSON.parse(stored);
+      showMainApp();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    createParticles();
+    checkUserRegistration();
+    setInterval(() => {
+      if (document.getElementById('mainApp').style.display !== 'none') renderPosts();
+    }, 60000);
+  });
+
+  // Compression ULTRA RAPIDE - version minimale
+  function quickResize(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        let { width, height } = img;
+        
+        // Réduction agressive mais rapide
+        const maxSize = 400; // Très petit pour être rapide
+        if (width > maxSize || height > maxSize) {
+          const ratio = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        
+        // Pas de lissage pour plus de rapidité
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compression unique à 70% - pas de boucle
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        callback(dataUrl);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nom = document.getElementById('nom').value.trim();
+    const prenom = document.getElementById('prenom').value.trim();
+    const contact = document.getElementById('contact').value.trim();
+    if (nom && prenom && contact) {
+      userData = {
+        id: Date.now().toString(),
+        nom: nom,
+        prenom: prenom,
+        contact: contact,
+        fullName: `${prenom} ${nom}`,
+        avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
+        registeredAt: new Date().toISOString()
+      };
+      localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
+      if (isConnected) database.ref('users/' + userData.id).set(userData);
+      showMainApp();
+    }
+  });
+
+  function showMainApp() {
+    document.getElementById('registrationOverlay').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
+    updateConnectionStatus();
+    loadPosts();
+  }
+
+  function loadPosts() {
+    if (postsListener) postsListener.off();
+    postsListener = database.ref('posts').orderByChild('timestamp');
+    postsListener.on('value', (snapshot) => {
+      posts = [];
+      snapshot.forEach((childSnapshot) => {
+        const post = childSnapshot.val();
+        posts.unshift(post);
+      });
+      renderPosts();
     });
+  }
 
-    function checkUserRegistration() {
-      const stored = localStorage.getItem('expressExchangeUser');
-      if (stored) {
-        userData = JSON.parse(stored);
-        showMainApp();
-      }
+  // PUBLICATION INSTANTANÉE - Affiche l'image originale immédiatement
+  document.getElementById('publishBtn').addEventListener('click', function() {
+    const text = document.getElementById('postText').value.trim();
+    const fileInput = document.getElementById('fileInput');
+    const publishBtn = document.getElementById('publishBtn');
+    
+    if (!text && !fileInput.files[0]) {
+      alert('Veuillez ajouter du texte ou une image');
+      return;
+    }
+    
+    if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
+      alert("Seules les images sont autorisées.");
+      return;
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      createParticles();
-      checkUserRegistration();
-      setInterval(() => {
-        if (document.getElementById('mainApp').style.display !== 'none') renderPosts();
-      }, 60000);
-    });
+    publishBtn.disabled = true;
+    publishBtn.textContent = 'Publication...';
 
-    function resizeImage(file, maxSizeKo = 200, callback) {
+    const postId = Date.now().toString();
+    const file = fileInput.files[0];
+    
+    // Si il y a une image, on l'affiche IMMÉDIATEMENT sans traitement
+    if (file) {
       const reader = new FileReader();
       reader.onload = function(event) {
-        const img = new window.Image();
-        img.onload = function() {
-          let width = img.width, height = img.height, maxPixels = 800;
-          if (width > maxPixels || height > maxPixels) {
-            if (width > height) {
-              height = Math.round(height * maxPixels / width); width = maxPixels;
-            } else { width = Math.round(width * maxPixels / height); height = maxPixels; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = width; canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          let quality = 0.85;
-          let dataUrl = canvas.toDataURL('image/jpeg', quality);
-          while (dataUrl.length/1024 > maxSizeKo && quality > 0.4) {
-            quality -= 0.05;
-            dataUrl = canvas.toDataURL('image/jpeg', quality);
-          }
-          callback(dataUrl);
+        const originalImageUrl = event.target.result;
+        
+        // Création du post avec l'image originale
+        const post = {
+          id: postId,
+          author: userData.fullName,
+          authorId: userData.id,
+          avatar: userData.avatar,
+          text: text,
+          imageUrl: originalImageUrl, // Image originale non compressée
+          timestamp: new Date().toISOString()
         };
-        img.src = event.target.result;
+
+        // Sauvegarde IMMÉDIATE avec l'image originale
+        database.ref('posts/' + postId).set(removeUndefinedDeep(post))
+          .then(() => {
+            clearPostForm();
+            resetPublishButton();
+            
+            // Compression en arrière-plan (optionnelle)
+            setTimeout(() => {
+              quickResize(file, function(compressedUrl) {
+                // Mise à jour discrète avec l'image compressée
+                database.ref('posts/' + postId + '/imageUrl').set(compressedUrl);
+              });
+            }, 100);
+          })
+          .catch(() => {
+            alert('Erreur lors de la publication.');
+            resetPublishButton();
+          });
       };
       reader.readAsDataURL(file);
-    }
-
-    document.getElementById('registrationForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const nom = document.getElementById('nom').value.trim();
-      const prenom = document.getElementById('prenom').value.trim();
-      const contact = document.getElementById('contact').value.trim();
-      if (nom && prenom && contact) {
-        userData = {
-          id: Date.now().toString(),
-          nom: nom,
-          prenom: prenom,
-          contact: contact,
-          fullName: `${prenom} ${nom}`,
-          avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
-          registeredAt: new Date().toISOString()
-        };
-        localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-        if (isConnected) database.ref('users/' + userData.id).set(userData);
-        showMainApp();
-      }
-    });
-
-    function showMainApp() {
-      document.getElementById('registrationOverlay').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
-      updateConnectionStatus();
-      loadPosts();
-    }
-
-    function loadPosts() {
-      if (postsListener) postsListener.off();
-      postsListener = database.ref('posts').orderByChild('timestamp');
-      postsListener.on('value', (snapshot) => {
-        posts = [];
-        snapshot.forEach((childSnapshot) => {
-          const post = childSnapshot.val();
-          posts.unshift(post);
-        });
-        renderPosts();
-      });
-    }
-
-    document.getElementById('publishBtn').addEventListener('click', function() {
-      const text = document.getElementById('postText').value.trim();
-      const fileInput = document.getElementById('fileInput');
-      const publishBtn = document.getElementById('publishBtn');
-      if (!text && !fileInput.files[0]) {
-        alert('Veuillez ajouter du texte ou une image');
-        return;
-      }
-      if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-        alert("Seules les images sont autorisées.");
-        return;
-      }
-      publishBtn.disabled = true;
-      publishBtn.textContent = 'Publication...';
-
-      const postId = Date.now().toString();
-      let post = {
+    } else {
+      // Pas d'image, publication immédiate
+      const post = {
         id: postId,
         author: userData.fullName,
         authorId: userData.id,
-        avatar: `${userData.avatar}`,
+        avatar: userData.avatar,
         text: text,
         imageUrl: null,
         timestamp: new Date().toISOString()
       };
-      function finalizePostAndSave(url) {
-        if(url) post.imageUrl = url;
-        database.ref('posts/' + post.id).set(removeUndefinedDeep(post))
-          .then(() => { clearPostForm(); resetPublishButton(); })
-          .catch(() => { alert('Erreur lors de la publication.'); resetPublishButton(); });
-      }
-      if (fileInput.files[0]) {
-        resizeImage(fileInput.files[0], 200, function(dataUrl) {
-          finalizePostAndSave(dataUrl);
+
+      database.ref('posts/' + postId).set(removeUndefinedDeep(post))
+        .then(() => {
+          clearPostForm();
+          resetPublishButton();
+        })
+        .catch(() => {
+          alert('Erreur lors de la publication.');
+          resetPublishButton();
         });
-      } else {
-        finalizePostAndSave(null);
+    }
+  });
+
+  function resetPublishButton() {
+    const publishBtn = document.getElementById('publishBtn');
+    publishBtn.disabled = false;
+    publishBtn.textContent = 'Publier';
+  }
+
+  document.getElementById('fileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const fileName = document.getElementById('fileName');
+    const preview = document.getElementById('mediaPreview');
+    
+    if (file) {
+      fileName.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        preview.innerHTML = `<img src="${event.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px;">`;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      fileName.textContent = '';
+      preview.innerHTML = '';
+    }
+  });
+
+  function clearPostForm() {
+    document.getElementById('postText').value = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('mediaPreview').innerHTML = '';
+  }
+
+  // --- Modal image ---
+  window.openImageModal = function(imgUrl) {
+    const modal = document.getElementById('modalImageView');
+    const modalImg = document.getElementById('modalImageBig');
+    modal.style.display = 'flex';
+    modalImg.src = imgUrl;
+  };
+
+  window.closeImageModal = function() {
+    document.getElementById('modalImageView').style.display = 'none';
+  };
+
+  document.getElementById('modalImageView').addEventListener('click', function(e){
+    if(e.target === this){ closeImageModal(); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ closeImageModal(); }
+  });
+
+  // --- Likes et commentaires synchronisés dans une autre branche ---
+  function listenLikesAndComments(postId) {
+    // Likes
+    database.ref('likes/' + postId).on('value', snap => {
+      const likes = snap.val() || {};
+      const cleanedLikes = removeUndefinedDeep(likes);
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        post.likes = cleanedLikes;
+        renderPosts();
       }
     });
-
-    function resetPublishButton() {
-      const publishBtn = document.getElementById('publishBtn');
-      publishBtn.disabled = false;
-      publishBtn.textContent = 'Publier';
-    }
-
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      const fileName = document.getElementById('fileName');
-      const preview = document.getElementById('mediaPreview');
-      if (file) {
-        fileName.textContent = file.name;
-        resizeImage(file, 200, function(dataUrl) {
-          preview.innerHTML = `<img src="${dataUrl}" style="max-width: 100px; max-height: 100px; border-radius: 5px;">`;
-        });
-      } else {
-        fileName.textContent = '';
-        preview.innerHTML = '';
+    // Comments
+    database.ref('comments/' + postId).on('value', snap => {
+      const comments = snap.val() || {};
+      const cleanedComments = removeUndefinedDeep(comments);
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        post.comments = cleanedComments;
+        renderPosts();
       }
     });
+  }
 
-    function clearPostForm() {
-      document.getElementById('postText').value = '';
-      document.getElementById('fileInput').value = '';
-      document.getElementById('fileName').textContent = '';
-      document.getElementById('mediaPreview').innerHTML = '';
-    }
-
-    // --- Modal image ---
-    window.openImageModal = function(imgUrl) {
-      const modal = document.getElementById('modalImageView');
-      const modalImg = document.getElementById('modalImageBig');
-      modal.style.display = 'flex';
-      modalImg.src = imgUrl;
-    };
-    window.closeImageModal = function() {
-      document.getElementById('modalImageView').style.display = 'none';
-    };
-    document.getElementById('modalImageView').addEventListener('click', function(e){
-      if(e.target === this){ closeImageModal(); }
-    });
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape'){ closeImageModal(); }
-    });
-
-    // --- Likes et commentaires synchronisés dans une autre branche ---
-    function listenLikesAndComments(postId) {
-      // Likes
-      database.ref('likes/' + postId).on('value', snap => {
-        const likes = snap.val() || {};
-        const cleanedLikes = removeUndefinedDeep(likes);
-        const post = posts.find(p => p.id === postId);
-        if (post) {
-          post.likes = cleanedLikes;
-          renderPosts();
-        }
-      });
-      // Comments
-      database.ref('comments/' + postId).on('value', snap => {
-        const comments = snap.val() || {};
-        const cleanedComments = removeUndefinedDeep(comments);
-        const post = posts.find(p => p.id === postId);
-        if (post) {
-          post.comments = cleanedComments;
-          renderPosts();
-        }
-      });
-    }
-
-    function renderPosts() {
-      const feed = document.getElementById('feed');
-      feed.innerHTML = '';
-      posts.forEach(post => {
-        // Pour chaque post, écoute likes/comments en temps réel si pas déjà fait
-        if (!post._listeners) {
-          listenLikesAndComments(post.id);
-          post._listeners = true;
-        }
-        const likesCount = post.likes ? Object.keys(post.likes).length : 0;
-        const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
-        const isLiked = post.likes && post.likes[userData.id];
-        const timeAgo = getTimeAgo(post.timestamp);
-        let imageHTML = '';
-        if (post.imageUrl) {
-          imageHTML = `
-            <div>
-              <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                <img src="${post.imageUrl}" alt="Image publication">
-              </a>
-            </div>
-          `;
-        }
-        let commentsHTML = '';
-        if (post.comments) {
-          const commentsList = Object.values(post.comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-          commentsHTML = commentsList.map(comment => `
-            <div class="comment">
-              <div class="comment-header">
-                <div class="comment-avatar">${comment.avatar}</div>
-                <div class="comment-username">${comment.author}</div>
-                <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
-              </div>
-              <div class="comment-text">${comment.text}</div>
-            </div>
-          `).join('');
-        }
-        const postHtml = `
-          <div class="publication">
-            <div class="pub-header">
-              <div class="pub-avatar">${post.avatar}</div>
-              <div class="pub-info">
-                <div class="pub-username">${post.author}</div>
-                <div class="pub-time">${timeAgo}</div>
-              </div>
-            </div>
-            <div class="pub-text">${post.text}</div>
-            ${imageHTML}
-            <div class="pub-actions">
-              <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}">
-                ${isLiked ? '❤️' : '🤍'} ${likesCount}
-              </button>
-              <button class="action-btn" onclick="toggleComments('${post.id}')">
-                💬 ${commentsCount}
-              </button>
-            </div>
-            <div class="comments-section" id="comments-${post.id}" style="display: none;">
-              ${commentsHTML}
-              <div class="comment-form">
-                <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-                <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-              </div>
-            </div>
+  function renderPosts() {
+    const feed = document.getElementById('feed');
+    feed.innerHTML = '';
+    posts.forEach(post => {
+      // Pour chaque post, écoute likes/comments en temps réel si pas déjà fait
+      if (!post._listeners) {
+        listenLikesAndComments(post.id);
+        post._listeners = true;
+      }
+      const likesCount = post.likes ? Object.keys(post.likes).length : 0;
+      const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
+      const isLiked = post.likes && post.likes[userData.id];
+      const timeAgo = getTimeAgo(post.timestamp);
+      
+      let imageHTML = '';
+      if (post.imageUrl) {
+        imageHTML = `
+          <div>
+            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
+              <img src="${post.imageUrl}" alt="Image publication" loading="lazy">
+            </a>
           </div>
         `;
-        feed.innerHTML += postHtml;
-      });
-    }
-
-    // --- Likes et commentaires : MAJ instantanée, synchro branchée ---
-    window.toggleLike = function(postId) {
-      const btn = document.getElementById('like-btn-' + postId);
-      if (btn) btn.disabled = true;
-      const likeRef = database.ref('likes/' + postId + '/' + userData.id);
-      likeRef.once('value').then(snapshot => {
-        if (snapshot.exists()) {
-          likeRef.remove();
-        } else {
-          likeRef.set(removeUndefinedDeep({
-            userId: userData.id,
-            username: userData.fullName,
-            timestamp: new Date().toISOString()
-          }));
-        }
-        if (btn) btn.disabled = false;
-      });
-    };
-
-    window.toggleComments = function(postId) {
-      const commentsSection = document.getElementById(`comments-${postId}`);
-      commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-    };
-
-    window.submitComment = function(postId) {
-      const input = document.getElementById(`comment-input-${postId}`);
-      const commentText = input.value.trim();
-      if (!commentText) return;
-      const commentsRef = database.ref('comments/' + postId);
-      const commentId = commentsRef.push().key;
-      const comment = removeUndefinedDeep({
-        id: commentId,
-        author: userData.fullName,
-        authorId: userData.id,
-        avatar: userData.avatar,
-        text: commentText,
-        timestamp: new Date().toISOString()
-      });
-      commentsRef.child(commentId).set(comment);
-      input.value = '';
-    };
-
-    document.addEventListener('keydown', function(e) {
-      if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
-        const postId = e.target.id.replace('comment-input-', '');
-        window.submitComment(postId);
       }
+      
+      let commentsHTML = '';
+      if (post.comments) {
+        const commentsList = Object.values(post.comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        commentsHTML = commentsList.map(comment => `
+          <div class="comment">
+            <div class="comment-header">
+              <div class="comment-avatar">${comment.avatar}</div>
+              <div class="comment-username">${comment.author}</div>
+              <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+          </div>
+        `).join('');
+      }
+      
+      const postHtml = `
+        <div class="publication">
+          <div class="pub-header">
+            <div class="pub-avatar">${post.avatar}</div>
+            <div class="pub-info">
+              <div class="pub-username">${post.author}</div>
+              <div class="pub-time">${timeAgo}</div>
+            </div>
+          </div>
+          <div class="pub-text">${post.text}</div>
+          ${imageHTML}
+          <div class="pub-actions">
+            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}">
+              ${isLiked ? '❤️' : '🤍'} ${likesCount}
+            </button>
+            <button class="action-btn" onclick="toggleComments('${post.id}')">
+              💬 ${commentsCount}
+            </button>
+          </div>
+          <div class="comments-section" id="comments-${post.id}" style="display: none;">
+            ${commentsHTML}
+            <div class="comment-form">
+              <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
+              <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
+            </div>
+          </div>
+        </div>
+      `;
+      feed.innerHTML += postHtml;
     });
+  }
 
-    function getTimeAgo(timestamp) {
-      const now = new Date();
-      const time = new Date(timestamp);
-      const diffInSeconds = Math.floor((now - time) / 1000);
-      if (diffInSeconds < 60) return 'À l\'instant';
-      if (diffInSeconds < 3600) {
-        const minutes = Math.floor(diffInSeconds / 60);
-        return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
-      } else if (diffInSeconds < 86400) {
-        const hours = Math.floor(diffInSeconds / 3600);
-        return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+  // --- Likes et commentaires : MAJ instantanée, synchro branchée ---
+  window.toggleLike = function(postId) {
+    const btn = document.getElementById('like-btn-' + postId);
+    if (btn) btn.disabled = true;
+    const likeRef = database.ref('likes/' + postId + '/' + userData.id);
+    likeRef.once('value').then(snapshot => {
+      if (snapshot.exists()) {
+        likeRef.remove();
       } else {
-        const days = Math.floor(diffInSeconds / 86400);
-        return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+        likeRef.set(removeUndefinedDeep({
+          userId: userData.id,
+          username: userData.fullName,
+          timestamp: new Date().toISOString()
+        }));
       }
-    }
-
-    function createParticles() {
-      const particles = document.getElementById('particles');
-      if (!particles) return;
-      for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 6 + 's';
-        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-        particles.appendChild(particle);
-      }
-    }
-    window.addEventListener('resize', function() {
-      const particles = document.getElementById('particles');
-      if (particles) {
-        particles.innerHTML = '';
-        createParticles();
-      }
+      if (btn) btn.disabled = false;
     });
+  };
 
-     document.getElementById('showMyPostsBtn').addEventListener('click', function() {
+  window.toggleComments = function(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+  };
+
+  window.submitComment = function(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const commentText = input.value.trim();
+    if (!commentText) return;
+    const commentsRef = database.ref('comments/' + postId);
+    const commentId = commentsRef.push().key;
+    const comment = removeUndefinedDeep({
+      id: commentId,
+      author: userData.fullName,
+      authorId: userData.id,
+      avatar: userData.avatar,
+      text: commentText,
+      timestamp: new Date().toISOString()
+    });
+    commentsRef.child(commentId).set(comment);
+    input.value = '';
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
+      const postId = e.target.id.replace('comment-input-', '');
+      window.submitComment(postId);
+    }
+  });
+
+  function getTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - time) / 1000);
+    if (diffInSeconds < 60) return 'À l\'instant';
+    if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+    }
+  }
+
+  function createParticles() {
+    const particles = document.getElementById('particles');
+    if (!particles) return;
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 6 + 's';
+      particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+      particles.appendChild(particle);
+    }
+  }
+
+  window.addEventListener('resize', function() {
+    const particles = document.getElementById('particles');
+    if (particles) {
+      particles.innerHTML = '';
+      createParticles();
+    }
+  });
+
+  document.getElementById('showMyPostsBtn').addEventListener('click', function() {
     showMyPostsModal();
   });
 
   document.getElementById('closeMyPostsModal').onclick = function() {
     document.getElementById('myPostsModal').style.display = 'none';
   };
+
   document.getElementById('myPostsModal').onclick = function(e) {
     if (e.target === this) this.style.display = 'none';
   };
@@ -797,7 +858,4 @@
       })
       .catch(() => alert("Erreur lors de la suppression."));
   };
-
-  </script>
-</body>
-</html>
+</script>
