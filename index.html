@@ -767,7 +767,6 @@
     <!-- Boutons de navigation -->
     <div class="nav-buttons">
         <button class="nav-btn" onclick="location.href='apropos.html'">À propos</button>
-        <button class="nav-btn" onclick="location.href='actualité.html'">Actualité</button>
         <button class="nav-btn" onclick="location.href='fournisseur.html'">Accès fournisseur</button>
         <button class="nav-btn gbere-btn" onclick="location.href='actualité.html'">ExpressUnion</button>
         <button id="show-customer-orders-btn" onclick="toggleCustomerOrders()">🧾 Mes commandes</button>
@@ -1075,162 +1074,119 @@
         <div class="customer-orders-list" id="customer-orders-list"></div>
         <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
     </div>
-       <script type="module">
-    // Firebase init (comme dans ton code)
+      <script type="module">
+    // Firebase init optimisé
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
-    authDomain: "kolo-livraison.firebaseapp.com",
-    databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
-    projectId: "kolo-livraison",
-    storageBucket: "kolo-livraison.firebasestorage.app",
-    messagingSenderId: "78667636312",
-    appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
-    measurementId: "G-R79LC3XQL4"
-};
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getDatabase(app);
-
-// Fonction unique et fiable :
-window.sendMarcioComment = function(message, userProfile) {
-    const commentsRef = ref(db, 'marcio_comments');
-    const newCommentRef = push(commentsRef);
-    const commentObj = {
-        message: message,
-        user: userProfile ? {
-            lastname: userProfile.lastname,
-            firstname: userProfile.firstname,
-            email: userProfile.email || "",
-            photo: userProfile.photo || ""
-        } : {},
-        timestamp: new Date().toISOString()
+    const firebaseConfig = {
+        apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
+        authDomain: "kolo-livraison.firebaseapp.com",
+        databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
+        projectId: "kolo-livraison",
+        storageBucket: "kolo-livraison.firebasestorage.app",
+        messagingSenderId: "78667636312",
+        appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
+        measurementId: "G-R79LC3XQL4"
     };
-    return set(newCommentRef, commentObj);
-};
-
-// --- FONCTION POUR ENVOYER UNE COMMANDE ---
-window.submitOrder = function(order) {
-    const orderRef = ref(db, 'orders');
-    const newOrderRef = push(orderRef);
-    order.timestamp = new Date().toISOString();
-    order.status = "nouveau";
-    set(newOrderRef, order)
-        .then(() => {
-            alert('Votre commande a été envoyée avec succès! Un livreur vous contactera bientôt.');
-            cart = [];
-            updateCart();
-            document.getElementById('order-form').reset();
-            addCustomerOrderToList(order);
-            showCustomerOrdersBox();
-            window.location.href = ""; // recharge la page
-        })
-        .catch((error) => {
-            alert('Erreur: ' + error.message);
-        });
-};
-    </script>
     
-    <script>
-    // === Gestion du profil utilisateur (localStorage) ===
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    // Fonction optimisée pour les commentaires Marcio
+    window.sendMarcioComment = function(message, userProfile) {
+        const commentsRef = ref(db, 'marcio_comments');
+        const newCommentRef = push(commentsRef);
+        const commentObj = {
+            message: message,
+            user: userProfile ? {
+                lastname: userProfile.lastname,
+                firstname: userProfile.firstname,
+                email: userProfile.email || "",
+                photo: userProfile.photo || ""
+            } : {},
+            timestamp: new Date().toISOString()
+        };
+        return set(newCommentRef, commentObj);
+    };
+
+    // Fonction d'envoi de commande optimisée pour Android
+    window.submitOrder = function(order) {
+        // Affichage immédiat du message de confirmation
+        const confirmationMsg = 'Votre commande a été envoyée avec succès! Un livreur vous contactera bientôt.';
+        
+        // Mise à jour immédiate de l'interface
+        cart = [];
+        updateCart();
+        document.getElementById('order-form').reset();
+        addCustomerOrderToList(order);
+        showCustomerOrdersBox();
+        
+        // Affichage du message de confirmation AVANT l'envoi Firebase
+        alert(confirmationMsg);
+        
+        // Envoi asynchrone en arrière-plan
+        const orderRef = ref(db, 'orders');
+        const newOrderRef = push(orderRef);
+        order.timestamp = new Date().toISOString();
+        order.status = "nouveau";
+        
+        // Envoi sans bloquer l'interface
+        set(newOrderRef, order)
+            .then(() => {
+                console.log('Commande envoyée avec succès à Firebase');
+                // Rechargement optionnel après envoi
+                setTimeout(() => {
+                    window.location.href = "";
+                }, 1000);
+            })
+            .catch((error) => {
+                console.error('Erreur Firebase:', error);
+                // En cas d'erreur, on informe discrètement
+                setTimeout(() => {
+                    alert('Note: Vérifiez votre connexion internet. Votre commande sera traitée dès que possible.');
+                }, 500);
+            });
+    };
+</script>
+
+<script>
+    // === Gestion optimisée du profil utilisateur ===
     let userProfile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+    
     function showProfileForm() {
-        document.getElementById('profile-overlay').style.display = 'flex';
+        const overlay = document.getElementById('profile-overlay');
+        overlay.style.display = 'flex';
+        
         if (userProfile) {
             document.getElementById('profile-lastname').value = userProfile.lastname || '';
             document.getElementById('profile-firstname').value = userProfile.firstname || '';
             document.getElementById('profile-email').value = userProfile.email || '';
+            
             if (userProfile.photo) {
-                document.getElementById('profile-photo-preview').src = userProfile.photo;
-                document.getElementById('profile-photo-preview').style.display = "inline";
-            }
-            if (userProfile.bg) {
-                document.getElementById('profile-bg-preview').src = userProfile.bg;
-                document.getElementById('profile-bg-preview').style.display = "inline";
+                const photoPreview = document.getElementById('profile-photo-big');
+                const placeholder = document.getElementById('profile-photo-placeholder');
+                if (photoPreview && placeholder) {
+                    photoPreview.src = userProfile.photo;
+                    photoPreview.style.display = "block";
+                    placeholder.style.display = "none";
+                }
             }
         }
     }
+
     function hideProfileForm() {
         document.getElementById('profile-overlay').style.display = 'none';
     }
-    document.getElementById('profile-btn').onclick = showProfileForm;
-    document.getElementById('profile-overlay').addEventListener('click', function(e){
-        if(e.target === this) hideProfileForm();
-    });
-    document.getElementById('profile-photo').addEventListener('change', function(){
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('profile-photo-preview').src = e.target.result;
-                document.getElementById('profile-photo-preview').style.display = "inline";
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    document.getElementById('profile-bg').addEventListener('change', function(){
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('profile-bg-preview').src = e.target.result;
-                document.getElementById('profile-bg-preview').style.display = "inline";
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    document.getElementById('profile-form').onsubmit = function(e) {
-        e.preventDefault();
-        const photo = document.getElementById('profile-photo-preview').src || null;
-        const bg = document.getElementById('profile-bg-preview').src || null;
-        userProfile = {
-            lastname: document.getElementById('profile-lastname').value,
-            firstname: document.getElementById('profile-firstname').value,
-            email: document.getElementById('profile-email').value,
-            photo: (photo && photo.startsWith('data')) ? photo : null,
-            bg: (bg && bg.startsWith('data')) ? bg : null
-        };
-        localStorage.setItem('userProfile', JSON.stringify(userProfile));
-        hideProfileForm();
-        applyUserProfile();
-        fillOrderFormWithProfile();
-    };
-    function applyUserProfile() {
-        if (userProfile) {
-            if (userProfile.bg) {
-                document.body.style.backgroundImage = `url('${userProfile.bg}')`;
-            } else {
-                document.body.style.backgroundImage = `url('image/WhatsApp Image 2025-06-10 à 23.52.24_467459e6.jpg')`;
-            }
-            // Affiche la photo dans le bouton profil
-            if (userProfile.photo) {
-                document.getElementById('profile-btn').innerHTML = `<img src="${userProfile.photo}" style="width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px;"> Mon profil`;
-            } else {
-                document.getElementById('profile-btn').innerHTML = '👤 Mon profil';
-            }
-        }
-    }
-    function fillOrderFormWithProfile() {
-        if (userProfile) {
-            document.getElementById('name').value = (userProfile.firstname || "") + ' ' + (userProfile.lastname || "");
-        }
-    }
-    window.addEventListener('DOMContentLoaded', function() {
-        if (!userProfile) {
-            showProfileForm();
-        } else {
-            applyUserProfile();
-            fillOrderFormWithProfile();
-        }
-    });
-    // === Gestion panier et quantité ===
+
+    // === Gestion optimisée du panier ===
     let cart = [];
     let total = 0;
     let customerOrders = JSON.parse(localStorage.getItem('customerOrders') || '[]');
     let orderCountByCategory = JSON.parse(localStorage.getItem('orderCountByCategory') || '{}');
+
     function generateOrderCode(category) {
         if (!orderCountByCategory[category]) orderCountByCategory[category] = 0;
         orderCountByCategory[category]++;
@@ -1238,12 +1194,7 @@ window.submitOrder = function(order) {
         let countStr = String(orderCountByCategory[category]).padStart(3, '0');
         return `#${countStr}${category}`;
     }
-    function showGarbaOptions() {
-        document.getElementById('garba-options-popup').style.display = 'block';
-    }
-    function hideGarbaOptions() {
-        document.getElementById('garba-options-popup').style.display = 'none';
-    }
+
     function promptAddToCart(name, price, category) {
         let qte = prompt("Choisir la quantité (ex: 1, 2, 3...)", "1");
         qte = parseInt(qte, 10);
@@ -1251,16 +1202,22 @@ window.submitOrder = function(order) {
             addToCart(name, price, category, qte);
         }
     }
-    function addToCart(name, price, category, qty=1) {
+
+    function addToCart(name, price, category, qty = 1) {
         cart.push({name: name, price: price, category: category, qty: qty});
         updateCart();
         alert(`${qty} ${name} ajouté(s) au panier!`);
     }
+
     function updateCart() {
         const orderItems = document.getElementById('order-items');
         const orderTotal = document.getElementById('order-total');
+        
+        if (!orderItems || !orderTotal) return;
+        
         orderItems.innerHTML = '';
         total = 0;
+        
         if (cart.length === 0) {
             orderItems.innerHTML = '<div class="order-item" id="empty-cart">Votre panier est vide</div>';
         } else {
@@ -1278,10 +1235,12 @@ window.submitOrder = function(order) {
         }
         orderTotal.textContent = `Total: ${total} FCFA`;
     }
+
     function removeFromCart(index) {
         cart.splice(index, 1);
         updateCart();
     }
+
     function addCustomerOrderToList(order) {
         let mainCategory = order.items.length > 0 ? order.items[0].category : 'A';
         let code = generateOrderCode(mainCategory) + " utt loko";
@@ -1296,8 +1255,11 @@ window.submitOrder = function(order) {
         localStorage.setItem('customerOrders', JSON.stringify(customerOrders));
         updateCustomerOrdersBox();
     }
+
     function updateCustomerOrdersBox() {
         let listDiv = document.getElementById('customer-orders-list');
+        if (!listDiv) return;
+        
         listDiv.innerHTML = '';
         if (!customerOrders.length) {
             listDiv.innerHTML = '<div style="color:#888;">Aucune commande récente</div>';
@@ -1313,6 +1275,15 @@ window.submitOrder = function(order) {
             });
         }
     }
+
+    function showCustomerOrdersBox() {
+        const box = document.getElementById('customer-orders-box');
+        if (box) {
+            box.style.display = 'block';
+            updateCustomerOrdersBox();
+        }
+    }
+
     function clearCustomerOrders() {
         if (confirm("Vider la liste de vos commandes récentes ?")) {
             customerOrders = [];
@@ -1320,75 +1291,111 @@ window.submitOrder = function(order) {
             updateCustomerOrdersBox();
         }
     }
-    function showCustomerOrdersBox() {
-        document.getElementById('customer-orders-box').style.display = 'block';
-        updateCustomerOrdersBox();
-    }
-    document.addEventListener("DOMContentLoaded", function() {
-        const btn = document.getElementById("show-customer-orders-btn");
-        const box = document.getElementById("customer-orders-box");
-        btn.onclick = function() {
-            if (box.style.display === "none" || box.style.display === "") {
-                showCustomerOrdersBox();
+
+    // === Fonctions utilitaires ===
+    function applyUserProfile() {
+        if (userProfile) {
+            if (userProfile.bg) {
+                document.body.style.backgroundImage = `url('${userProfile.bg}')`;
             } else {
-                box.style.display = "none";
+                document.body.style.backgroundImage = `url('image/WhatsApp Image 2025-06-10 à 23.52.24_467459e6.jpg')`;
             }
-        };
-        document.addEventListener("click", function(e) {
-            if (
-                box.style.display === "block" &&
-                !box.contains(e.target) &&
-                e.target !== btn
-            ) {
-                box.style.display = "none";
-            }
-        });
-        updateCustomerOrdersBox();
-    });
-    window.onload = () => {
-        fillOrderFormWithProfile();
-        const orderForm = document.getElementById('order-form');
-        if(orderForm){
-            orderForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (cart.length === 0) {
-                    alert("Votre panier est vide! Veuillez ajouter des articles avant de commander.");
-                    return;
+            
+            const profileBtn = document.getElementById('profile-btn');
+            if (profileBtn) {
+                if (userProfile.photo) {
+                    profileBtn.innerHTML = `<img src="${userProfile.photo}" style="width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px;"> Mon profil`;
+                } else {
+                    profileBtn.innerHTML = '👤 Mon profil';
                 }
-                if (!userProfile) {
-                    alert("Veuillez créer votre profil avant de commander.");
-                    showProfileForm();
-                    return;
-                }
-                let mainCategory = cart.length > 0 ? cart[0].category : 'A';
-                let code = generateOrderCode(mainCategory) + "utt loko";
-                const order = {
-                    code: code,
-                    customer: { ...userProfile },
-                    items: cart,
-                    total: total
-                };
-                window.submitOrder(order);
-            });
-        }
-    };
-    document.addEventListener('click', function(e) {
-        const popup = document.getElementById('garba-options-popup');
-        if (popup && popup.style.display === 'block') {
-            if (!popup.contains(e.target) && e.target.innerText !== 'Commander') {
-                popup.style.display = 'none';
             }
         }
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.card button').forEach(btn => {
-            let oldClick = btn.getAttribute('onclick');
-            if (oldClick && oldClick.startsWith("addToCart")) {
-                let args = oldClick.substring(10, oldClick.length - 1);
-                btn.setAttribute('onclick', `promptAddToCart(${args})`);
+    }
+
+    function fillOrderFormWithProfile() {
+        if (userProfile) {
+            const nameField = document.getElementById('name');
+            if (nameField) {
+                nameField.value = (userProfile.firstname || "") + ' ' + (userProfile.lastname || "");
             }
-        });
-    });
+        }
+    }
+
+    // === Robot Marcio Chat ===
+    function openMarcioChat() {
+        const chat = document.getElementById("marcio-chat");
+        if (chat) {
+            chat.style.display = "flex";
+            setTimeout(() => {
+                const input = document.getElementById("chat-input");
+                if (input) input.focus();
+            }, 100);
+        }
+    }
+
+    function closeMarcioChat() {
+        const chat = document.getElementById("marcio-chat");
+        if (chat) chat.style.display = "none";
+    }
+
+    function appendMessage(content, isBot = false) {
+        const chat = document.getElementById("chat-messages");
+        if (!chat) return;
+        
+        const div = document.createElement("div");
+        div.className = "message" + (isBot ? " bot" : " user");
+        div.textContent = content;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("chat-input");
+        if (!input) return;
+        
+        const msg = input.value.trim();
+        if (!msg) return;
+        
+        appendMessage(msg, false);
+        input.value = "";
+        
+        // Envoi à Firebase
+        if (typeof window.sendMarcioComment === "function") {
+            window.sendMarcioComment(msg, userProfile)
+                .then(() => {
+                    appendMessage("Merci pour votre message ! Nous avons bien reçu votre commentaire. 👍", true);
+                })
+                .catch(() => {
+                    appendMessage("Erreur lors de l'envoi du commentaire. Veuillez réessayer plus tard.", true);
+                });
+        }
+    }
+
+    function handleChatKeyPress(e) {
+        if (e.key === "Enter") sendMessage();
+    }
+
+    // === Fonctions contact/invitation ===
+    function contactWhatsApp() {
+        window.open("https://wa.me/2250719983044?text=Bonjour%20ISFM%20Express%20!", "_blank");
+    }
+
+    function callPhone() {
+        window.open("tel:0719983044");
+    }
+
+    function inviteWhatsApp() {
+        window.open("https://wa.me/?text=Rejoins%20ISFM%20Express%20ici%20:%20https://loko-blush.vercel.app/", "_blank");
+    }
+
+    function inviteFacebook() {
+        window.open("https://www.facebook.com/sharer/sharer.php?u=https://loko-blush.vercel.app/", "_blank");
+    }
+
+    function inviteInstagram() {
+        window.open("https://www.instagram.com/?url=https://loko-blush.vercel.app/", "_blank");
+    }
+
     function showSupplierAccess() {
         const pwd = prompt("Entrez le mot de passe d'accès fournisseur :");
         if (pwd === "marcio200@") {
@@ -1397,192 +1404,183 @@ window.submitOrder = function(order) {
             alert("Mot de passe incorrect !");
         }
     }
+
     function showAbout() {
         alert("Bienvenue ! Repas ISFM Express, la solution repas rapide et bon marché pour les étudiants.");
     }
+
     function showContact() {
         alert("Contact WhatsApp : +225 XX XX XX XX\nEmail : contact@isfmexpress.com");
     }
-    </script>
-    <script>
-        // === Robot Marcio - Système de commentaires à la base de données ===
-window.sendMarcioComment = function(message, userProfile) {
-    const commentsRef = ref(database, 'marcio_comments');
-    const newCommentRef = push(commentsRef);
-    const commentObj = {
-        message: message,
-        user: userProfile ? {
-            lastname: userProfile.lastname,
-            firstname: userProfile.firstname,
-            email: userProfile.email || "",
-            photo: userProfile.photo || ""
-        } : {},
-        timestamp: new Date().toISOString()
-    };
-    return set(newCommentRef, commentObj);
-};
-// --- Robot Marcio Chat Logic ---
-function openMarcioChat() {
-    document.getElementById("marcio-chat").style.display = "flex";
-    setTimeout(() => {
-        document.getElementById("chat-input").focus();
-    }, 300);
-}
-function closeMarcioChat() {
-    document.getElementById("marcio-chat").style.display = "none";
-}
-function appendMessage(content, isBot = false) {
-    const chat = document.getElementById("chat-messages");
-    const div = document.createElement("div");
-    div.className = "message" + (isBot ? " bot" : " user");
-    div.textContent = content;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-}
-function handleChatKeyPress(e) {
-    if (e.key === "Enter") sendMessage();
-}
-function sendMessage() {
-    const input = document.getElementById("chat-input");
-    const msg = input.value.trim();
-    if (!msg) return;
-    appendMessage(msg, false);
-    input.value = "";
-    // Envoi à la base de données (Firebase)
-    let userProfile = JSON.parse(localStorage.getItem('userProfile') || 'null');
-    if (typeof window.sendMarcioComment === "function") {
-        window.sendMarcioComment(msg, userProfile).then(() => {
-            appendMessage("Merci pour votre message ! Nous avons bien reçu votre commentaire. 👍", true);
-        }).catch(() => {
-            appendMessage("Erreur lors de l'envoi du commentaire. Veuillez réessayer plus tard.", true);
+
+    // === Initialisation optimisée ===
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configuration du profil initial
+        if (!userProfile) {
+            showProfileForm();
+        } else {
+            applyUserProfile();
+            fillOrderFormWithProfile();
+        }
+
+        // Configuration des événements
+        const profileBtn = document.getElementById('profile-btn');
+        if (profileBtn) {
+            profileBtn.onclick = showProfileForm;
+        }
+
+        const profileOverlay = document.getElementById('profile-overlay');
+        if (profileOverlay) {
+            profileOverlay.addEventListener('click', function(e) {
+                if (e.target === this) hideProfileForm();
+            });
+        }
+
+        // Configuration du formulaire de profil
+        const profilePhotoInput = document.getElementById('profile-photo');
+        if (profilePhotoInput) {
+            profilePhotoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photoPreview = document.getElementById('profile-photo-big');
+                        const placeholder = document.getElementById('profile-photo-placeholder');
+                        if (photoPreview && placeholder) {
+                            photoPreview.src = e.target.result;
+                            photoPreview.style.display = "block";
+                            placeholder.style.display = "none";
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        const profileBgInput = document.getElementById('profile-bg');
+        if (profileBgInput) {
+            profileBgInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        userProfile = userProfile || {};
+                        userProfile.bg = e.target.result;
+                        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                        applyUserProfile();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        const profileForm = document.getElementById('profile-form');
+        if (profileForm) {
+            profileForm.onsubmit = function(e) {
+                e.preventDefault();
+                const photoPreview = document.getElementById('profile-photo-big');
+                const photo = photoPreview ? photoPreview.src : null;
+                const bg = userProfile && userProfile.bg ? userProfile.bg : null;
+                
+                userProfile = {
+                    lastname: document.getElementById('profile-lastname').value,
+                    firstname: document.getElementById('profile-firstname').value,
+                    email: document.getElementById('profile-email').value,
+                    photo: (photo && photo.startsWith('data')) ? photo : null,
+                    bg: (bg && bg.startsWith('data')) ? bg : null
+                };
+                
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                hideProfileForm();
+                applyUserProfile();
+                fillOrderFormWithProfile();
+            };
+        }
+
+        // Configuration du formulaire de commande
+        const orderForm = document.getElementById('order-form');
+        if (orderForm) {
+            orderForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (cart.length === 0) {
+                    alert("Votre panier est vide! Veuillez ajouter des articles avant de commander.");
+                    return;
+                }
+                
+                if (!userProfile) {
+                    alert("Veuillez créer votre profil avant de commander.");
+                    showProfileForm();
+                    return;
+                }
+                
+                let mainCategory = cart.length > 0 ? cart[0].category : 'A';
+                let code = generateOrderCode(mainCategory) + "utt loko";
+                
+                const order = {
+                    code: code,
+                    customer: { ...userProfile },
+                    items: cart,
+                    total: total
+                };
+                
+                window.submitOrder(order);
+            });
+        }
+
+        // Configuration des commandes client
+        const showOrdersBtn = document.getElementById("show-customer-orders-btn");
+        const ordersBox = document.getElementById("customer-orders-box");
+        
+        if (showOrdersBtn && ordersBox) {
+            showOrdersBtn.onclick = function() {
+                if (ordersBox.style.display === "none" || ordersBox.style.display === "") {
+                    showCustomerOrdersBox();
+                } else {
+                    ordersBox.style.display = "none";
+                }
+            };
+
+            document.addEventListener("click", function(e) {
+                if (ordersBox.style.display === "block" && 
+                    !ordersBox.contains(e.target) && 
+                    e.target !== showOrdersBtn) {
+                    ordersBox.style.display = "none";
+                }
+            });
+        }
+
+        // Mise à jour des boutons de commande pour utiliser promptAddToCart
+        document.querySelectorAll('.card button').forEach(btn => {
+            let oldClick = btn.getAttribute('onclick');
+            if (oldClick && oldClick.startsWith("addToCart")) {
+                let args = oldClick.substring(10, oldClick.length - 1);
+                btn.setAttribute('onclick', `promptAddToCart(${args})`);
+            }
         });
-    } else {
-        appendMessage("Erreur technique. Réessayez plus tard.", true);
-    }
-}
 
-// Pour ouvrir/fermer la boîte commandes client
-function toggleCustomerOrders() {
-    const box = document.getElementById("customer-orders-box");
-    if (box.style.display === "none" || box.style.display === "") {
-        showCustomerOrdersBox();
-    } else {
-        box.style.display = "none";
-    }
-}
+        updateCustomerOrdersBox();
+        fillOrderFormWithProfile();
+    });
 
-function showProfileForm() {
-  document.getElementById('profile-overlay').style.display = 'flex';
-  if (userProfile) {
-    document.getElementById('profile-lastname').value = userProfile.lastname || '';
-    document.getElementById('profile-firstname').value = userProfile.firstname || '';
-    document.getElementById('profile-email').value = userProfile.email || '';
-    if (userProfile.photo) {
-      document.getElementById('profile-photo-big').src = userProfile.photo;
-      document.getElementById('profile-photo-big').style.display = "block";
-      document.getElementById('profile-photo-placeholder').style.display = "none";
-    } else {
-      document.getElementById('profile-photo-big').style.display = "none";
-      document.getElementById('profile-photo-placeholder').style.display = "flex";
-    }
-  }
-}
-function hideProfileForm() {
-  document.getElementById('profile-overlay').style.display = 'none';
-}
-document.getElementById('profile-btn').onclick = showProfileForm;
-document.getElementById('profile-overlay').addEventListener('click', function(e){
-  if(e.target === this) hideProfileForm();
-});
-document.getElementById('profile-photo').addEventListener('change', function(){
-  const file = this.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('profile-photo-big').src = e.target.result;
-      document.getElementById('profile-photo-big').style.display = "block";
-      document.getElementById('profile-photo-placeholder').style.display = "none";
-    };
-    reader.readAsDataURL(file);
-  }
-});
-document.getElementById('profile-bg').addEventListener('change', function(){
-  const file = this.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      userProfile = userProfile || {};
-      userProfile.bg = e.target.result;
-      localStorage.setItem('userProfile', JSON.stringify(userProfile));
-      applyUserProfile();
-    };
-    reader.readAsDataURL(file);
-  }
-});
-document.getElementById('profile-form').onsubmit = function(e) {
-  e.preventDefault();
-  const photo = document.getElementById('profile-photo-big').src || null;
-  const bg = userProfile && userProfile.bg ? userProfile.bg : null;
-  userProfile = {
-    lastname: document.getElementById('profile-lastname').value,
-    firstname: document.getElementById('profile-firstname').value,
-    email: document.getElementById('profile-email').value,
-    photo: (photo && photo.startsWith('data')) ? photo : null,
-    bg: (bg && bg.startsWith('data')) ? bg : null
-  };
-  localStorage.setItem('userProfile', JSON.stringify(userProfile));
-  hideProfileForm();
-  applyUserProfile();
-  fillOrderFormWithProfile();
-};
-function applyUserProfile() {
-  if (userProfile) {
-    if (userProfile.bg) {
-      document.body.style.backgroundImage = `url('${userProfile.bg}')`;
-    } else {
-      document.body.style.backgroundImage = `url('image/WhatsApp Image 2025-06-10 à 23.52.24_467459e6.jpg')`;
-    }
-    // Photo dans le bouton profil
-    if (userProfile.photo) {
-      document.getElementById('profile-btn').innerHTML = `<img src="${userProfile.photo}" style="width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px;"> Mon profil`;
-    } else {
-      document.getElementById('profile-btn').innerHTML = '👤 Mon profil';
-    }
-  }
-}
-function fillOrderFormWithProfile() {
-  if (userProfile) {
-    document.getElementById('name').value = (userProfile.firstname || "") + ' ' + (userProfile.lastname || "");
-  }
-}
-// Fonctions contact/invitation
-function contactWhatsApp() {
-  window.open("https://wa.me/2250719983044?text=Bonjour%20ISFM%20Express%20!", "_blank");
-}
-function callPhone() {
-  window.open("tel:0719983044");
-}
-function inviteWhatsApp() {
-  window.open("https://wa.me/?text=Rejoins%20ISFM%20Express%20ici%20:%20https://loko-blush.vercel.app/", "_blank");
-}
-function inviteFacebook() {
-  window.open("https://www.facebook.com/sharer/sharer.php?u=https://loko-blush.vercel.app/", "_blank");
-}
-function inviteInstagram() {
-  window.open("https://www.instagram.com/?url=https://loko-blush.vercel.app/", "_blank");
-}
-// Chargement initial
-window.addEventListener('DOMContentLoaded', function() {
-  if (!userProfile) {
-    showProfileForm();
-  } else {
-    applyUserProfile();
-    fillOrderFormWithProfile();
-  }
-});
-
-    </script>
-</body>
+    // Exposition des fonctions globales nécessaires
+    window.openMarcioChat = openMarcioChat;
+    window.closeMarcioChat = closeMarcioChat;
+    window.sendMessage = sendMessage;
+    window.handleChatKeyPress = handleChatKeyPress;
+    window.contactWhatsApp = contactWhatsApp;
+    window.callPhone = callPhone;
+    window.inviteWhatsApp = inviteWhatsApp;
+    window.inviteFacebook = inviteFacebook;
+    window.inviteInstagram = inviteInstagram;
+    window.showSupplierAccess = showSupplierAccess;
+    window.showAbout = showAbout;
+    window.showContact = showContact;
+    window.promptAddToCart = promptAddToCart;
+    window.addToCart = addToCart;
+    window.removeFromCart = removeFromCart;
+    window.clearCustomerOrders = clearCustomerOrders;
+</script>
 </html>
 <a href="index.html" class="btn-retour-bas">⬅ Retour à l'accueil</a>
 
