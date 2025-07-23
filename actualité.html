@@ -5,15 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Express Exchange - Réseau Social Étudiant</title>
   <style>
-    /* Styles de base */
-    body { 
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --error: #e74c3c;
+      --text: #333;
+      --text-light: #666;
+      --bg: #f0f2f5;
+      --card-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      color: #333;
-      background: #f0f2f5;
     }
-    
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
     /* Arrière-plan vidéo */
     .video-background {
       position: fixed;
@@ -24,46 +38,57 @@
       z-index: -2;
       overflow: hidden;
     }
+
     .video-background video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       opacity: 0.7;
     }
+
     .video-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: linear-gradient(135deg, rgba(102,126,234,0.6) 0%, rgba(118,75,162,0.6) 100%);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(118, 75, 162, 0.6) 100%);
       z-index: -1;
     }
-    
+
     /* Conteneur principal */
     .container {
       max-width: 600px;
       margin: 0 auto;
       padding: 15px;
     }
-    
+
     /* En-tête */
     .header {
       text-align: center;
       color: white;
       margin-bottom: 20px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
-    
+
+    .user-info {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+
     /* Formulaire de publication */
     .post-form {
-      background: rgba(255,255,255,0.95);
+      background: var(--card-bg);
       border-radius: 12px;
       padding: 15px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(10px);
     }
+
     .post-textarea {
       width: 100%;
       min-height: 100px;
@@ -73,14 +98,18 @@
       font-size: 16px;
       resize: none;
       margin-bottom: 10px;
+      font-family: inherit;
     }
+
     .post-textarea:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--primary);
     }
+
     .file-input-wrapper {
       margin-bottom: 10px;
     }
+
     .file-input-label {
       display: inline-block;
       padding: 8px 15px;
@@ -88,30 +117,39 @@
       border-radius: 20px;
       cursor: pointer;
       font-size: 14px;
+      transition: background 0.2s;
     }
+
+    .file-input-label:hover {
+      background: #e0e0ef;
+    }
+
     .post-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
     .post-btn {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       border: none;
       padding: 10px 25px;
       border-radius: 20px;
       font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s, opacity 0.2s;
     }
+
     .post-btn:disabled {
       opacity: 0.7;
       cursor: not-allowed;
     }
+
     .post-btn:hover:not(:disabled) {
       transform: translateY(-2px);
     }
-    
+
     /* Barre de progression */
     .upload-progress {
       height: 4px;
@@ -121,43 +159,53 @@
       overflow: hidden;
       display: none;
     }
+
     .progress-bar {
       height: 100%;
-      background: linear-gradient(90deg, #667eea, #764ba2);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       width: 0%;
       transition: width 0.3s;
     }
-    
+
     /* Feed de publications */
     .feed {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
-    
+
     /* Publication individuelle */
     .publication {
-      background: rgba(255,255,255,0.95);
+      background: var(--card-bg);
       border-radius: 12px;
       padding: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       backdrop-filter: blur(10px);
       animation: fadeIn 0.3s ease-out;
     }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .pub-header {
       display: flex;
       align-items: center;
       margin-bottom: 12px;
     }
+
     .pub-avatar {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       display: flex;
       align-items: center;
@@ -166,26 +214,32 @@
       margin-right: 10px;
       flex-shrink: 0;
     }
+
     .pub-user {
       flex-grow: 1;
     }
+
     .pub-username {
       font-weight: bold;
     }
+
     .pub-time {
       font-size: 12px;
-      color: #666;
+      color: var(--text-light);
     }
+
     .pub-text {
       margin-bottom: 10px;
       line-height: 1.4;
       white-space: pre-wrap;
     }
+
     .pub-image-container {
       margin-top: 10px;
       border-radius: 8px;
       overflow: hidden;
     }
+
     .pub-image {
       max-width: 100%;
       max-height: 300px;
@@ -193,9 +247,11 @@
       cursor: pointer;
       transition: transform 0.2s;
     }
+
     .pub-image:hover {
       transform: scale(1.02);
     }
+
     .image-loading {
       background: #f5f5f5;
       min-height: 150px;
@@ -203,8 +259,10 @@
       align-items: center;
       justify-content: center;
       border-radius: 8px;
+      color: var(--text-light);
+      font-size: 14px;
     }
-    
+
     /* Actions de publication */
     .pub-actions {
       display: flex;
@@ -213,6 +271,7 @@
       padding-top: 10px;
       border-top: 1px solid #eee;
     }
+
     .action-btn {
       background: none;
       border: none;
@@ -221,15 +280,18 @@
       gap: 5px;
       cursor: pointer;
       font-size: 14px;
-      color: #555;
+      color: var(--text-light);
+      transition: color 0.2s;
     }
+
     .action-btn.liked {
-      color: #e74c3c;
+      color: var(--error);
     }
+
     .action-btn:hover {
-      color: #667eea;
+      color: var(--primary);
     }
-    
+
     /* Section commentaires */
     .comments-section {
       margin-top: 10px;
@@ -237,27 +299,31 @@
       border-top: 1px solid #eee;
       display: none;
     }
+
     .comments-list {
       margin-bottom: 10px;
       max-height: 300px;
       overflow-y: auto;
     }
+
     .comment {
       background: #f7f7fb;
       padding: 8px 12px;
       border-radius: 8px;
       margin-bottom: 8px;
     }
+
     .comment-header {
       display: flex;
       align-items: center;
       margin-bottom: 5px;
     }
+
     .comment-avatar {
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       font-size: 10px;
       display: flex;
@@ -265,45 +331,58 @@
       justify-content: center;
       margin-right: 8px;
     }
+
     .comment-username {
       font-weight: bold;
       font-size: 13px;
     }
+
     .comment-time {
       font-size: 11px;
-      color: #666;
+      color: var(--text-light);
       margin-left: auto;
     }
+
     .comment-text {
       font-size: 14px;
       line-height: 1.3;
     }
+
     .comment-form {
       display: flex;
       gap: 8px;
       margin-top: 10px;
     }
+
     .comment-input {
       flex-grow: 1;
       padding: 8px 12px;
       border: 1px solid #ddd;
       border-radius: 20px;
       font-size: 14px;
+      font-family: inherit;
     }
+
     .comment-input:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--primary);
     }
+
     .comment-btn {
-      background: #667eea;
+      background: var(--primary);
       color: white;
       border: none;
       border-radius: 20px;
       padding: 8px 15px;
       font-size: 14px;
       cursor: pointer;
+      transition: background 0.2s;
     }
-    
+
+    .comment-btn:hover {
+      background: #5a67d8;
+    }
+
     /* Modal image */
     .image-modal {
       position: fixed;
@@ -311,17 +390,20 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.9);
+      background: rgba(0, 0, 0, 0.9);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 1000;
     }
+
     .modal-image {
       max-width: 90vw;
       max-height: 90vh;
       border-radius: 8px;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
     }
+
     .close-modal {
       position: absolute;
       top: 20px;
@@ -329,18 +411,47 @@
       color: white;
       font-size: 40px;
       cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
     }
-    
+
+    .close-modal:hover {
+      opacity: 1;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     /* Responsive */
     @media (max-width: 600px) {
       .container {
         padding: 10px;
       }
+
       .post-form {
         padding: 12px;
       }
+
       .pub-actions {
         gap: 15px;
+      }
+
+      .pub-image {
+        max-height: 250px;
       }
     }
   </style>
@@ -356,9 +467,9 @@
   <div class="container">
     <div class="header">
       <h1>📱 Express Exchange</h1>
-      <div id="user-info" style="display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; color: white;">
+      <div class="user-info">
         <span id="username-display"></span>
-        <span id="connection-status" style="margin-left: 10px; font-size: 12px;">🟢 Connecté</span>
+        <span id="connection-status"></span>
       </div>
     </div>
 
@@ -367,7 +478,7 @@
       <div class="file-input-wrapper">
         <input type="file" id="file-input" accept="image/*" style="display: none;">
         <label for="file-input" class="file-input-label" id="file-label">📷 Ajouter une photo</label>
-        <span id="file-name" style="font-size: 12px; margin-left: 10px; color: #666;"></span>
+        <span id="file-name" style="font-size: 12px; margin-left: 10px; color: var(--text-light);"></span>
       </div>
       <div id="image-preview" style="margin-bottom: 10px;"></div>
       <div class="upload-progress" id="upload-progress">
@@ -429,13 +540,38 @@
       avatar: ''
     };
 
+    // Détection des capacités de l'appareil
+    const deviceCapabilities = {
+      isLowEnd: () => {
+        // Détection des appareils bas de gamme
+        const isSlowCPU = navigator.hardwareConcurrency < 4;
+        const isLowRAM = navigator.deviceMemory < 2;
+        const isSlowNetwork = navigator.connection?.effectiveType.includes('2g') || 
+                             navigator.connection?.saveData;
+        
+        return isSlowCPU || isLowRAM || isSlowNetwork;
+      },
+      supportsWebP: () => {
+        return document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0;
+      }
+    };
+
     // Vérifier l'inscription au chargement
     document.addEventListener('DOMContentLoaded', () => {
       checkUserRegistration();
       setupConnectionMonitoring();
       setupEventListeners();
       loadPosts();
+      warmUp(); // Préparation des optimisations
     });
+
+    function warmUp() {
+      // Pré-compilation des fonctions critiques
+      const dummyCanvas = document.createElement('canvas');
+      dummyCanvas.width = 2;
+      dummyCanvas.height = 2;
+      dummyCanvas.getContext('2d').fillRect(0, 0, 1, 1);
+    }
 
     function checkUserRegistration() {
       const savedUser = localStorage.getItem('expressExchangeUser');
@@ -449,7 +585,6 @@
     }
 
     function showRegistrationModal() {
-      // Code du modal d'inscription (simplifié pour l'exemple)
       const name = prompt("Entrez votre prénom et nom:");
       if (name) {
         userData = {
@@ -469,7 +604,7 @@
     }
 
     function showAppInterface() {
-      // L'interface est déjà visible dans cette version
+      // L'interface est déjà visible
     }
 
     function setupConnectionMonitoring() {
@@ -523,8 +658,9 @@
 
       // Désactiver le bouton pendant le traitement
       publishBtn.disabled = true;
-      publishBtn.textContent = 'Publication...';
+      publishBtn.innerHTML = '<span class="spinner"></span> Publication...';
       uploadProgress.style.display = 'block';
+      progressBar.style.width = '10%';
 
       try {
         const postId = Date.now().toString();
@@ -547,9 +683,9 @@
         // Traitement de l'image en arrière-plan si nécessaire
         if (file) {
           processAndUploadImage(file, postId);
+        } else {
+          resetPostForm();
         }
-        
-        resetPostForm();
       } catch (error) {
         console.error("Erreur de publication:", error);
         alert("Une erreur est survenue lors de la publication");
@@ -559,78 +695,90 @@
 
     async function processAndUploadImage(file, postId) {
       try {
-        // Compression de l'image
-        updateProgress(10, "Compression de l'image...");
-        
-        const compressedFile = await new Promise((resolve) => {
-          new Compressor(file, {
-            quality: 0.7,
-            maxWidth: 800,
-            maxHeight: 800,
-            convertSize: 200000, // 200KB
-            success: resolve,
-            error: (err) => {
-              console.error("Erreur de compression:", err);
-              resolve(file); // Fallback sur le fichier original
-            }
-          });
-        });
-
-        // Simulation de l'upload avec progression
-        updateProgress(30, "Envoi de l'image...");
-        await simulateUploadProgress();
-        
-        // Conversion en base64
-        updateProgress(80, "Finalisation...");
-        const imageUrl = await fileToBase64(compressedFile);
-        
-        // Mise à jour du post avec l'URL finale
+        // 1. Créer une version basse résolution immédiate
+        progressBar.style.width = '20%';
+        const quickPreviewUrl = await createQuickPreview(file);
         await database.ref('posts/' + postId).update({
-          imageUrl: imageUrl
+          imageUrl: quickPreviewUrl,
+          imageStatus: 'processing'
+        });
+        updatePostImage(postId, quickPreviewUrl);
+
+        // 2. Compression adaptative
+        progressBar.style.width = '40%';
+        publishBtn.innerHTML = '<span class="spinner"></span> Optimisation pour votre mobile...';
+        
+        const finalImage = await compressImage(file);
+        
+        // 3. Envoi final
+        progressBar.style.width = '80%';
+        publishBtn.textContent = 'Envoi final...';
+        
+        const finalUrl = await blobToBase64(finalImage);
+        await database.ref('posts/' + postId).update({
+          imageUrl: finalUrl,
+          imageStatus: 'completed'
         });
         
-        // Mise à jour de l'affichage local
-        updatePostImage(postId, imageUrl);
+        updatePostImage(postId, finalUrl);
         
       } catch (error) {
         console.error("Erreur traitement image:", error);
         await database.ref('posts/' + postId).update({
-          imageUrl: 'error'
+          imageStatus: 'error'
         });
       } finally {
-        updateProgress(100, "Publication terminée");
+        progressBar.style.width = '100%';
         setTimeout(() => {
           uploadProgress.style.display = 'none';
           progressBar.style.width = '0%';
-        }, 1000);
+          resetPostForm();
+        }, 500);
       }
     }
 
-    function updateProgress(percent, message) {
-      progressBar.style.width = `${percent}%`;
-      publishBtn.textContent = message;
-    }
+    async function compressImage(file) {
+      const isLowEnd = deviceCapabilities.isLowEnd();
+      const useWebP = deviceCapabilities.supportsWebP() && !isLowEnd;
+      
+      const options = {
+        maxWidth: isLowEnd ? 640 : 1080,
+        maxHeight: isLowEnd ? 640 : 1080,
+        quality: isLowEnd ? 0.6 : 0.8,
+        format: useWebP ? 'image/webp' : 'image/jpeg'
+      };
 
-    function simulateUploadProgress() {
       return new Promise((resolve) => {
-        let progress = 30;
-        const interval = setInterval(() => {
-          progress += 5 + Math.random() * 10;
-          if (progress >= 80) {
-            clearInterval(interval);
-            resolve();
-          } else {
-            progressBar.style.width = `${progress}%`;
+        new Compressor(file, {
+          ...options,
+          success: resolve,
+          error: (err) => {
+            console.error("Erreur compression:", err);
+            resolve(file); // Fallback sur fichier original
           }
-        }, 200);
+        });
       });
     }
 
-    function fileToBase64(file) {
+    async function createQuickPreview(file) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.min(200, img.width);
+          canvas.height = Math.min(200, img.height);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.5));
+        };
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    function blobToBase64(blob) {
       return new Promise((resolve) => {
         const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
       });
     }
 
