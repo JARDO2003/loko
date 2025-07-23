@@ -161,428 +161,307 @@
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 <script>
-  // --- CONFIG FIREBASE ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
-    authDomain: "data-com-a94a8.firebaseapp.com",
-    databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
-    projectId: "data-com-a94a8",
-    storageBucket: "data-com-a94a8.appspot.com",
-    messagingSenderId: "276904640935",
-    appId: "1:276904640935:web:9cd805aeba6c34c767f682",
-    measurementId: "G-FYQCWY5G4S"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+  // ==== EXPRESS EXCHANGE : UX ULTRA-INSTANTANÉE (Android & PC Friendly) ====
 
-  let userData = null;
-  let posts = [];
-  let postsListener = null;
-  let isConnected = false;
-  let backgroundProcessingQueue = new Map(); // Queue pour les traitements en arrière-plan
-  let localPosts = new Map(); // Publications locales en attente de traitement
+// ==== CONFIG ====
+const firebaseConfig = {
+  apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
+  authDomain: "data-com-a94a8.firebaseapp.com",
+  databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
+  projectId: "data-com-a94a8",
+  storageBucket: "data-com-a94a8.appspot.com",
+  messagingSenderId: "276904640935",
+  appId: "1:276904640935:web:9cd805aeba6c34c767f682",
+  measurementId: "G-FYQCWY5G4S"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-  // Nettoyage de tous les undefined dans les objets envoyés à Firebase
-  function removeUndefinedDeep(obj) {
-    if (Array.isArray(obj)) {
-      return obj.map(removeUndefinedDeep);
-    } else if (obj && typeof obj === 'object') {
-      const cleaned = {};
-      for (const key in obj) {
-        if (obj[key] !== undefined) {
-          cleaned[key] = removeUndefinedDeep(obj[key]);
-        }
+let userData = null;
+let posts = [];
+let postsListener = null;
+let isConnected = false;
+let localPosts = new Map();
+let renderTimeout;
+
+// ==== UTILS ====
+function removeUndefinedDeep(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefinedDeep);
+  } else if (obj && typeof obj === 'object') {
+    const cleaned = {};
+    for (const key in obj) {
+      if (obj[key] !== undefined) {
+        cleaned[key] = removeUndefinedDeep(obj[key]);
       }
-      return cleaned;
     }
-    return obj;
+    return cleaned;
   }
+  return obj;
+}
 
-  function updateConnectionStatus() {
-    const statusIndicator = document.getElementById('statusIndicator');
-    if (statusIndicator) {
-      statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
-      statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
-    }
+function updateConnectionStatus() {
+  const statusIndicator = document.getElementById('statusIndicator');
+  if (statusIndicator) {
+    statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
+    statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
   }
+}
 
-  database.ref(".info/connected").on("value", (snap) => {
-    isConnected = snap.val() === true;
-    updateConnectionStatus();
+database.ref(".info/connected").on("value", (snap) => {
+  isConnected = snap.val() === true;
+  updateConnectionStatus();
+});
+
+// ==== INSCRIPTION ====
+function checkUserRegistration() {
+  const stored = localStorage.getItem('expressExchangeUser');
+  if (stored) {
+    userData = JSON.parse(stored);
+    showMainApp();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  createParticles();
+  checkUserRegistration();
+  setInterval(() => {
+    if (document.getElementById('mainApp').style.display !== 'none') renderPosts();
+  }, 60000);
+});
+
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const nom = document.getElementById('nom').value.trim();
+  const prenom = document.getElementById('prenom').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+  if (nom && prenom && contact) {
+    userData = {
+      id: Date.now().toString(),
+      nom: nom,
+      prenom: prenom,
+      contact: contact,
+      fullName: `${prenom} ${nom}`,
+      avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
+      registeredAt: new Date().toISOString()
+    };
+    localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
+    if (isConnected) database.ref('users/' + userData.id).set(userData);
+    showMainApp();
+  }
+});
+
+function showMainApp() {
+  document.getElementById('registrationOverlay').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
+  updateConnectionStatus();
+  loadPosts();
+}
+
+// ==== FEED ====
+function loadPosts() {
+  if (postsListener) postsListener.off();
+  postsListener = database.ref('posts').orderByChild('timestamp');
+  postsListener.on('value', (snapshot) => {
+    const remotePosts = [];
+    snapshot.forEach((childSnapshot) => {
+      const post = childSnapshot.val();
+      if (!localPosts.has(post.id)) {
+        remotePosts.unshift(post);
+      }
+    });
+    // Fusionne posts locaux (encore en traitement) et distants
+    const allPosts = Array.from(localPosts.values()).concat(remotePosts);
+    posts = allPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    debouncedRender();
   });
+}
 
-  function checkUserRegistration() {
-    const stored = localStorage.getItem('expressExchangeUser');
-    if (stored) {
-      userData = JSON.parse(stored);
-      showMainApp();
-    }
+// ==== PUBLICATION ULTRA-INSTANTANÉE ====
+document.getElementById('publishBtn').addEventListener('click', function() {
+  const text = document.getElementById('postText').value.trim();
+  const fileInput = document.getElementById('fileInput');
+  const publishBtn = document.getElementById('publishBtn');
+
+  if (!text && !fileInput.files[0]) {
+    alert('Veuillez ajouter du texte ou une image');
+    return;
+  }
+  if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
+    alert("Seules les images sont autorisées.");
+    return;
+  }
+  if (fileInput.files[0] && fileInput.files[0].size > 2 * 1024 * 1024) {
+    alert("L'image est trop lourde (max 2 Mo pour rapidité sur Android)");
+    return;
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    createParticles();
-    checkUserRegistration();
-    setInterval(() => {
-      if (document.getElementById('mainApp').style.display !== 'none') renderPosts();
-    }, 60000);
-  });
+  publishBtn.disabled = true;
+  publishBtn.style.transform = 'scale(0.95)';
+  publishBtn.textContent = '✨ Publication...';
 
-  // ========= COMPRESSION ULTRA-RAPIDE EN ARRIÈRE-PLAN =========
-  function ultraFastCompress(file, callback) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const img = new Image();
-      img.onload = function() {
-        // Utilisation de requestAnimationFrame pour éviter de bloquer l'UI
-        requestAnimationFrame(() => {
-          let { width, height } = img;
-          
-          // Compression agressive pour la rapidité
-          const maxSize = 800;
-          if (width > maxSize || height > maxSize) {
-            const ratio = Math.min(maxSize / width, maxSize / height);
-            width = Math.round(width * ratio);
-            height = Math.round(height * ratio);
-          }
+  const postId = Date.now().toString();
+  const file = fileInput.files[0];
 
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          
-          // Optimisation pour la qualité et rapidité
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Compression optimale
-          const compressedUrl = canvas.toDataURL('image/jpeg', 0.85);
-          callback(compressedUrl);
+  // --- Affichage instantané, image loader ---
+  const instantPost = {
+    id: postId,
+    author: userData.fullName,
+    authorId: userData.id,
+    avatar: userData.avatar,
+    text: text,
+    imageUrl: file ? 'https://i.imgur.com/JfPpwOA.gif' : null, // loader GIF
+    timestamp: new Date().toISOString(),
+    isLocal: true,
+    status: 'processing'
+  };
+
+  localPosts.set(postId, instantPost);
+  posts.unshift(instantPost);
+  debouncedRender();
+  clearPostForm();
+
+  setTimeout(() => {
+    publishBtn.disabled = false;
+    publishBtn.textContent = 'Publier';
+    publishBtn.style.transform = 'scale(1)';
+  }, 350);
+
+  if (file) {
+    setTimeout(() => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        // Mise à jour locale (image réelle)
+        const idx = posts.findIndex(p => p.id === postId);
+        if (idx !== -1) {
+          posts[idx].imageUrl = event.target.result;
+          debouncedRender();
+        }
+        // Compression et publication publique
+        ultraFastCompress(file, function(compressedUrl) {
+          const publicPost = {
+            id: postId,
+            author: userData.fullName,
+            authorId: userData.id,
+            avatar: userData.avatar,
+            text: text,
+            imageUrl: compressedUrl,
+            timestamp: instantPost.timestamp
+          };
+          database.ref('posts/' + postId).set(removeUndefinedDeep(publicPost))
+            .then(() => {
+              localPosts.delete(postId);
+              loadPosts();
+            });
         });
       };
-      img.src = event.target.result;
+      reader.readAsDataURL(file);
+    }, 30);
+  } else {
+    // Publication texte seul
+    const publicPost = { ...instantPost, isLocal: false };
+    delete publicPost.status;
+    database.ref('posts/' + postId).set(removeUndefinedDeep(publicPost))
+      .then(() => {
+        localPosts.delete(postId);
+        loadPosts();
+      });
+  }
+});
+
+// ==== COMPRESSION ULTRA FAST ====
+function ultraFastCompress(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      requestAnimationFrame(() => {
+        let { width, height } = img;
+        const maxSize = 800;
+        if (width > maxSize || height > maxSize) {
+          const ratio = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedUrl = canvas.toDataURL('image/jpeg', 0.85);
+        callback(compressedUrl);
+      });
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ==== PREVIEW IMAGE ====
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  const fileName = document.getElementById('fileName');
+  const preview = document.getElementById('mediaPreview');
+  if (file) {
+    if (file.size > 2 * 1024 * 1024) {
+      fileName.textContent = 'Fichier trop lourd (>2Mo)';
+      preview.innerHTML = '';
+      return;
+    }
+    fileName.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      preview.innerHTML = `<img src="${event.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">`;
     };
     reader.readAsDataURL(file);
+  } else {
+    fileName.textContent = '';
+    preview.innerHTML = '';
   }
+});
 
-  function showProcessingIndicator() {
-    const indicator = document.getElementById('processingIndicator');
-    if (indicator) {
-      indicator.classList.add('show');
-      setTimeout(() => indicator.classList.remove('show'), 3000);
+function clearPostForm() {
+  document.getElementById('postText').value = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileName').textContent = '';
+  document.getElementById('mediaPreview').innerHTML = '';
+}
+
+// ==== RENDER POSTS, LIKES, COMMENTAIRES, PARTICLES, ETC. ====
+
+// --- Render des posts ---
+function renderPosts() {
+  const feed = document.getElementById('feed');
+  feed.innerHTML = '';
+  posts.forEach(post => {
+    // Écouter likes/commentaires seulement pour les posts publiés
+    if (!post._listeners && !post.isLocal) {
+      listenLikesAndComments(post.id);
+      post._listeners = true;
     }
-  }
-
-  document.getElementById('registrationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const nom = document.getElementById('nom').value.trim();
-    const prenom = document.getElementById('prenom').value.trim();
-    const contact = document.getElementById('contact').value.trim();
-    if (nom && prenom && contact) {
-      userData = {
-        id: Date.now().toString(),
-        nom: nom,
-        prenom: prenom,
-        contact: contact,
-        fullName: `${prenom} ${nom}`,
-        avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
-        registeredAt: new Date().toISOString()
-      };
-      localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-      if (isConnected) database.ref('users/' + userData.id).set(userData);
-      showMainApp();
+    const likesCount = post.likes ? Object.keys(post.likes).length : 0;
+    const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
+    const isLiked = post.likes && post.likes[userData.id];
+    const timeAgo = getTimeAgo(post.timestamp);
+    let imageHTML = '';
+    if (post.imageUrl) {
+      const imageClass = post.isLocal && post.status === 'processing' ? 'processing-image' : '';
+      imageHTML = `
+        <div>
+          <a class="image-link ${imageClass}" onclick="openImageModal('${post.imageUrl}')">
+            <img src="${post.imageUrl}" alt="Image publication" loading="lazy" style="${post.isLocal && post.status === 'processing' ? 'opacity: 0.8; filter: blur(0.5px);' : ''}">
+            ${post.isLocal && post.status === 'processing' ? '<div class="processing-overlay">⚡ Optimisation...</div>' : ''}
+          </a>
+        </div>
+      `;
     }
-  });
-
-  function showMainApp() {
-    document.getElementById('registrationOverlay').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
-    updateConnectionStatus();
-    loadPosts();
-  }
-
-  function loadPosts() {
-    if (postsListener) postsListener.off();
-    postsListener = database.ref('posts').orderByChild('timestamp');
-    postsListener.on('value', (snapshot) => {
-      const remotePosts = [];
-      snapshot.forEach((childSnapshot) => {
-        const post = childSnapshot.val();
-        // Ne pas écraser les posts locaux non traités
-        if (!localPosts.has(post.id)) {
-          remotePosts.unshift(post);
-        }
-      });
-      
-      // Fusionner posts locaux et distants
-      const allPosts = Array.from(localPosts.values()).concat(remotePosts);
-      posts = allPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      renderPosts();
-    });
-  }
-
-  // ========= PUBLICATION INSTANTANÉE RÉVOLUTIONNAIRE =========
-  document.getElementById('publishBtn').addEventListener('click', function() {
-    const text = document.getElementById('postText').value.trim();
-    const fileInput = document.getElementById('fileInput');
-    const publishBtn = document.getElementById('publishBtn');
-    
-    if (!text && !fileInput.files[0]) {
-      alert('Veuillez ajouter du texte ou une image');
-      return;
-    }
-    
-    if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-      alert("Seules les images sont autorisées.");
-      return;
-    }
-
-    // Animation du bouton (feedback instantané)
-    publishBtn.disabled = true;
-    publishBtn.style.transform = 'scale(0.95)';
-    publishBtn.textContent = '✨ Publication...';
-    
-    const postId = Date.now().toString();
-    const file = fileInput.files[0];
-    
-    // ✨ AFFICHAGE INSTANTANÉ - 0ms de délai ✨
-    const instantPost = {
-      id: postId,
-      author: userData.fullName,
-      authorId: userData.id,
-      avatar: userData.avatar,
-      text: text,
-      imageUrl: null, // Temporaire
-      timestamp: new Date().toISOString(),
-      isLocal: true, // Marqueur pour post local
-      status: 'processing' // Statut de traitement
-    };
-
-    if (file) {
-      // Lecture instantanée pour affichage immédiat
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        instantPost.imageUrl = event.target.result;
-        
-        // 🚀 AFFICHAGE INSTANTANÉ DANS LE FEED 🚀
-        localPosts.set(postId, instantPost);
-        posts.unshift(instantPost);
-        renderPosts();
-        clearPostForm();
-        
-        // Indication visuelle du traitement
-        showProcessingIndicator();
-        updatePostStatus(postId, 'Optimisation en cours...');
-        
-        setTimeout(() => {
-          publishBtn.disabled = false;
-          publishBtn.textContent = 'Publier';
-          publishBtn.style.transform = 'scale(1)';
-        }, 300);
-
-        // 🔄 TRAITEMENT EN ARRIÈRE-PLAN - INVISIBLE POUR L'UTILISATEUR 🔄
-        processImageInBackground(file, postId, text);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      // Publication texte seul - INSTANTANÉ
-      localPosts.set(postId, instantPost);
-      posts.unshift(instantPost);
-      renderPosts();
-      clearPostForm();
-      
-      setTimeout(() => {
-        publishBtn.disabled = false;
-        publishBtn.textContent = 'Publier';
-        publishBtn.style.transform = 'scale(1)';
-      }, 200);
-
-      // Publication directe sur Firebase (texte seul, rapide)
-      publishToFirebase(postId, instantPost);
-    }
-  });
-
-  // Traitement d'image en arrière-plan
-  function processImageInBackground(file, postId, text) {
-    backgroundProcessingQueue.set(postId, {
-      file: file,
-      text: text,
-      startTime: Date.now()
-    });
-
-    // Compression asynchrone
-    setTimeout(() => {
-      ultraFastCompress(file, function(compressedUrl) {
-        const processedPost = {
-          id: postId,
-          author: userData.fullName,
-          authorId: userData.id,
-          avatar: userData.avatar,
-          text: text,
-          imageUrl: compressedUrl,
-          timestamp: new Date().toISOString(),
-          processed: true
-        };
-
-        // Publication sur Firebase avec image optimisée
-        publishToFirebase(postId, processedPost);
-        
-        // Mise à jour silencieuse du post local
-        if (localPosts.has(postId)) {
-          const localPost = localPosts.get(postId);
-          localPost.imageUrl = compressedUrl;
-          localPost.status = 'published';
-          localPost.processed = true;
-          
-          // Supprimer de la queue locale après publication
-          setTimeout(() => {
-            localPosts.delete(postId);
-            backgroundProcessingQueue.delete(postId);
-          }, 2000);
-        }
-
-        updatePostStatus(postId, 'Publié ✓');
-      });
-    }, 100); // Délai minimal pour ne pas bloquer l'UI
-  }
-
-  // Publication sur Firebase
-  function publishToFirebase(postId, postData) {
-    const cleanedPost = removeUndefinedDeep({
-      id: postData.id,
-      author: postData.author,
-      authorId: postData.authorId,
-      avatar: postData.avatar,
-      text: postData.text,
-      imageUrl: postData.imageUrl,
-      timestamp: postData.timestamp
-    });
-
-    database.ref('posts/' + postId).set(cleanedPost)
-      .then(() => {
-        console.log('Publication réussie:', postId);
-      })
-      .catch((error) => {
-        console.error('Erreur de publication:', error);
-        // En cas d'erreur, marquer le post comme échoué
-        updatePostStatus(postId, 'Erreur - Retry...');
-        
-        // Retry automatique après 3 secondes
-        setTimeout(() => {
-          publishToFirebase(postId, postData);
-        }, 3000);
-      });
-  }
-
-  // Mise à jour du statut visuel d'un post
-  function updatePostStatus(postId, status) {
-    const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-    if (postElement) {
-      let statusElement = postElement.querySelector('.post-status');
-      if (!statusElement) {
-        statusElement = document.createElement('div');
-        statusElement.className = 'post-status';
-        statusElement.style.cssText = 'font-size: 11px; color: #888; margin-top: 5px; font-style: italic;';
-        postElement.querySelector('.pub-text').appendChild(statusElement);
-      }
-      statusElement.textContent = status;
-      
-      // Supprimer le statut après 3 secondes si c'est "Publié"
-      if (status.includes('✓')) {
-        setTimeout(() => {
-          if (statusElement && statusElement.parentNode) {
-            statusElement.remove();
-          }
-        }, 3000);
-      }
-    }
-  }
-
-  document.getElementById('fileInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const fileName = document.getElementById('fileName');
-    const preview = document.getElementById('mediaPreview');
-    
-    if (file) {
-      fileName.textContent = file.name;
-      // Prévisualisation instantanée
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        preview.innerHTML = `<img src="${event.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">`;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      fileName.textContent = '';
-      preview.innerHTML = '';
-    }
-  });
-
-  function clearPostForm() {
-    document.getElementById('postText').value = '';
-    document.getElementById('fileInput').value = '';
-    document.getElementById('fileName').textContent = '';
-    document.getElementById('mediaPreview').innerHTML = '';
-  }
-
-  // --- Modal image ---
-  window.openImageModal = function(imgUrl) {
-    const modal = document.getElementById('modalImageView');
-    const modalImg = document.getElementById('modalImageBig');
-    modal.style.display = 'flex';
-    modalImg.src = imgUrl;
-  };
-
-  window.closeImageModal = function() {
-    document.getElementById('modalImageView').style.display = 'none';
-  };
-
-  document.getElementById('modalImageView').addEventListener('click', function(e){
-    if(e.target === this){ closeImageModal(); }
-  });
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){ closeImageModal(); }
-  });
-
-  // --- Likes et commentaires avec mises à jour instantanées ---
-  function listenLikesAndComments(postId) {
-    database.ref('likes/' + postId).on('value', snap => {
-      const likes = snap.val() || {};
-      const cleanedLikes = removeUndefinedDeep(likes);
-      const post = posts.find(p => p.id === postId);
-      if (post) {
-        post.likes = cleanedLikes;
-        updateLikeButton(postId, cleanedLikes);
-      }
-    });
-
-    database.ref('comments/' + postId).on('value', snap => {
-      const comments = snap.val() || {};
-      const cleanedComments = removeUndefinedDeep(comments);
-      const post = posts.find(p => p.id === postId);
-      if (post) {
-        post.comments = cleanedComments;
-        updateCommentsSection(postId, cleanedComments);
-      }
-    });
-  }
-
-  function updateLikeButton(postId, likes) {
-    const btn = document.getElementById('like-btn-' + postId);
-    if (btn) {
-      const likesCount = Object.keys(likes).length;
-      const isLiked = likes[userData.id];
-      btn.innerHTML = `${isLiked ? '❤️' : '🤍'} ${likesCount}`;
-      btn.className = `action-btn ${isLiked ? 'liked' : ''}`;
-    }
-  }
-
-  function updateCommentsSection(postId, comments) {
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    if (commentsSection) {
-      const commentsList = Object.values(comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-      const commentsHTML = commentsList.map(comment => `
+    let commentsHTML = '';
+    if (post.comments && !post.isLocal) {
+      const commentsList = Object.values(post.comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      commentsHTML = commentsList.map(comment => `
         <div class="comment">
           <div class="comment-header">
             <div class="comment-avatar">${comment.avatar}</div>
@@ -592,314 +471,296 @@
           <div class="comment-text">${comment.text}</div>
         </div>
       `).join('');
-      
-      const commentForm = commentsSection.querySelector('.comment-form');
-      commentsSection.innerHTML = commentsHTML + commentForm.outerHTML;
-      
-      // Mise à jour du compteur
-      const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"]`);
-      if (commentBtn) {
-        commentBtn.innerHTML = `💬 ${Object.keys(comments).length}`;
-      }
     }
-  }
-
-  function renderPosts() {
-    const feed = document.getElementById('feed');
-    feed.innerHTML = '';
-    posts.forEach(post => {
-      // Écouter les likes/commentaires seulement pour les posts publiés
-      if (!post._listeners && !post.isLocal) {
-        listenLikesAndComments(post.id);
-        post._listeners = true;
-      }
-      
-      const likesCount = post.likes ? Object.keys(post.likes).length : 0;
-      const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
-      const isLiked = post.likes && post.likes[userData.id];
-      const timeAgo = getTimeAgo(post.timestamp);
-      
-      let imageHTML = '';
-      if (post.imageUrl) {
-        const imageClass = post.isLocal && post.status === 'processing' ? 'processing-image' : '';
-        imageHTML = `
-          <div>
-            <a class="image-link ${imageClass}" onclick="openImageModal('${post.imageUrl}')">
-              <img src="${post.imageUrl}" alt="Image publication" loading="lazy" style="${post.isLocal && post.status === 'processing' ? 'opacity: 0.8; filter: blur(0.5px);' : ''}">
-              ${post.isLocal && post.status === 'processing' ? '<div class="processing-overlay">⚡ Optimisation...</div>' : ''}
-            </a>
-          </div>
-        `;
-      }
-      
-      let commentsHTML = '';
-      if (post.comments && !post.isLocal) {
-        const commentsList = Object.values(post.comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        commentsHTML = commentsList.map(comment => `
-          <div class="comment">
-            <div class="comment-header">
-              <div class="comment-avatar">${comment.avatar}</div>
-              <div class="comment-username">${comment.author}</div>
-              <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
-            </div>
-            <div class="comment-text">${comment.text}</div>
-          </div>
-        `).join('');
-      }
-      
-      // Indicateur visuel pour posts locaux
-      const localIndicator = post.isLocal ? '<span style="color: #ff6b6b; font-size: 12px; margin-left: 8px;">⚡ Instantané</span>' : '';
-      
-      const postHtml = `
-        <div class="publication" data-post-id="${post.id}">
-          <div class="pub-header">
-            <div class="pub-avatar">${post.avatar}</div>
-            <div class="pub-info">
-              <div class="pub-username">${post.author}${localIndicator}</div>
-              <div class="pub-time">${timeAgo}</div>
-            </div>
-          </div>
-          <div class="pub-text">${post.text}</div>
-          ${imageHTML}
-          <div class="pub-actions">
-            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}" ${post.isLocal ? 'disabled' : ''}>
-              ${isLiked ? '❤️' : '🤍'} ${likesCount}
-            </button>
-            <button class="action-btn" onclick="toggleComments('${post.id}')" ${post.isLocal ? 'disabled' : ''}>
-              💬 ${commentsCount}
-            </button>
-          </div>
-          <div class="comments-section" id="comments-${post.id}" style="display: none;">
-            ${commentsHTML}
-            ${!post.isLocal ? `
-            <div class="comment-form">
-              <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-              <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-            </div>
-            ` : '<div style="color: #888; padding: 10px; text-align: center; font-size: 13px;">Publication en cours...</div>'}
+    const localIndicator = post.isLocal ? '<span style="color: #ff6b6b; font-size: 12px; margin-left: 8px;">⚡ Instantané</span>' : '';
+    const postHtml = `
+      <div class="publication" data-post-id="${post.id}">
+        <div class="pub-header">
+          <div class="pub-avatar">${post.avatar}</div>
+          <div class="pub-info">
+            <div class="pub-username">${post.author}${localIndicator}</div>
+            <div class="pub-time">${timeAgo}</div>
           </div>
         </div>
-      `;
-      feed.innerHTML += postHtml;
-    });
+        <div class="pub-text">${post.text}</div>
+        ${imageHTML}
+        <div class="pub-actions">
+          <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}" ${post.isLocal ? 'disabled' : ''}>
+            ${isLiked ? '❤️' : '🤍'} ${likesCount}
+          </button>
+          <button class="action-btn" onclick="toggleComments('${post.id}')" ${post.isLocal ? 'disabled' : ''}>
+            💬 ${commentsCount}
+          </button>
+        </div>
+        <div class="comments-section" id="comments-${post.id}" style="display: none;">
+          ${commentsHTML}
+          ${!post.isLocal ? `
+          <div class="comment-form">
+            <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
+            <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
+          </div>
+          ` : '<div style="color: #888; padding: 10px; text-align: center; font-size: 13px;">Publication en cours...</div>'}
+        </div>
+      </div>
+    `;
+    feed.innerHTML += postHtml;
+  });
+}
+
+// --- Debounce pour éviter trop de rendus ---
+function debouncedRender() {
+  if (renderTimeout) clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(renderPosts, 100);
+}
+
+// --- Likes et commentaires ---
+function listenLikesAndComments(postId) {
+  database.ref('likes/' + postId).on('value', snap => {
+    const likes = snap.val() || {};
+    const cleanedLikes = removeUndefinedDeep(likes);
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      post.likes = cleanedLikes;
+      updateLikeButton(postId, cleanedLikes);
+    }
+  });
+  database.ref('comments/' + postId).on('value', snap => {
+    const comments = snap.val() || {};
+    const cleanedComments = removeUndefinedDeep(comments);
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      post.comments = cleanedComments;
+      updateCommentsSection(postId, cleanedComments);
+    }
+  });
+}
+
+function updateLikeButton(postId, likes) {
+  const btn = document.getElementById('like-btn-' + postId);
+  if (btn) {
+    const likesCount = Object.keys(likes).length;
+    const isLiked = likes[userData.id];
+    btn.innerHTML = `${isLiked ? '❤️' : '🤍'} ${likesCount}`;
+    btn.className = `action-btn ${isLiked ? 'liked' : ''}`;
   }
+}
 
-  // ========= INTERACTIONS INSTANTANÉES =========
-  window.toggleLike = function(postId) {
-    const post = posts.find(p => p.id === postId);
-    if (!post || post.isLocal) return; // Pas d'interaction sur posts locaux
-    
-    const btn = document.getElementById('like-btn-' + postId);
-    
-    // Mise à jour instantanée de l'UI
-    if (!post.likes) post.likes = {};
-    const isCurrentlyLiked = post.likes[userData.id];
-    
-    if (isCurrentlyLiked) {
-      delete post.likes[userData.id];
-    } else {
-      post.likes[userData.id] = {
-        userId: userData.id,
-        username: userData.fullName,
-        timestamp: new Date().toISOString()
-      };
+function updateCommentsSection(postId, comments) {
+  const commentsSection = document.getElementById(`comments-${postId}`);
+  if (commentsSection) {
+    const commentsList = Object.values(comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const commentsHTML = commentsList.map(comment => `
+      <div class="comment">
+        <div class="comment-header">
+          <div class="comment-avatar">${comment.avatar}</div>
+          <div class="comment-username">${comment.author}</div>
+          <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
+        </div>
+        <div class="comment-text">${comment.text}</div>
+      </div>
+    `).join('');
+    const commentForm = commentsSection.querySelector('.comment-form');
+    commentsSection.innerHTML = commentsHTML + (commentForm ? commentForm.outerHTML : '');
+    const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"]`);
+    if (commentBtn) {
+      commentBtn.innerHTML = `💬 ${Object.keys(comments).length}`;
     }
-    
-    // Mise à jour immédiate du bouton
-    updateLikeButton(postId, post.likes);
-    
-    // Synchronisation Firebase en arrière-plan
-    const likeRef = database.ref('likes/' + postId + '/' + userData.id);
-    if (isCurrentlyLiked) {
-      likeRef.remove();
-    } else {
-      likeRef.set(removeUndefinedDeep({
-        userId: userData.id,
-        username: userData.fullName,
-        timestamp: new Date().toISOString()
-      }));
-    }
-  };
+  }
+}
 
-  window.toggleComments = function(postId) {
-    const post = posts.find(p => p.id === postId);
-    if (post && post.isLocal) return; // Pas de commentaires sur posts locaux
-    
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-  };
-
-  window.submitComment = function(postId) {
-    const post = posts.find(p => p.id === postId);
-    if (post && post.isLocal) return; // Pas de commentaires sur posts locaux
-    
-    const input = document.getElementById(`comment-input-${postId}`);
-    const commentText = input.value.trim();
-    if (!commentText) return;
-    
-    const commentId = Date.now().toString();
-    const comment = {
-      id: commentId,
-      author: userData.fullName,
-      authorId: userData.id,
-      avatar: userData.avatar,
-      text: commentText,
+window.toggleLike = function(postId) {
+  const post = posts.find(p => p.id === postId);
+  if (!post || post.isLocal) return;
+  const btn = document.getElementById('like-btn-' + postId);
+  if (!post.likes) post.likes = {};
+  const isCurrentlyLiked = post.likes[userData.id];
+  if (isCurrentlyLiked) {
+    delete post.likes[userData.id];
+  } else {
+    post.likes[userData.id] = {
+      userId: userData.id,
+      username: userData.fullName,
       timestamp: new Date().toISOString()
     };
-    
-    // Ajout instantané au post local
-    if (post) {
-      if (!post.comments) post.comments = {};
-      post.comments[commentId] = comment;
-      updateCommentsSection(postId, post.comments);
-    }
-    
-    // Vider le champ immédiatement
-    input.value = '';
-    
-    // Synchronisation Firebase en arrière-plan
-    database.ref('comments/' + postId + '/' + commentId).set(removeUndefinedDeep(comment));
-  };
-
-  document.addEventListener('keydown', function(e) {
-    if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
-      const postId = e.target.id.replace('comment-input-', '');
-      window.submitComment(postId);
-    }
-  });
-
-  function getTimeAgo(timestamp) {
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - time) / 1000);
-    if (diffInSeconds < 60) return 'À l\'instant';
-    if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
-    } else {
-      const days = Math.floor(diffInSeconds / 86400);
-      return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
-    }
   }
-
-  function createParticles() {
-    const particles = document.getElementById('particles');
-    if (!particles) return;
-    for (let i = 0; i < 20; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 6 + 's';
-      particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-      particles.appendChild(particle);
-    }
+  updateLikeButton(postId, post.likes);
+  const likeRef = database.ref('likes/' + postId + '/' + userData.id);
+  if (isCurrentlyLiked) {
+    likeRef.remove();
+  } else {
+    likeRef.set(removeUndefinedDeep({
+      userId: userData.id,
+      username: userData.fullName,
+      timestamp: new Date().toISOString()
+    }));
   }
+};
 
-  window.addEventListener('resize', function() {
-    const particles = document.getElementById('particles');
-    if (particles) {
-      particles.innerHTML = '';
-      createParticles();
-    }
-  });
+window.toggleComments = function(postId) {
+  const post = posts.find(p => p.id === postId);
+  if (post && post.isLocal) return;
+  const commentsSection = document.getElementById(`comments-${postId}`);
+  commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+};
 
-  // ========= GESTION DES PUBLICATIONS PERSONNELLES =========
-  document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-    showMyPostsModal();
-  });
-
-  document.getElementById('closeMyPostsModal').onclick = function() {
-    document.getElementById('myPostsModal').style.display = 'none';
+window.submitComment = function(postId) {
+  const post = posts.find(p => p.id === postId);
+  if (post && post.isLocal) return;
+  const input = document.getElementById(`comment-input-${postId}`);
+  const commentText = input.value.trim();
+  if (!commentText) return;
+  const commentId = Date.now().toString();
+  const comment = {
+    id: commentId,
+    author: userData.fullName,
+    authorId: userData.id,
+    avatar: userData.avatar,
+    text: commentText,
+    timestamp: new Date().toISOString()
   };
+  if (post) {
+    if (!post.comments) post.comments = {};
+    post.comments[commentId] = comment;
+    updateCommentsSection(postId, post.comments);
+  }
+  input.value = '';
+  database.ref('comments/' + postId + '/' + commentId).set(removeUndefinedDeep(comment));
+};
 
-  document.getElementById('myPostsModal').onclick = function(e) {
-    if (e.target === this) this.style.display = 'none';
-  };
+document.addEventListener('keydown', function(e) {
+  if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
+    const postId = e.target.id.replace('comment-input-', '');
+    window.submitComment(postId);
+  }
+});
 
-  function showMyPostsModal() {
-    const listEl = document.getElementById('myPostsList');
-    const myPosts = posts.filter(p => p.authorId === userData.id);
-    if (myPosts.length === 0) {
-      listEl.innerHTML = `<div style="color:#555; padding:18px; text-align:center;">Aucune publication trouvée.</div>`;
-    } else {
-      listEl.innerHTML = myPosts.map(post => {
-        const timeAgo = getTimeAgo(post.timestamp);
-        let img = post.imageUrl ? `<img src="${post.imageUrl}" alt="" style="max-width:80px; max-height:80px; border-radius:7px; margin-bottom:8px; display:block; ${post.isLocal ? 'opacity: 0.7;' : ''}">` : "";
-        const statusBadge = post.isLocal ? '<span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">En cours</span>' : '';
-        
-        return `
-          <div style="border-bottom:1px solid #eee; padding:10px 0 11px 0; display:flex; gap:14px; align-items:center;">
-            <div style="flex:0 0 80px;">
-              ${img}
-            </div>
-            <div style="flex:1;">
-              <div style="font-weight:500; color:#222;">${post.text ? post.text : "(aucun texte)"}${statusBadge}</div>
-              <div style="font-size:13px; color:#666; margin-top:3px;">${timeAgo}</div>
-            </div>
-            <button onclick="deleteMyPost('${post.id}')" style="margin-left:10px; background:linear-gradient(135deg, #e85c6b, #c44569); color:#fff; border:none; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer;" ${post.isLocal ? 'disabled' : ''}>
-              ${post.isLocal ? 'En cours...' : 'Supprimer'}
-            </button>
+// --- Modal image ---
+window.openImageModal = function(imgUrl) {
+  const modal = document.getElementById('modalImageView');
+  const modalImg = document.getElementById('modalImageBig');
+  modal.style.display = 'flex';
+  modalImg.src = imgUrl;
+};
+window.closeImageModal = function() {
+  document.getElementById('modalImageView').style.display = 'none';
+};
+document.getElementById('modalImageView').addEventListener('click', function(e){
+  if(e.target === this){ closeImageModal(); }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ closeImageModal(); }
+});
+
+// --- Particules ---
+function createParticles() {
+  const particles = document.getElementById('particles');
+  if (!particles) return;
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 6 + 's';
+    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    particles.appendChild(particle);
+  }
+}
+window.addEventListener('resize', function() {
+  const particles = document.getElementById('particles');
+  if (particles) {
+    particles.innerHTML = '';
+    createParticles();
+  }
+});
+
+// --- GESTION DES PUBLICATIONS PERSONNELLES ---
+document.getElementById('showMyPostsBtn').addEventListener('click', function() {
+  showMyPostsModal();
+});
+document.getElementById('closeMyPostsModal').onclick = function() {
+  document.getElementById('myPostsModal').style.display = 'none';
+};
+document.getElementById('myPostsModal').onclick = function(e) {
+  if (e.target === this) this.style.display = 'none';
+};
+function showMyPostsModal() {
+  const listEl = document.getElementById('myPostsList');
+  const myPosts = posts.filter(p => p.authorId === userData.id);
+  if (myPosts.length === 0) {
+    listEl.innerHTML = `<div style="color:#555; padding:18px; text-align:center;">Aucune publication trouvée.</div>`;
+  } else {
+    listEl.innerHTML = myPosts.map(post => {
+      const timeAgo = getTimeAgo(post.timestamp);
+      let img = post.imageUrl ? `<img src="${post.imageUrl}" alt="" style="max-width:80px; max-height:80px; border-radius:7px; margin-bottom:8px; display:block; ${post.isLocal ? 'opacity: 0.7;' : ''}">` : "";
+      const statusBadge = post.isLocal ? '<span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">En cours</span>' : '';
+      return `
+        <div style="border-bottom:1px solid #eee; padding:10px 0 11px 0; display:flex; gap:14px; align-items:center;">
+          <div style="flex:0 0 80px;">
+            ${img}
           </div>
-        `;
-      }).join('');
-    }
-    document.getElementById('myPostsModal').style.display = 'flex';
+          <div style="flex:1;">
+            <div style="font-weight:500; color:#222;">${post.text ? post.text : "(aucun texte)"}${statusBadge}</div>
+            <div style="font-size:13px; color:#666; margin-top:3px;">${timeAgo}</div>
+          </div>
+          <button onclick="deleteMyPost('${post.id}')" style="margin-left:10px; background:linear-gradient(135deg, #e85c6b, #c44569); color:#fff; border:none; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer;" ${post.isLocal ? 'disabled' : ''}>
+            ${post.isLocal ? 'En cours...' : 'Supprimer'}
+          </button>
+        </div>
+      `;
+    }).join('');
   }
-
-  window.deleteMyPost = function(postId) {
-    const post = posts.find(p => p.id === postId);
-    if (post && post.isLocal) {
-      alert("Impossible de supprimer une publication en cours de traitement.");
-      return;
-    }
-    
-    if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) return;
-    
-    // Suppression instantanée du feed local
-    posts = posts.filter(post => post.id !== postId);
-    renderPosts();
-    showMyPostsModal(); // Refresh la liste
-    
-    // Suppression Firebase en arrière-plan
-    const updates = {};
-    updates['/posts/' + postId] = null;
-    updates['/likes/' + postId] = null;
-    updates['/comments/' + postId] = null;
-    firebase.database().ref().update(updates)
-      .catch(() => {
-        alert("Erreur lors de la suppression. La publication pourrait réapparaître.");
-        // En cas d'erreur, recharger depuis Firebase
-        loadPosts();
-      });
-  };
-
-  // ========= OPTIMISATIONS PERFORMANCES =========
-  
-  
-  function debouncedRender() {
-    if (renderTimeout) clearTimeout(renderTimeout);
-    renderTimeout = setTimeout(renderPosts, 100);
+  document.getElementById('myPostsModal').style.display = 'flex';
+}
+window.deleteMyPost = function(postId) {
+  const post = posts.find(p => p.id === postId);
+  if (post && post.isLocal) {
+    alert("Impossible de supprimer une publication en cours de traitement.");
+    return;
   }
-
-  // Préchargement des images pour une navigation fluide
-  function preloadImages() {
-    posts.forEach(post => {
-      if (post.imageUrl) {
-        const img = new Image();
-        img.src = post.imageUrl;
-      }
+  if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) return;
+  posts = posts.filter(post => post.id !== postId);
+  debouncedRender();
+  showMyPostsModal();
+  const updates = {};
+  updates['/posts/' + postId] = null;
+  updates['/likes/' + postId] = null;
+  updates['/comments/' + postId] = null;
+  firebase.database().ref().update(updates)
+    .catch(() => {
+      alert("Erreur lors de la suppression. La publication pourrait réapparaître.");
+      loadPosts();
     });
+};
+
+// --- Time Ago ---
+function getTimeAgo(timestamp) {
+  const now = new Date();
+  const time = new Date(timestamp);
+  const diffInSeconds = Math.floor((now - time) / 1000);
+  if (diffInSeconds < 60) return 'À l\'instant';
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+  } else {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
   }
+}
 
-  // Appel du préchargement après le rendu
-  setTimeout(preloadImages, 1000);
-
-  // Nettoyage des listeners Firebase à la fermeture de page
-  window.addEventListener('beforeunload', function() {
-    if (postsListener) postsListener.off();
+// --- Préchargement images ---
+function preloadImages() {
+  posts.forEach(post => {
+    if (post.imageUrl) {
+      const img = new Image();
+      img.src = post.imageUrl;
+    }
   });
+}
+setTimeout(preloadImages, 1000);
 
-</script>
+// --- Nettoyage listeners Firebase à la fermeture de page ---
+window.addEventListener('beforeunload', function() {
+  if (postsListener) postsListener.off();
+});
