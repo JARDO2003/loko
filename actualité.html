@@ -41,6 +41,8 @@
     .post-actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
     .post-btn { background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; border:none; padding:9px 20px; border-radius:18px; font-size:15px; font-weight:500; transition:all 0.2s;}
     .post-btn:disabled { opacity:0.7; cursor:not-allowed; transform:scale(0.98);}
+    .post-btn.publishing { animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     .feed { display:flex; flex-direction:column; gap:16px;}
     .publication { background:#fff; border-radius:13px; padding:17px; box-shadow:0 2px 12px #0001; animation:slideIn 0.3s ease-out;}
     @keyframes slideIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);}}
@@ -53,6 +55,8 @@
     .image-link { cursor:pointer; display:inline-block; max-width:100%; margin-bottom:12px;}
     .image-link img { max-width:100%; max-height:270px; border-radius:7px; box-shadow:0 1px 6px #0002; transition:transform 0.18s;}
     .image-link img:hover { transform:scale(1.04);}
+    .image-optimizing { opacity: 0.7; position: relative; }
+    .image-optimizing::after { content: '🔄 Optimisation...'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
     .modal-image-view { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.90); z-index:4000; justify-content:center; align-items:center;}
     .modal-image-view img { max-width:98vw; max-height:96vh; border-radius:12px; box-shadow:0 2px 32px #0008;}
     .close-modal-image { position:absolute; top:24px; right:40px; color:#fff; font-size:40px; cursor:pointer; z-index:4050;}
@@ -72,8 +76,6 @@
     .comment-input:focus { outline:none; border-color:#667eea;}
     .comment-btn { background:#667eea; color:#fff; border:none; padding:6px 13px; border-radius:16px; font-size:13px;}
     .comment-btn:hover { background:#5a67d8;}
-    .processing-indicator { position:absolute; top:10px; right:10px; background:rgba(102,126,234,0.1); color:#667eea; padding:4px 8px; border-radius:12px; font-size:11px; opacity:0; transition:opacity 0.3s;}
-    .processing-indicator.show { opacity:1;}
     @media (max-width:680px) { .container{padding:4px;} .header h1{font-size:1.4em;} .registration-form{padding:18px 4px;} }
   </style>
 </head>
@@ -140,7 +142,6 @@
         </div>
       </div>
       <div class="post-form" style="position:relative;">
-        <div class="processing-indicator" id="processingIndicator">🔄 Optimisation...</div>
         <textarea class="post-textarea" id="postText" placeholder="Que voulez-vous partager ?"></textarea>
         <div class="file-input-wrapper">
           <input type="file" id="fileInput" class="file-input" accept="image/*">
@@ -179,7 +180,6 @@
   let posts = [];
   let postsListener = null;
   let isConnected = false;
-  let processingQueue = new Map(); // Queue pour les traitements en arrière-plan
 
   // Nettoyage de tous les undefined dans les objets envoyés à Firebase
   function removeUndefinedDeep(obj) {
@@ -226,47 +226,42 @@
     }, 60000);
   });
 
-  // ========= COMPRESSION ULTRA-RAPIDE EN ARRIÈRE-PLAN =========
-  function ultraFastCompress(file, callback) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const img = new Image();
-      img.onload = function() {
-        // Utilisation de requestAnimationFrame pour éviter de bloquer l'UI
-        requestAnimationFrame(() => {
-          let { width, height } = img;
-          
-          // Compression agressive pour la rapidité
-          const maxSize = 600;
-          if (width > maxSize || height > maxSize) {
-            const ratio = Math.min(maxSize / width, maxSize / height);
-            width = Math.round(width * ratio);
-            height = Math.round(height * ratio);
-          }
+  // ========= COMPRESSION ASYNCHRONE EN ARRIÈRE-PLAN =========
+  function asyncImageCompress(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          // Utilisation de setTimeout pour rendre le processus asynchrone
+          setTimeout(() => {
+            let { width, height } = img;
+            
+            // Compression aggressive pour la rapidité
+            const maxSize = 600;
+            if (width > maxSize || height > maxSize) {
+              const ratio = Math.min(maxSize / width, maxSize / height);
+              width = Math.round(width * ratio);
+              height = Math.round(height * ratio);
+            }
 
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          
-          // Désactivation du lissage pour plus de rapidité
-          ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Compression optimale
-          const compressedUrl = canvas.toDataURL('image/jpeg', 0.8);
-          callback(compressedUrl);
-        });
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Optimisation pour la rapidité
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const compressedUrl = canvas.toDataURL('image/jpeg', 0.8);
+            resolve(compressedUrl);
+          }, 0); // Permet à l'UI de se mettre à jour avant de commencer la compression
+        };
+        img.src = event.target.result;
       };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function showProcessingIndicator() {
-    const indicator = document.getElementById('processingIndicator');
-    indicator.classList.add('show');
-    setTimeout(() => indicator.classList.remove('show'), 2000);
+      reader.readAsDataURL(file);
+    });
   }
 
   document.getElementById('registrationForm').addEventListener('submit', function(e) {
@@ -311,7 +306,7 @@
     });
   }
 
-  // ========= PUBLICATION INSTANTANÉE OPTIMISÉE =========
+  // ========= PUBLICATION ULTRA-RAPIDE =========
   document.getElementById('publishBtn').addEventListener('click', function() {
     const text = document.getElementById('postText').value.trim();
     const fileInput = document.getElementById('fileInput');
@@ -322,61 +317,56 @@
       return;
     }
     
-    if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
+    // Validation rapide du type de fichier (sans lecture)
+    const file = fileInput.files[0];
+    if (file && !file.type.startsWith('image/')) {
       alert("Seules les images sont autorisées.");
       return;
     }
 
-    // Animation du bouton (feedback instantané)
+    // ⚡ FEEDBACK INSTANTANÉ ⚡
     publishBtn.disabled = true;
-    publishBtn.style.transform = 'scale(0.95)';
-    setTimeout(() => publishBtn.style.transform = 'scale(1)', 100);
+    publishBtn.classList.add('publishing');
+    publishBtn.textContent = 'Publication...';
 
     const postId = Date.now().toString();
-    const file = fileInput.files[0];
     
     if (file) {
-      // Lecture instantanée du fichier pour affichage immédiat
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const originalImageUrl = event.target.result;
-        
-        // ✨ PUBLICATION INSTANTANÉE ✨
-        const post = {
-          id: postId,
-          author: userData.fullName,
-          authorId: userData.id,
-          avatar: userData.avatar,
-          text: text,
-          imageUrl: originalImageUrl,
-          timestamp: new Date().toISOString()
-        };
-
-        // Ajout instantané au feed local (0ms)
-        posts.unshift(post);
-        renderPosts();
-        clearPostForm();
-        resetPublishButton();
-
-        // Sauvegarde Firebase en parallèle (non-bloquant)
-        database.ref('posts/' + postId).set(removeUndefinedDeep(post));
-
-        // 🔄 COMPRESSION EN ARRIÈRE-PLAN (invisible)
-        showProcessingIndicator();
-        setTimeout(() => {
-          ultraFastCompress(file, function(compressedUrl) {
-            // Mise à jour silencieuse avec l'image optimisée
-            database.ref('posts/' + postId + '/imageUrl').set(compressedUrl);
-            
-            // Mise à jour locale discrète
-            const localPost = posts.find(p => p.id === postId);
-            if (localPost) localPost.imageUrl = compressedUrl;
-          });
-        }, 50); // Délai minimal pour ne pas bloquer l'UI
+      // ✨ PUBLICATION IMMÉDIATE avec placeholder ✨
+      const post = {
+        id: postId,
+        author: userData.fullName,
+        authorId: userData.id,
+        avatar: userData.avatar,
+        text: text,
+        imageUrl: URL.createObjectURL(file), // URL temporaire instantanée
+        imageOptimizing: true, // Flag pour indiquer l'optimisation
+        timestamp: new Date().toISOString()
       };
-      reader.readAsDataURL(file);
+
+      // Ajout INSTANTANÉ au feed (0ms de latence)
+      posts.unshift(post);
+      renderPosts();
+      clearPostForm();
+      resetPublishButton();
+
+      // 🔄 COMPRESSION et UPLOAD EN PARALLÈLE (non-bloquant)
+      asyncImageCompress(file).then(compressedUrl => {
+        // Mise à jour avec l'image optimisée
+        const localPost = posts.find(p => p.id === postId);
+        if (localPost) {
+          localPost.imageUrl = compressedUrl;
+          localPost.imageOptimizing = false;
+          renderPosts(); // Re-render avec l'image optimisée
+        }
+
+        // Sauvegarde Firebase avec l'image optimisée
+        const finalPost = { ...post, imageUrl: compressedUrl };
+        delete finalPost.imageOptimizing;
+        database.ref('posts/' + postId).set(removeUndefinedDeep(finalPost));
+      });
     } else {
-      // Publication texte seul - INSTANTANÉ
+      // ⚡ PUBLICATION TEXTE - INSTANTANÉE ⚡
       const post = {
         id: postId,
         author: userData.fullName,
@@ -387,7 +377,7 @@
         timestamp: new Date().toISOString()
       };
 
-      // Ajout instantané au feed
+      // Ajout instantané
       posts.unshift(post);
       renderPosts();
       clearPostForm();
@@ -401,8 +391,8 @@
   function resetPublishButton() {
     const publishBtn = document.getElementById('publishBtn');
     publishBtn.disabled = false;
+    publishBtn.classList.remove('publishing');
     publishBtn.textContent = 'Publier';
-    publishBtn.style.transform = 'scale(1)';
   }
 
   document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -412,12 +402,9 @@
     
     if (file) {
       fileName.textContent = file.name;
-      // Prévisualisation instantanée
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        preview.innerHTML = `<img src="${event.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px;">`;
-      };
-      reader.readAsDataURL(file);
+      // Prévisualisation instantanée avec URL temporaire
+      const tempUrl = URL.createObjectURL(file);
+      preview.innerHTML = `<img src="${tempUrl}" style="max-width: 100px; max-height: 100px; border-radius: 5px;">`;
     } else {
       fileName.textContent = '';
       preview.innerHTML = '';
@@ -459,7 +446,6 @@
       const post = posts.find(p => p.id === postId);
       if (post) {
         post.likes = cleanedLikes;
-        // Mise à jour instantanée de l'UI
         updateLikeButton(postId, cleanedLikes);
       }
     });
@@ -503,7 +489,6 @@
       const commentForm = commentsSection.querySelector('.comment-form');
       commentsSection.innerHTML = commentsHTML + commentForm.outerHTML;
       
-      // Mise à jour du compteur
       const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"]`);
       if (commentBtn) {
         commentBtn.innerHTML = `💬 ${Object.keys(comments).length}`;
@@ -526,8 +511,9 @@
       
       let imageHTML = '';
       if (post.imageUrl) {
+        const optimizingClass = post.imageOptimizing ? 'image-optimizing' : '';
         imageHTML = `
-          <div>
+          <div class="${optimizingClass}">
             <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
               <img src="${post.imageUrl}" alt="Image publication" loading="lazy">
             </a>
@@ -773,7 +759,7 @@
   // Préchargement des images pour une navigation fluide
   function preloadImages() {
     posts.forEach(post => {
-      if (post.imageUrl) {
+      if (post.imageUrl && !post.imageOptimizing) {
         const img = new Image();
         img.src = post.imageUrl;
       }
@@ -786,6 +772,12 @@
   // Optimisation mémoire - nettoyage des listeners inutiles
   window.addEventListener('beforeunload', function() {
     if (postsListener) postsListener.off();
+    // Nettoyage des URLs temporaires
+    posts.forEach(post => {
+      if (post.imageUrl && post.imageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(post.imageUrl);
+      }
+    });
   });
 
 </script>
