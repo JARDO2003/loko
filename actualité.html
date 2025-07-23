@@ -5,762 +5,827 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Express Exchange - Réseau Social Étudiant</title>
   <style>
-    body { font-family: 'Segoe UI',sans-serif; background: #f0f2f5; color: #222; margin:0; }
-    .video-background { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-2; overflow:hidden;}
-    .video-background video { width:100vw; height:100vh; object-fit:cover; opacity:0.7; }
-    .video-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-1;
-      background:linear-gradient(135deg,rgba(102,126,234,0.6) 0%,rgba(118,75,162,0.6) 100%);}
-    .particles { position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:0;}
-    .particle { position:absolute; width:4px; height:4px; background:rgba(255,255,255,0.6); border-radius:50%; animation:float 6s infinite ease-in-out;}
-    @keyframes float { 0%,100% {transform:translateY(0) rotate(0); opacity:0;} 50%{transform:translateY(-100px) rotate(180deg); opacity:1;} }
-    .registration-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1000; display:flex; align-items:center; justify-content:center;
-      background:rgba(0,0,0,0.8);}
-    .registration-form { background:rgba(255,255,255,0.97); border-radius:15px; padding:40px; box-shadow:0 8px 40px #0003; min-width:320px; max-width:95vw;}
-    .registration-form h2 { color:#764ba2; margin-bottom:10px; }
-    .form-group { margin-bottom:18px; }
-    .form-group label { font-weight:600; display:block; margin-bottom:5px;}
-    .form-group input { width:100%; padding:10px; border-radius:7px; border:2px solid #ddd; font-size:15px;}
-    .form-group input:focus { outline:none; border-color:#667eea;}
-    .submit-btn { width:100%; padding:12px; border-radius:8px; border:none; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; font-weight:bold; font-size:16px;}
-    .submit-btn:hover { filter:brightness(1.1);}
-    .main-app { display:none;}
-    .container { max-width:580px; margin:0 auto; background:none; padding:18px;}
-    .header { text-align:center; color:#fff; margin-bottom:18px; text-shadow:0 2px 10px #0003;}
-    .header h1 { font-size:2.2em; margin-bottom:8px;}
-    .user-info { background:rgba(255,255,255,0.13); padding:7px 18px; border-radius:20px; color:#fff; margin-bottom:20px; display:inline-block;}
-    .status-indicator { margin-left:10px; border-radius:12px; padding:2px 12px; font-size:13px;}
-    .status-connected { background:rgba(34,197,94,0.15); color:#22c55e;}
-    .status-disconnected { background:rgba(239,68,68,0.16); color:#ef4444;}
-    .post-form { background:rgba(255,255,255,0.99); border-radius:13px; padding:18px; margin-bottom:18px; box-shadow:0 3px 14px #0001;}
-    .post-textarea { width:100%; min-height:70px; padding:11px; border:2px solid #eee; border-radius:8px; font-size:15px; background:#fcfcfe;}
-    .post-textarea:focus { outline:none; border-color:#667eea;}
-    .file-input-wrapper { margin:11px 0;}
-    .file-input { display:none;}
-    .file-input-label { display:inline-block; padding:7px 20px; background:#f0f0f7; border-radius:20px; cursor:pointer; }
-    .file-input-label:hover { background:#e5e5ef; }
-    .post-actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
-    .post-btn { background:linear-gradient(135deg, #667eea, #764ba2); color:#fff; border:none; padding:9px 20px; border-radius:18px; font-size:15px; font-weight:500; transition:all 0.2s;}
-    .post-btn:disabled { opacity:0.7; cursor:not-allowed; transform:scale(0.98);}
-    .feed { display:flex; flex-direction:column; gap:16px;}
-    .publication { background:#fff; border-radius:13px; padding:17px; box-shadow:0 2px 12px #0001; animation:slideIn 0.3s ease-out;}
-    @keyframes slideIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);}}
-    .pub-header { display:flex; align-items:center; margin-bottom:10px;}
-    .pub-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:16px; margin-right:9px;}
-    .pub-info { flex:1;}
-    .pub-username { font-weight:bold; color:#333;}
-    .pub-time { color:#666; font-size:13px;}
-    .pub-text { margin-bottom:11px; white-space:pre-wrap; }
-    .image-link { cursor:pointer; display:inline-block; max-width:100%; margin-bottom:12px;}
-    .image-link img { max-width:100%; max-height:270px; border-radius:7px; box-shadow:0 1px 6px #0002; transition:transform 0.18s;}
-    .image-link img:hover { transform:scale(1.04);}
-    .modal-image-view { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.90); z-index:4000; justify-content:center; align-items:center;}
-    .modal-image-view img { max-width:98vw; max-height:96vh; border-radius:12px; box-shadow:0 2px 32px #0008;}
-    .close-modal-image { position:absolute; top:24px; right:40px; color:#fff; font-size:40px; cursor:pointer; z-index:4050;}
-    .pub-actions { display:flex; gap:16px; margin-bottom:11px; padding:7px 0; border-top:1px solid #eee;}
-    .action-btn { background:none; border:none; color:#666; cursor:pointer; font-size:15px; display:flex; align-items:center; gap:6px;}
-    .action-btn:hover { color:#667eea;}
-    .action-btn.liked { color:#e74c3c;}
-    .comments-section { border-top:1px solid #eee; padding-top:10px;}
-    .comment { background:#f7f7fb; padding:8px 14px; border-radius:8px; margin-bottom:7px;}
-    .comment-header { display:flex; align-items:center; margin-bottom:4px;}
-    .comment-avatar { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg, #667eea, #764ba2); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:12px; margin-right:8px;}
-    .comment-username { font-weight:bold; color:#333; font-size:13px;}
-    .comment-time { color:#666; font-size:11px; margin-left:auto;}
-    .comment-text { font-size:13px;}
-    .comment-form { display:flex; gap:8px; margin-top:7px;}
-    .comment-input { flex:1; padding:7px 12px; border:1px solid #ddd; border-radius:17px; font-size:13px; background:#fff;}
-    .comment-input:focus { outline:none; border-color:#667eea;}
-    .comment-btn { background:#667eea; color:#fff; border:none; padding:6px 13px; border-radius:16px; font-size:13px;}
-    .comment-btn:hover { background:#5a67d8;}
-    .processing-indicator { position:absolute; top:10px; right:10px; background:rgba(102,126,234,0.1); color:#667eea; padding:4px 8px; border-radius:12px; font-size:11px; opacity:0; transition:opacity 0.3s;}
-    .processing-indicator.show { opacity:1;}
-    @media (max-width:680px) { .container{padding:4px;} .header h1{font-size:1.4em;} .registration-form{padding:18px 4px;} }
+    /* Styles de base */
+    body { 
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background: #f0f2f5;
+    }
+    
+    /* Arrière-plan vidéo */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+      overflow: hidden;
+    }
+    .video-background video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.7;
+    }
+    .video-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, rgba(102,126,234,0.6) 0%, rgba(118,75,162,0.6) 100%);
+      z-index: -1;
+    }
+    
+    /* Conteneur principal */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+    
+    /* En-tête */
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Formulaire de publication */
+    .post-form {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+    }
+    .post-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 16px;
+      resize: none;
+      margin-bottom: 10px;
+    }
+    .post-textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .file-input-wrapper {
+      margin-bottom: 10px;
+    }
+    .file-input-label {
+      display: inline-block;
+      padding: 8px 15px;
+      background: #f0f0f7;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .post-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .post-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .post-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    
+    /* Barre de progression */
+    .upload-progress {
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    /* Feed de publications */
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    /* Publication individuelle */
+    .publication {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pub-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .pub-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .pub-user {
+      flex-grow: 1;
+    }
+    .pub-username {
+      font-weight: bold;
+    }
+    .pub-time {
+      font-size: 12px;
+      color: #666;
+    }
+    .pub-text {
+      margin-bottom: 10px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .pub-image-container {
+      margin-top: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pub-image {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .pub-image:hover {
+      transform: scale(1.02);
+    }
+    .image-loading {
+      background: #f5f5f5;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    
+    /* Actions de publication */
+    .pub-actions {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+    .action-btn {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #555;
+    }
+    .action-btn.liked {
+      color: #e74c3c;
+    }
+    .action-btn:hover {
+      color: #667eea;
+    }
+    
+    /* Section commentaires */
+    .comments-section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      display: none;
+    }
+    .comments-list {
+      margin-bottom: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .comment {
+      background: #f7f7fb;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .comment-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .comment-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+    }
+    .comment-username {
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .comment-time {
+      font-size: 11px;
+      color: #666;
+      margin-left: auto;
+    }
+    .comment-text {
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .comment-input {
+      flex-grow: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+    .comment-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .comment-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    /* Modal image */
+    .image-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-image {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 8px;
+    }
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      .post-form {
+        padding: 12px;
+      }
+      .pub-actions {
+        gap: 15px;
+      }
+    }
   </style>
 </head>
 <body>
-<div style="text-align: right; margin-bottom: 14px;">
-  <button id="showMyPostsBtn" class="post-btn" style="padding: 8px 22px; font-size:15px;">🗂️ Mes publications</button>
-</div>
-
-<!-- Modal pour afficher la liste des publications de l'utilisateur -->
-<div id="myPostsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:2000; background:rgba(0,0,0,0.85); justify-content:center; align-items:center;">
-  <div style="background:#fff; border-radius:18px; max-width:500px; width:95vw; max-height:85vh; overflow:auto; box-shadow:0 10px 40px #0005; padding:24px 18px 18px 18px; position:relative;">
-    <span id="closeMyPostsModal" style="position:absolute; top:14px; right:28px; color:#764ba2; font-size:32px; cursor:pointer;">&times;</span>
-    <h3 style="margin-top:0; margin-bottom:18px; color:#764ba2;">Mes publications</h3>
-    <div id="myPostsList"></div>
-  </div>
-</div>
-
   <div class="video-background">
     <video autoplay muted loop>
       <source src="https://videos.pexels.com/video-files/5212456/5212456-hd_1920_1080_30fps.mp4" type="video/mp4">
-      Votre navigateur ne supporte pas la vidéo HTML5.
     </video>
   </div>
   <div class="video-overlay"></div>
-  <div class="particles" id="particles"></div>
 
-  <!-- Modal image agrandie -->
-  <div class="modal-image-view" id="modalImageView">
-    <span class="close-modal-image" onclick="closeImageModal()">&times;</span>
-    <img id="modalImageBig" src="" alt="Image publication">
-  </div>
-
-  <!-- Formulaire d'inscription -->
-  <div class="registration-overlay" id="registrationOverlay">
-    <div class="registration-form">
-      <h2>🎓 Express Exchange</h2>
-      <p>Rejoignez le réseau social étudiant</p>
-      <form id="registrationForm">
-        <div class="form-group">
-          <label for="nom">Nom *</label>
-          <input type="text" id="nom" name="nom" required>
-        </div>
-        <div class="form-group">
-          <label for="prenom">Prénom *</label>
-          <input type="text" id="prenom" name="prenom" required>
-        </div>
-        <div class="form-group">
-          <label for="contact">Contact (Email ou Téléphone) *</label>
-          <input type="text" id="contact" name="contact" required>
-        </div>
-        <button type="submit" class="submit-btn">Rejoindre Express Exchange</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Interface principale -->
-  <div class="main-app" id="mainApp">
-    <div class="container">
-      <div class="header">
-        <h1>📱 Express Exchange</h1>
-        <div class="user-info" id="userInfo">
-          <span id="welcomeMessage"></span>
-          <span class="status-indicator" id="statusIndicator">🔄 Connexion...</span>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>📱 Express Exchange</h1>
+      <div id="user-info" style="display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; color: white;">
+        <span id="username-display"></span>
+        <span id="connection-status" style="margin-left: 10px; font-size: 12px;">🟢 Connecté</span>
       </div>
-      <div class="post-form" style="position:relative;">
-        <div class="processing-indicator" id="processingIndicator">🔄 Optimisation...</div>
-        <textarea class="post-textarea" id="postText" placeholder="Que voulez-vous partager ?"></textarea>
-        <div class="file-input-wrapper">
-          <input type="file" id="fileInput" class="file-input" accept="image/*">
-          <label for="fileInput" class="file-input-label">
-            📷 Ajouter une photo
-          </label>
-          <span id="fileName"></span>
-        </div>
-        <div class="post-actions">
-          <div id="mediaPreview"></div>
-          <button class="post-btn" id="publishBtn">Publier</button>
-        </div>
-      </div>
-      <div class="feed" id="feed"></div>
     </div>
+
+    <div class="post-form">
+      <textarea class="post-textarea" id="post-text" placeholder="Quoi de neuf aujourd'hui ?"></textarea>
+      <div class="file-input-wrapper">
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+        <label for="file-input" class="file-input-label" id="file-label">📷 Ajouter une photo</label>
+        <span id="file-name" style="font-size: 12px; margin-left: 10px; color: #666;"></span>
+      </div>
+      <div id="image-preview" style="margin-bottom: 10px;"></div>
+      <div class="upload-progress" id="upload-progress">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="post-actions">
+        <div></div>
+        <button class="post-btn" id="publish-btn">Publier</button>
+      </div>
+    </div>
+
+    <div class="feed" id="feed"></div>
   </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-<script>
-  // ==== EXPRESS EXCHANGE : UX ULTRA-INSTANTANÉE (Android & PC Friendly) ====
+  <!-- Modal pour les images -->
+  <div class="image-modal" id="image-modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-image" id="modal-image" src="">
+  </div>
 
-// ==== CONFIG ====
-const firebaseConfig = {
-  apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
-  authDomain: "data-com-a94a8.firebaseapp.com",
-  databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
-  projectId: "data-com-a94a8",
-  storageBucket: "data-com-a94a8.appspot.com",
-  messagingSenderId: "276904640935",
-  appId: "1:276904640935:web:9cd805aeba6c34c767f682",
-  measurementId: "G-FYQCWY5G4S"
-};
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+  <script src="https://unpkg.com/compressorjs@1.1.1/dist/compressor.min.js"></script>
 
-let userData = null;
-let posts = [];
-let postsListener = null;
-let isConnected = false;
-let localPosts = new Map();
-let renderTimeout;
+  <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
+      databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
+      projectId: "data-com-a94a8",
+      storageBucket: "data-com-a94a8.appspot.com",
+      messagingSenderId: "276904640935",
+      appId: "1:276904640935:web:9cd805aeba6c34c767f682"
+    };
 
-// ==== UTILS ====
-function removeUndefinedDeep(obj) {
-  if (Array.isArray(obj)) {
-    return obj.map(removeUndefinedDeep);
-  } else if (obj && typeof obj === 'object') {
-    const cleaned = {};
-    for (const key in obj) {
-      if (obj[key] !== undefined) {
-        cleaned[key] = removeUndefinedDeep(obj[key]);
+    // Initialisation Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Éléments DOM
+    const postText = document.getElementById('post-text');
+    const fileInput = document.getElementById('file-input');
+    const fileLabel = document.getElementById('file-label');
+    const fileName = document.getElementById('file-name');
+    const imagePreview = document.getElementById('image-preview');
+    const publishBtn = document.getElementById('publish-btn');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const feed = document.getElementById('feed');
+    const imageModal = document.getElementById('image-modal');
+    const modalImage = document.getElementById('modal-image');
+    const usernameDisplay = document.getElementById('username-display');
+    const connectionStatus = document.getElementById('connection-status');
+
+    // Données utilisateur
+    let userData = {
+      id: '',
+      fullName: '',
+      avatar: ''
+    };
+
+    // Vérifier l'inscription au chargement
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUserRegistration();
+      setupConnectionMonitoring();
+      setupEventListeners();
+      loadPosts();
+    });
+
+    function checkUserRegistration() {
+      const savedUser = localStorage.getItem('expressExchangeUser');
+      if (savedUser) {
+        userData = JSON.parse(savedUser);
+        usernameDisplay.textContent = userData.fullName;
+        showAppInterface();
+      } else {
+        showRegistrationModal();
       }
     }
-    return cleaned;
-  }
-  return obj;
-}
 
-function updateConnectionStatus() {
-  const statusIndicator = document.getElementById('statusIndicator');
-  if (statusIndicator) {
-    statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
-    statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
-  }
-}
-
-database.ref(".info/connected").on("value", (snap) => {
-  isConnected = snap.val() === true;
-  updateConnectionStatus();
-});
-
-// ==== INSCRIPTION ====
-function checkUserRegistration() {
-  const stored = localStorage.getItem('expressExchangeUser');
-  if (stored) {
-    userData = JSON.parse(stored);
-    showMainApp();
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  createParticles();
-  checkUserRegistration();
-  setInterval(() => {
-    if (document.getElementById('mainApp').style.display !== 'none') renderPosts();
-  }, 60000);
-});
-
-document.getElementById('registrationForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const nom = document.getElementById('nom').value.trim();
-  const prenom = document.getElementById('prenom').value.trim();
-  const contact = document.getElementById('contact').value.trim();
-  if (nom && prenom && contact) {
-    userData = {
-      id: Date.now().toString(),
-      nom: nom,
-      prenom: prenom,
-      contact: contact,
-      fullName: `${prenom} ${nom}`,
-      avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
-      registeredAt: new Date().toISOString()
-    };
-    localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-    if (isConnected) database.ref('users/' + userData.id).set(userData);
-    showMainApp();
-  }
-});
-
-function showMainApp() {
-  document.getElementById('registrationOverlay').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
-  updateConnectionStatus();
-  loadPosts();
-}
-
-// ==== FEED ====
-function loadPosts() {
-  if (postsListener) postsListener.off();
-  postsListener = database.ref('posts').orderByChild('timestamp');
-  postsListener.on('value', (snapshot) => {
-    const remotePosts = [];
-    snapshot.forEach((childSnapshot) => {
-      const post = childSnapshot.val();
-      if (!localPosts.has(post.id)) {
-        remotePosts.unshift(post);
-      }
-    });
-    // Fusionne posts locaux (encore en traitement) et distants
-    const allPosts = Array.from(localPosts.values()).concat(remotePosts);
-    posts = allPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    debouncedRender();
-  });
-}
-
-// ==== PUBLICATION ULTRA-INSTANTANÉE ====
-document.getElementById('publishBtn').addEventListener('click', function() {
-  const text = document.getElementById('postText').value.trim();
-  const fileInput = document.getElementById('fileInput');
-  const publishBtn = document.getElementById('publishBtn');
-
-  if (!text && !fileInput.files[0]) {
-    alert('Veuillez ajouter du texte ou une image');
-    return;
-  }
-  if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-    alert("Seules les images sont autorisées.");
-    return;
-  }
-  if (fileInput.files[0] && fileInput.files[0].size > 2 * 1024 * 1024) {
-    alert("L'image est trop lourde (max 2 Mo pour rapidité sur Android)");
-    return;
-  }
-
-  publishBtn.disabled = true;
-  publishBtn.style.transform = 'scale(0.95)';
-  publishBtn.textContent = '✨ Publication...';
-
-  const postId = Date.now().toString();
-  const file = fileInput.files[0];
-
-  // --- Affichage instantané, image loader ---
-  const instantPost = {
-    id: postId,
-    author: userData.fullName,
-    authorId: userData.id,
-    avatar: userData.avatar,
-    text: text,
-    imageUrl: file ? 'https://i.imgur.com/JfPpwOA.gif' : null, // loader GIF
-    timestamp: new Date().toISOString(),
-    isLocal: true,
-    status: 'processing'
-  };
-
-  localPosts.set(postId, instantPost);
-  posts.unshift(instantPost);
-  debouncedRender();
-  clearPostForm();
-
-  setTimeout(() => {
-    publishBtn.disabled = false;
-    publishBtn.textContent = 'Publier';
-    publishBtn.style.transform = 'scale(1)';
-  }, 350);
-
-  if (file) {
-    setTimeout(() => {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        // Mise à jour locale (image réelle)
-        const idx = posts.findIndex(p => p.id === postId);
-        if (idx !== -1) {
-          posts[idx].imageUrl = event.target.result;
-          debouncedRender();
+    function showRegistrationModal() {
+      // Code du modal d'inscription (simplifié pour l'exemple)
+      const name = prompt("Entrez votre prénom et nom:");
+      if (name) {
+        userData = {
+          id: Date.now().toString(),
+          fullName: name,
+          avatar: name.split(' ').map(n => n[0]).join('').toUpperCase()
+        };
+        localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
+        usernameDisplay.textContent = userData.fullName;
+        showAppInterface();
+        
+        // Enregistrer l'utilisateur dans Firebase
+        if (navigator.onLine) {
+          database.ref('users/' + userData.id).set(userData);
         }
-        // Compression et publication publique
-        ultraFastCompress(file, function(compressedUrl) {
-          const publicPost = {
-            id: postId,
-            author: userData.fullName,
-            authorId: userData.id,
-            avatar: userData.avatar,
-            text: text,
-            imageUrl: compressedUrl,
-            timestamp: instantPost.timestamp
-          };
-          database.ref('posts/' + postId).set(removeUndefinedDeep(publicPost))
-            .then(() => {
-              localPosts.delete(postId);
-              loadPosts();
-            });
-        });
+      }
+    }
+
+    function showAppInterface() {
+      // L'interface est déjà visible dans cette version
+    }
+
+    function setupConnectionMonitoring() {
+      database.ref('.info/connected').on('value', (snap) => {
+        const isConnected = snap.val() === true;
+        connectionStatus.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
+        connectionStatus.style.color = isConnected ? '#4CAF50' : '#f44336';
+      });
+    }
+
+    function setupEventListeners() {
+      // Sélection de fichier
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      // Publication
+      publishBtn.addEventListener('click', publishPost);
+      
+      // Soumission avec Entrée dans les commentaires
+      document.addEventListener('keypress', (e) => {
+        if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
+          const postId = e.target.id.split('-')[2];
+          submitComment(postId);
+        }
+      });
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      fileName.textContent = file.name;
+      
+      // Aperçu immédiat
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        imagePreview.innerHTML = `
+          <img src="${event.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+        `;
       };
       reader.readAsDataURL(file);
-    }, 30);
-  } else {
-    // Publication texte seul
-    const publicPost = { ...instantPost, isLocal: false };
-    delete publicPost.status;
-    database.ref('posts/' + postId).set(removeUndefinedDeep(publicPost))
-      .then(() => {
-        localPosts.delete(postId);
-        loadPosts();
-      });
-  }
-});
+    }
 
-// ==== COMPRESSION ULTRA FAST ====
-function ultraFastCompress(file, callback) {
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const img = new Image();
-    img.onload = function() {
-      requestAnimationFrame(() => {
-        let { width, height } = img;
-        const maxSize = 800;
-        if (width > maxSize || height > maxSize) {
-          const ratio = Math.min(maxSize / width, maxSize / height);
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
+    async function publishPost() {
+      const text = postText.value.trim();
+      const file = fileInput.files[0];
+      
+      if (!text && !file) {
+        alert('Veuillez écrire un message ou ajouter une photo');
+        return;
+      }
+
+      // Désactiver le bouton pendant le traitement
+      publishBtn.disabled = true;
+      publishBtn.textContent = 'Publication...';
+      uploadProgress.style.display = 'block';
+
+      try {
+        const postId = Date.now().toString();
+        const postData = {
+          id: postId,
+          author: userData.fullName,
+          authorId: userData.id,
+          avatar: userData.avatar,
+          text: text,
+          timestamp: new Date().toISOString(),
+          imageUrl: file ? 'processing' : null
+        };
+
+        // Enregistrement immédiat dans Firebase
+        await database.ref('posts/' + postId).set(postData);
+        
+        // Affichage optimiste dans le feed
+        displayPost(postData);
+        
+        // Traitement de l'image en arrière-plan si nécessaire
+        if (file) {
+          processAndUploadImage(file, postId);
         }
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, width, height);
-        const compressedUrl = canvas.toDataURL('image/jpeg', 0.85);
-        callback(compressedUrl);
+        
+        resetPostForm();
+      } catch (error) {
+        console.error("Erreur de publication:", error);
+        alert("Une erreur est survenue lors de la publication");
+        resetPostForm();
+      }
+    }
+
+    async function processAndUploadImage(file, postId) {
+      try {
+        // Compression de l'image
+        updateProgress(10, "Compression de l'image...");
+        
+        const compressedFile = await new Promise((resolve) => {
+          new Compressor(file, {
+            quality: 0.7,
+            maxWidth: 800,
+            maxHeight: 800,
+            convertSize: 200000, // 200KB
+            success: resolve,
+            error: (err) => {
+              console.error("Erreur de compression:", err);
+              resolve(file); // Fallback sur le fichier original
+            }
+          });
+        });
+
+        // Simulation de l'upload avec progression
+        updateProgress(30, "Envoi de l'image...");
+        await simulateUploadProgress();
+        
+        // Conversion en base64
+        updateProgress(80, "Finalisation...");
+        const imageUrl = await fileToBase64(compressedFile);
+        
+        // Mise à jour du post avec l'URL finale
+        await database.ref('posts/' + postId).update({
+          imageUrl: imageUrl
+        });
+        
+        // Mise à jour de l'affichage local
+        updatePostImage(postId, imageUrl);
+        
+      } catch (error) {
+        console.error("Erreur traitement image:", error);
+        await database.ref('posts/' + postId).update({
+          imageUrl: 'error'
+        });
+      } finally {
+        updateProgress(100, "Publication terminée");
+        setTimeout(() => {
+          uploadProgress.style.display = 'none';
+          progressBar.style.width = '0%';
+        }, 1000);
+      }
+    }
+
+    function updateProgress(percent, message) {
+      progressBar.style.width = `${percent}%`;
+      publishBtn.textContent = message;
+    }
+
+    function simulateUploadProgress() {
+      return new Promise((resolve) => {
+        let progress = 30;
+        const interval = setInterval(() => {
+          progress += 5 + Math.random() * 10;
+          if (progress >= 80) {
+            clearInterval(interval);
+            resolve();
+          } else {
+            progressBar.style.width = `${progress}%`;
+          }
+        }, 200);
       });
-    };
-    img.src = event.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-// ==== PREVIEW IMAGE ====
-document.getElementById('fileInput').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  const fileName = document.getElementById('fileName');
-  const preview = document.getElementById('mediaPreview');
-  if (file) {
-    if (file.size > 2 * 1024 * 1024) {
-      fileName.textContent = 'Fichier trop lourd (>2Mo)';
-      preview.innerHTML = '';
-      return;
     }
-    fileName.textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      preview.innerHTML = `<img src="${event.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">`;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    fileName.textContent = '';
-    preview.innerHTML = '';
-  }
-});
 
-function clearPostForm() {
-  document.getElementById('postText').value = '';
-  document.getElementById('fileInput').value = '';
-  document.getElementById('fileName').textContent = '';
-  document.getElementById('mediaPreview').innerHTML = '';
-}
+    function fileToBase64(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+    }
 
-// ==== RENDER POSTS, LIKES, COMMENTAIRES, PARTICLES, ETC. ====
+    function resetPostForm() {
+      postText.value = '';
+      fileInput.value = '';
+      fileName.textContent = '';
+      imagePreview.innerHTML = '';
+      publishBtn.disabled = false;
+      publishBtn.textContent = 'Publier';
+    }
 
-// --- Render des posts ---
-function renderPosts() {
-  const feed = document.getElementById('feed');
-  feed.innerHTML = '';
-  posts.forEach(post => {
-    // Écouter likes/commentaires seulement pour les posts publiés
-    if (!post._listeners && !post.isLocal) {
-      listenLikesAndComments(post.id);
-      post._listeners = true;
+    function loadPosts() {
+      database.ref('posts').orderByChild('timestamp').on('value', (snapshot) => {
+        feed.innerHTML = '';
+        snapshot.forEach((child) => {
+          const post = child.val();
+          displayPost(post);
+        });
+      });
     }
-    const likesCount = post.likes ? Object.keys(post.likes).length : 0;
-    const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
-    const isLiked = post.likes && post.likes[userData.id];
-    const timeAgo = getTimeAgo(post.timestamp);
-    let imageHTML = '';
-    if (post.imageUrl) {
-      const imageClass = post.isLocal && post.status === 'processing' ? 'processing-image' : '';
-      imageHTML = `
-        <div>
-          <a class="image-link ${imageClass}" onclick="openImageModal('${post.imageUrl}')">
-            <img src="${post.imageUrl}" alt="Image publication" loading="lazy" style="${post.isLocal && post.status === 'processing' ? 'opacity: 0.8; filter: blur(0.5px);' : ''}">
-            ${post.isLocal && post.status === 'processing' ? '<div class="processing-overlay">⚡ Optimisation...</div>' : ''}
-          </a>
-        </div>
-      `;
-    }
-    let commentsHTML = '';
-    if (post.comments && !post.isLocal) {
-      const commentsList = Object.values(post.comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-      commentsHTML = commentsList.map(comment => `
-        <div class="comment">
-          <div class="comment-header">
-            <div class="comment-avatar">${comment.avatar}</div>
-            <div class="comment-username">${comment.author}</div>
-            <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
-          </div>
-          <div class="comment-text">${comment.text}</div>
-        </div>
-      `).join('');
-    }
-    const localIndicator = post.isLocal ? '<span style="color: #ff6b6b; font-size: 12px; margin-left: 8px;">⚡ Instantané</span>' : '';
-    const postHtml = `
-      <div class="publication" data-post-id="${post.id}">
+
+    function displayPost(post) {
+      const postElement = document.createElement('div');
+      postElement.className = 'publication';
+      postElement.id = `post-${post.id}`;
+      
+      // Calcul des métriques
+      const likesCount = post.likes ? Object.keys(post.likes).length : 0;
+      const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
+      const isLiked = post.likes && post.likes[userData.id];
+      
+      postElement.innerHTML = `
         <div class="pub-header">
-          <div class="pub-avatar">${post.avatar}</div>
-          <div class="pub-info">
-            <div class="pub-username">${post.author}${localIndicator}</div>
-            <div class="pub-time">${timeAgo}</div>
+          <div class="pub-avatar">${post.avatar || post.author.charAt(0)}</div>
+          <div class="pub-user">
+            <div class="pub-username">${post.author}</div>
+            <div class="pub-time">${formatTime(post.timestamp)}</div>
           </div>
         </div>
-        <div class="pub-text">${post.text}</div>
-        ${imageHTML}
+        <div class="pub-text">${post.text || ''}</div>
+        ${post.imageUrl === 'processing' ? `
+          <div class="image-loading">
+            <div>📷 Image en cours de traitement...</div>
+          </div>
+        ` : post.imageUrl && post.imageUrl !== 'processing' ? `
+          <div class="pub-image-container">
+            <img src="${post.imageUrl}" class="pub-image" onclick="openImageModal('${post.imageUrl}')">
+          </div>
+        ` : ''}
+        
         <div class="pub-actions">
-          <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}" ${post.isLocal ? 'disabled' : ''}>
+          <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
             ${isLiked ? '❤️' : '🤍'} ${likesCount}
           </button>
-          <button class="action-btn" onclick="toggleComments('${post.id}')" ${post.isLocal ? 'disabled' : ''}>
+          <button class="action-btn" onclick="toggleComments('${post.id}')">
             💬 ${commentsCount}
           </button>
         </div>
-        <div class="comments-section" id="comments-${post.id}" style="display: none;">
-          ${commentsHTML}
-          ${!post.isLocal ? `
+        
+        <div class="comments-section" id="comments-${post.id}">
+          <div class="comments-list" id="comments-list-${post.id}">
+            ${post.comments ? renderComments(post.comments) : ''}
+          </div>
           <div class="comment-form">
-            <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
+            <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Ajouter un commentaire...">
             <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
           </div>
-          ` : '<div style="color: #888; padding: 10px; text-align: center; font-size: 13px;">Publication en cours...</div>'}
-        </div>
-      </div>
-    `;
-    feed.innerHTML += postHtml;
-  });
-}
-
-// --- Debounce pour éviter trop de rendus ---
-function debouncedRender() {
-  if (renderTimeout) clearTimeout(renderTimeout);
-  renderTimeout = setTimeout(renderPosts, 100);
-}
-
-// --- Likes et commentaires ---
-function listenLikesAndComments(postId) {
-  database.ref('likes/' + postId).on('value', snap => {
-    const likes = snap.val() || {};
-    const cleanedLikes = removeUndefinedDeep(likes);
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-      post.likes = cleanedLikes;
-      updateLikeButton(postId, cleanedLikes);
-    }
-  });
-  database.ref('comments/' + postId).on('value', snap => {
-    const comments = snap.val() || {};
-    const cleanedComments = removeUndefinedDeep(comments);
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-      post.comments = cleanedComments;
-      updateCommentsSection(postId, cleanedComments);
-    }
-  });
-}
-
-function updateLikeButton(postId, likes) {
-  const btn = document.getElementById('like-btn-' + postId);
-  if (btn) {
-    const likesCount = Object.keys(likes).length;
-    const isLiked = likes[userData.id];
-    btn.innerHTML = `${isLiked ? '❤️' : '🤍'} ${likesCount}`;
-    btn.className = `action-btn ${isLiked ? 'liked' : ''}`;
-  }
-}
-
-function updateCommentsSection(postId, comments) {
-  const commentsSection = document.getElementById(`comments-${postId}`);
-  if (commentsSection) {
-    const commentsList = Object.values(comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    const commentsHTML = commentsList.map(comment => `
-      <div class="comment">
-        <div class="comment-header">
-          <div class="comment-avatar">${comment.avatar}</div>
-          <div class="comment-username">${comment.author}</div>
-          <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
-        </div>
-        <div class="comment-text">${comment.text}</div>
-      </div>
-    `).join('');
-    const commentForm = commentsSection.querySelector('.comment-form');
-    commentsSection.innerHTML = commentsHTML + (commentForm ? commentForm.outerHTML : '');
-    const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"]`);
-    if (commentBtn) {
-      commentBtn.innerHTML = `💬 ${Object.keys(comments).length}`;
-    }
-  }
-}
-
-window.toggleLike = function(postId) {
-  const post = posts.find(p => p.id === postId);
-  if (!post || post.isLocal) return;
-  const btn = document.getElementById('like-btn-' + postId);
-  if (!post.likes) post.likes = {};
-  const isCurrentlyLiked = post.likes[userData.id];
-  if (isCurrentlyLiked) {
-    delete post.likes[userData.id];
-  } else {
-    post.likes[userData.id] = {
-      userId: userData.id,
-      username: userData.fullName,
-      timestamp: new Date().toISOString()
-    };
-  }
-  updateLikeButton(postId, post.likes);
-  const likeRef = database.ref('likes/' + postId + '/' + userData.id);
-  if (isCurrentlyLiked) {
-    likeRef.remove();
-  } else {
-    likeRef.set(removeUndefinedDeep({
-      userId: userData.id,
-      username: userData.fullName,
-      timestamp: new Date().toISOString()
-    }));
-  }
-};
-
-window.toggleComments = function(postId) {
-  const post = posts.find(p => p.id === postId);
-  if (post && post.isLocal) return;
-  const commentsSection = document.getElementById(`comments-${postId}`);
-  commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-};
-
-window.submitComment = function(postId) {
-  const post = posts.find(p => p.id === postId);
-  if (post && post.isLocal) return;
-  const input = document.getElementById(`comment-input-${postId}`);
-  const commentText = input.value.trim();
-  if (!commentText) return;
-  const commentId = Date.now().toString();
-  const comment = {
-    id: commentId,
-    author: userData.fullName,
-    authorId: userData.id,
-    avatar: userData.avatar,
-    text: commentText,
-    timestamp: new Date().toISOString()
-  };
-  if (post) {
-    if (!post.comments) post.comments = {};
-    post.comments[commentId] = comment;
-    updateCommentsSection(postId, post.comments);
-  }
-  input.value = '';
-  database.ref('comments/' + postId + '/' + commentId).set(removeUndefinedDeep(comment));
-};
-
-document.addEventListener('keydown', function(e) {
-  if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
-    const postId = e.target.id.replace('comment-input-', '');
-    window.submitComment(postId);
-  }
-});
-
-// --- Modal image ---
-window.openImageModal = function(imgUrl) {
-  const modal = document.getElementById('modalImageView');
-  const modalImg = document.getElementById('modalImageBig');
-  modal.style.display = 'flex';
-  modalImg.src = imgUrl;
-};
-window.closeImageModal = function() {
-  document.getElementById('modalImageView').style.display = 'none';
-};
-document.getElementById('modalImageView').addEventListener('click', function(e){
-  if(e.target === this){ closeImageModal(); }
-});
-document.addEventListener('keydown', function(e){
-  if(e.key === 'Escape'){ closeImageModal(); }
-});
-
-// --- Particules ---
-function createParticles() {
-  const particles = document.getElementById('particles');
-  if (!particles) return;
-  for (let i = 0; i < 20; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.animationDelay = Math.random() * 6 + 's';
-    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-    particles.appendChild(particle);
-  }
-}
-window.addEventListener('resize', function() {
-  const particles = document.getElementById('particles');
-  if (particles) {
-    particles.innerHTML = '';
-    createParticles();
-  }
-});
-
-// --- GESTION DES PUBLICATIONS PERSONNELLES ---
-document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-  showMyPostsModal();
-});
-document.getElementById('closeMyPostsModal').onclick = function() {
-  document.getElementById('myPostsModal').style.display = 'none';
-};
-document.getElementById('myPostsModal').onclick = function(e) {
-  if (e.target === this) this.style.display = 'none';
-};
-function showMyPostsModal() {
-  const listEl = document.getElementById('myPostsList');
-  const myPosts = posts.filter(p => p.authorId === userData.id);
-  if (myPosts.length === 0) {
-    listEl.innerHTML = `<div style="color:#555; padding:18px; text-align:center;">Aucune publication trouvée.</div>`;
-  } else {
-    listEl.innerHTML = myPosts.map(post => {
-      const timeAgo = getTimeAgo(post.timestamp);
-      let img = post.imageUrl ? `<img src="${post.imageUrl}" alt="" style="max-width:80px; max-height:80px; border-radius:7px; margin-bottom:8px; display:block; ${post.isLocal ? 'opacity: 0.7;' : ''}">` : "";
-      const statusBadge = post.isLocal ? '<span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">En cours</span>' : '';
-      return `
-        <div style="border-bottom:1px solid #eee; padding:10px 0 11px 0; display:flex; gap:14px; align-items:center;">
-          <div style="flex:0 0 80px;">
-            ${img}
-          </div>
-          <div style="flex:1;">
-            <div style="font-weight:500; color:#222;">${post.text ? post.text : "(aucun texte)"}${statusBadge}</div>
-            <div style="font-size:13px; color:#666; margin-top:3px;">${timeAgo}</div>
-          </div>
-          <button onclick="deleteMyPost('${post.id}')" style="margin-left:10px; background:linear-gradient(135deg, #e85c6b, #c44569); color:#fff; border:none; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer;" ${post.isLocal ? 'disabled' : ''}>
-            ${post.isLocal ? 'En cours...' : 'Supprimer'}
-          </button>
         </div>
       `;
-    }).join('');
-  }
-  document.getElementById('myPostsModal').style.display = 'flex';
-}
-window.deleteMyPost = function(postId) {
-  const post = posts.find(p => p.id === postId);
-  if (post && post.isLocal) {
-    alert("Impossible de supprimer une publication en cours de traitement.");
-    return;
-  }
-  if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) return;
-  posts = posts.filter(post => post.id !== postId);
-  debouncedRender();
-  showMyPostsModal();
-  const updates = {};
-  updates['/posts/' + postId] = null;
-  updates['/likes/' + postId] = null;
-  updates['/comments/' + postId] = null;
-  firebase.database().ref().update(updates)
-    .catch(() => {
-      alert("Erreur lors de la suppression. La publication pourrait réapparaître.");
-      loadPosts();
-    });
-};
-
-// --- Time Ago ---
-function getTimeAgo(timestamp) {
-  const now = new Date();
-  const time = new Date(timestamp);
-  const diffInSeconds = Math.floor((now - time) / 1000);
-  if (diffInSeconds < 60) return 'À l\'instant';
-  if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
-  } else {
-    const days = Math.floor(diffInSeconds / 86400);
-    return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
-  }
-}
-
-// --- Préchargement images ---
-function preloadImages() {
-  posts.forEach(post => {
-    if (post.imageUrl) {
-      const img = new Image();
-      img.src = post.imageUrl;
+      
+      feed.prepend(postElement);
+      setupPostListeners(post.id);
     }
-  });
-}
-setTimeout(preloadImages, 1000);
 
-// --- Nettoyage listeners Firebase à la fermeture de page ---
-window.addEventListener('beforeunload', function() {
-  if (postsListener) postsListener.off();
-});
+    function updatePostImage(postId, imageUrl) {
+      const postElement = document.getElementById(`post-${postId}`);
+      if (postElement) {
+        const imageContainer = postElement.querySelector('.image-loading');
+        if (imageContainer) {
+          imageContainer.outerHTML = `
+            <div class="pub-image-container">
+              <img src="${imageUrl}" class="pub-image" onclick="openImageModal('${imageUrl}')">
+            </div>
+          `;
+        }
+      }
+    }
+
+    function setupPostListeners(postId) {
+      // Likes
+      database.ref(`likes/${postId}`).on('value', (snapshot) => {
+        const likes = snapshot.val() || {};
+        const likeBtn = document.querySelector(`#post-${postId} .pub-actions button:first-child`);
+        if (likeBtn) {
+          const isLiked = likes[userData.id];
+          const likesCount = Object.keys(likes).length;
+          likeBtn.innerHTML = `${isLiked ? '❤️' : '🤍'} ${likesCount}`;
+          likeBtn.classList.toggle('liked', isLiked);
+        }
+      });
+      
+      // Commentaires
+      database.ref(`comments/${postId}`).on('value', (snapshot) => {
+        const comments = snapshot.val() || {};
+        const commentsList = document.getElementById(`comments-list-${postId}`);
+        if (commentsList) {
+          commentsList.innerHTML = renderComments(comments);
+        }
+      });
+    }
+
+    function renderComments(comments) {
+      return Object.values(comments)
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        .map(comment => `
+          <div class="comment">
+            <div class="comment-header">
+              <div class="comment-avatar">${comment.author.charAt(0)}</div>
+              <div class="comment-username">${comment.author}</div>
+              <div class="comment-time">${formatTime(comment.timestamp)}</div>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+          </div>
+        `).join('');
+    }
+
+    function formatTime(timestamp) {
+      const now = new Date();
+      const date = new Date(timestamp);
+      const diff = Math.floor((now - date) / 1000);
+      
+      if (diff < 60) return 'À l\'instant';
+      if (diff < 3600) return `Il y a ${Math.floor(diff/60)} min`;
+      if (diff < 86400) return `Il y a ${Math.floor(diff/3600)} h`;
+      return `Le ${date.toLocaleDateString()}`;
+    }
+
+    // Fonctions globales
+    window.toggleLike = function(postId) {
+      const likeRef = database.ref(`likes/${postId}/${userData.id}`);
+      likeRef.once('value').then(snap => {
+        if (snap.exists()) {
+          likeRef.remove();
+        } else {
+          likeRef.set({
+            userId: userData.id,
+            timestamp: new Date().toISOString()
+          });
+        }
+      });
+    };
+
+    window.toggleComments = function(postId) {
+      const commentsSection = document.getElementById(`comments-${postId}`);
+      if (commentsSection) {
+        commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+      }
+    };
+
+    window.submitComment = function(postId) {
+      const input = document.getElementById(`comment-input-${postId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      
+      const commentId = database.ref(`comments/${postId}`).push().key;
+      const comment = {
+        id: commentId,
+        author: userData.fullName,
+        authorId: userData.id,
+        text: text,
+        timestamp: new Date().toISOString()
+      };
+      
+      database.ref(`comments/${postId}/${commentId}`).set(comment);
+      input.value = '';
+    };
+
+    window.openImageModal = function(imageUrl) {
+      modalImage.src = imageUrl;
+      imageModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeImageModal = function() {
+      imageModal.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    // Fermer le modal en cliquant à l'extérieur
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        closeImageModal();
+      }
+    });
+  </script>
+</body>
+</html>
