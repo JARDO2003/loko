@@ -665,1009 +665,733 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     
     <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
-            authDomain: "data-com-a94a8.firebaseapp.com",
-            databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
-            projectId: "data-com-a94a8",
-            storageBucket: "data-com-a94a8.appspot.com",
-            messagingSenderId: "276904640935",
-            appId: "1:276904640935:web:9cd805aeba6c34c767f682",
-            measurementId: "G-FYQCWY5G4S"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+  /******************************************************************
+   *  CONFIG FIREBASE
+   ******************************************************************/
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
+    authDomain: "data-com-a94a8.firebaseapp.com",
+    databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
+    projectId: "data-com-a94a8",
+    storageBucket: "data-com-a94a8.appspot.com",
+    messagingSenderId: "276904640935",
+    appId: "1:276904640935:web:9cd805aeba6c34c767f682",
+    measurementId: "G-FYQCWY5G4S"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
-        let userData = null;
-        let posts = [];
-        let postsListener = null;
-        let isConnected = false;
+  /******************************************************************
+   *  ÉTAT GLOBAL
+   ******************************************************************/
+  let userData = null;
+  let posts = [];
+  let postsListener = null;
+  let isConnected = false;
+  let compressedImageDataUrl = null;
+  let io = null; // IntersectionObserver pour lazy-load
 
-        // Optimisation: Classe pour gérer le redimensionnement d'images avec Web Workers
-        class ImageProcessor {
-            constructor() {
-                this.canvas = document.createElement('canvas');
-                this.ctx = this.canvas.getContext('2d');
-            }
+  /******************************************************************
+   *  UTILS
+   ******************************************************************/
+  function removeUndefinedDeep(obj) {
+    if (Array.isArray(obj)) return obj.map(removeUndefinedDeep);
+    else if (obj && typeof obj === 'object') {
+      const cleaned = {};
+      for (const key in obj) {
+        if (obj[key] !== undefined) cleaned[key] = removeUndefinedDeep(obj[key]);
+      }
+      return cleaned;
+    }
+    return obj;
+  }
 
-            // Redimensionnement optimisé avec compression progressive
-            async resizeImageOptimized(file, maxSizeKB = 200, maxPixels = 800, onProgress = null) {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            // Calcul des dimensions optimales
-                            let { width, height } = this.calculateOptimalSize(img.width, img.height, maxPixels);
-                            
-                            // Configuration du canvas
-                            this.canvas.width = width;
-                            this.canvas.height = height;
-                            
-                            // Utilisation de requestAnimationFrame pour éviter le blocage
-                            requestAnimationFrame(() => {
-                                // Redimensionnement avec lissage
-                                this.ctx.imageSmoothingEnabled = true;
-                                this.ctx.imageSmoothingQuality = 'high';
-                                this.ctx.drawImage(img, 0, 0, width, height);
-                                
-                                // Compression progressive
-                                this.compressProgressively(maxSizeKB, onProgress, resolve);
-                            });
-                        };
-                        img.src = event.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-            calculateOptimalSize(originalWidth, originalHeight, maxPixels) {
-                let width = originalWidth;
-                let height = originalHeight;
-                
-                if (width > maxPixels || height > maxPixels) {
-                    const ratio = Math.min(maxPixels / width, maxPixels / height);
-                    width = Math.round(width * ratio);
-                    height = Math.round(height * ratio);
-                }
-                
-                return { width, height };
-            }
+  function getTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - time) / 1000);
+    if (diffInSeconds < 60) return 'À l\'instant';
+    if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+    }
+  }
 
-            compressProgressively(maxSizeKB, onProgress, resolve) {
-                let quality = 0.9;
-                let attempts = 0;
-                const maxAttempts = 10;
-                
-                const compress = () => {
-                    const dataUrl = this.canvas.toDataURL('image/jpeg', quality);
-                    const sizeKB = (dataUrl.length * 0.75) / 1024; // Estimation taille
-                    
-                    if (onProgress) {
-                        onProgress(Math.min(90, (attempts / maxAttempts) * 100));
-                    }
-                    
-                    if (sizeKB <= maxSizeKB || quality <= 0.3 || attempts >= maxAttempts) {
-                        if (onProgress) onProgress(100);
-                        resolve(dataUrl);
-                        return;
-                    }
-                    
-                    quality -= 0.1;
-                    attempts++;
-                    
-                    // Utilisation de setTimeout pour éviter le blocage
-                    setTimeout(compress, 10);
-                };
-                
-                compress();
-            }
+  /******************************************************************
+   *  CONNEXION & INIT
+   ******************************************************************/
+  database.ref(".info/connected").on("value", (snap) => {
+    isConnected = snap.val() === true;
+    updateConnectionStatus();
+  });
+
+  function updateConnectionStatus() {
+    const statusIndicator = document.getElementById('statusIndicator');
+    if (!statusIndicator) return;
+    statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
+    statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
+  }
+
+  function checkUserRegistration() {
+    const stored = localStorage.getItem('expressExchangeUser');
+    if (stored) {
+      userData = JSON.parse(stored);
+      showMainApp();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    createParticles();
+    checkUserRegistration();
+    setInterval(() => {
+      if (document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
+        renderPosts();
+      }
+    }, 60000);
+
+    // Prépare l'IntersectionObserver pour lazy-loading
+    setupIntersectionObserver();
+  });
+
+  /******************************************************************
+   *  INSCRIPTION
+   ******************************************************************/
+  document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nom = document.getElementById('nom').value.trim();
+    const prenom = document.getElementById('prenom').value.trim();
+    const contact = document.getElementById('contact').value.trim();
+    if (nom && prenom && contact) {
+      userData = {
+        id: Date.now().toString(),
+        nom: nom,
+        prenom: prenom,
+        contact: contact,
+        fullName: `${prenom} ${nom}`,
+        avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
+        registeredAt: new Date().toISOString()
+      };
+      localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
+      if (isConnected) database.ref('users/' + userData.id).set(userData);
+      showMainApp();
+    }
+  });
+
+  function showMainApp() {
+    document.getElementById('registrationOverlay').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
+    updateConnectionStatus();
+    loadPosts();
+  }
+
+  /******************************************************************
+   *  CHARGEMENT DES POSTS
+   ******************************************************************/
+  function loadPosts() {
+    if (postsListener) postsListener.off();
+    postsListener = database.ref('posts').orderByChild('timestamp');
+    postsListener.on('value', (snapshot) => {
+      const tmp = [];
+      snapshot.forEach((childSnapshot) => {
+        const post = childSnapshot.val();
+        tmp.unshift(post);
+      });
+
+      // On garde les posts locaux "optimistic" (pending) qui n'ont pas encore été confirmés par Firebase
+      const localsPending = posts.filter(p => p._pending === true);
+      posts = [...localsPending, ...tmp];
+      renderPosts();
+    });
+  }
+
+  /******************************************************************
+   *  COMPRESSION D'IMAGE (Android Friendly) + BARRE DE PROGRESSION
+   ******************************************************************/
+  async function compressImageAndroidFriendly(file, maxSizeKo = 600) {
+    const progressBar = document.getElementById('compressionProgress');
+    const progressContainer = document.getElementById('compressionProgressContainer');
+    if (progressContainer) progressContainer.style.display = 'block';
+    if (progressBar) progressBar.style.width = '0%';
+
+    const img = await fileToImage(file);
+    const {canvas} = scaleToMax(img, 1024);
+    const supportWebp = await canUseWebP();
+    let quality = 0.85;
+    const minQuality = 0.4;
+
+    while (quality >= minQuality) {
+      const blob = await canvasToBlob(canvas, supportWebp ? 'image/webp' : 'image/jpeg', quality);
+      const sizeKo = blob.size / 1024;
+      updateProgress(quality);
+      if (sizeKo <= maxSizeKo) {
+        const result = await blobToDataURL(blob);
+        if (progressContainer) {
+          setTimeout(() => { progressContainer.style.display = 'none'; }, 400);
         }
+        return result;
+      }
+      quality -= 0.05;
+      await sleep(30); // laisse respirer le thread UI Android
+    }
 
-        const imageProcessor = new ImageProcessor();
+    const lastBlob = await canvasToBlob(canvas, supportWebp ? 'image/webp' : 'image/jpeg', minQuality);
+    const result = await blobToDataURL(lastBlob);
+    if (progressContainer) {
+      setTimeout(() => { progressContainer.style.display = 'none'; }, 400);
+    }
+    return result;
+  }
 
-        // Gestionnaire de cache intelligent
-        class CacheManager {
-            constructor() {
-                this.cache = new Map();
-                this.maxSize = 50; // Nombre max d'éléments en cache
+  function fileToImage(file){
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = e => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+  function scaleToMax(img, maxPixels){
+    let {width, height} = img;
+    if (width > maxPixels || height > maxPixels) {
+      if (width > height) {
+        height = Math.round(height * maxPixels / width);
+        width = maxPixels;
+      } else {
+        width = Math.round(width * maxPixels / height);
+        height = maxPixels;
+      }
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = width; canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
+    return {canvas, ctx};
+  }
+  function canvasToBlob(canvas, type, quality){
+    return new Promise(resolve => canvas.toBlob(b => resolve(b), type, quality));
+  }
+  function blobToDataURL(blob){
+    return new Promise(resolve => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.readAsDataURL(blob);
+    });
+  }
+  function canUseWebP(){
+    return new Promise(resolve=>{
+      const c = document.createElement('canvas');
+      if (!!(c.getContext && c.getContext('2d'))) {
+        c.toBlob(b=>resolve(!!b), 'image/webp');
+      } else resolve(false);
+    });
+  }
+  function updateProgress(quality){
+    const el = document.getElementById('compressionProgress');
+    if (!el) return;
+    const p = Math.round((0.85 - quality) / (0.85 - 0.4) * 100);
+    el.style.width = Math.min(100, p) + '%';
+  }
+
+  /******************************************************************
+   *  SÉLECTION FICHIER (Compression auto)
+   ******************************************************************/
+  document.getElementById('fileInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    const fileName = document.getElementById('fileName');
+    const preview = document.getElementById('mediaPreview');
+
+    if (!file) {
+      compressedImageDataUrl = null;
+      if (fileName) fileName.textContent = '';
+      if (preview) preview.innerHTML = '';
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      alert("Seules les images sont autorisées.");
+      this.value = '';
+      return;
+    }
+
+    try {
+      if (fileName) fileName.textContent = file.name;
+      compressedImageDataUrl = await compressImageAndroidFriendly(file, 600);
+      if (preview) {
+        preview.innerHTML = `<img src="${compressedImageDataUrl}" style="max-width:100px;max-height:100px;border-radius:5px;">`;
+      }
+    } catch (e) {
+      console.error('Erreur compression:', e);
+      alert('Erreur pendant la compression.');
+      compressedImageDataUrl = null;
+    } finally {
+      const container = document.getElementById('compressionProgressContainer');
+      const bar = document.getElementById('compressionProgress');
+      if (container && bar) {
+        setTimeout(() => {
+          container.style.display = 'none';
+          bar.style.width = '0%';
+        }, 400);
+      }
+    }
+  });
+
+  /******************************************************************
+   *  PUBLICATION (Optimistic UI)
+   ******************************************************************/
+  document.getElementById('publishBtn').addEventListener('click', async function () {
+    const text = document.getElementById('postText').value.trim();
+    const publishBtn = document.getElementById('publishBtn');
+
+    if (!text && !compressedImageDataUrl) {
+      alert('Veuillez ajouter du texte ou une image');
+      return;
+    }
+
+    // 1) Ajout immédiat du post dans le feed (optimistic UI)
+    const tempId = 'temp-' + Date.now();
+    const localPendingPost = {
+      id: tempId,
+      author: userData.fullName,
+      authorId: userData.id,
+      avatar: userData.avatar,
+      text: text,
+      imageUrl: compressedImageDataUrl || null,
+      timestamp: new Date().toISOString(),
+      _pending: true
+    };
+    posts.unshift(localPendingPost);
+    renderPosts();
+
+    // 2) Envoi réel à Firebase
+    publishBtn.disabled = true;
+    publishBtn.textContent = 'Publication...';
+
+    const realId = Date.now().toString();
+    const postForDb = {
+      id: realId,
+      author: userData.fullName,
+      authorId: userData.id,
+      avatar: userData.avatar,
+      text: text,
+      imageUrl: compressedImageDataUrl || null,
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      await database.ref('posts/' + realId).set(removeUndefinedDeep(postForDb));
+
+      // Remplace le post local "temp" par le "vrai" confirmé
+      const idx = posts.findIndex(p => p.id === tempId);
+      if (idx !== -1) {
+        posts[idx] = {...postForDb, _pending: false};
+      }
+      clearPostForm();
+    } catch (e) {
+      console.error('Erreur publication:', e);
+      alert('Erreur lors de la publication.');
+      // Marque l'item comme échoué pour proposer un retry
+      const idx = posts.findIndex(p => p.id === tempId);
+      if (idx !== -1) {
+        posts[idx]._error = true;
+        posts[idx]._pending = false;
+      }
+    } finally {
+      publishBtn.disabled = false;
+      publishBtn.textContent = 'Publier';
+      renderPosts();
+    }
+  });
+
+  function clearPostForm() {
+    document.getElementById('postText').value = '';
+    document.getElementById('fileInput').value = '';
+    const fileName = document.getElementById('fileName');
+    const preview = document.getElementById('mediaPreview');
+    if (fileName) fileName.textContent = '';
+    if (preview) preview.innerHTML = '';
+    compressedImageDataUrl = null;
+  }
+
+  /******************************************************************
+   *  RENDER POSTS + Lazy Loading + Listeners likes/comments
+   ******************************************************************/
+  function setupIntersectionObserver() {
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            const src = img.getAttribute('data-src');
+            if (src) {
+              img.src = src;
+              img.removeAttribute('data-src');
             }
-
-            set(key, value) {
-                if (this.cache.size >= this.maxSize) {
-                    const firstKey = this.cache.keys().next().value;
-                    this.cache.delete(firstKey);
-                }
-                this.cache.set(key, value);
-            }
-
-            get(key) {
-                return this.cache.get(key);
-            }
-
-            clear() {
-                this.cache.clear();
-            }
-        }
-
-        const cacheManager = new CacheManager();
-
-        // Fonction utilitaire pour nettoyer les objets
-        function removeUndefinedDeep(obj) {
-            if (Array.isArray(obj)) {
-                return obj.map(removeUndefinedDeep);
-            } else if (obj && typeof obj === 'object') {
-                const cleaned = {};
-                for (const key in obj) {
-                    if (obj[key] !== undefined) {
-                        cleaned[key] = removeUndefinedDeep(obj[key]);
-                    }
-                }
-                return cleaned;
-            }
-            return obj;
-        }
-
-        // Gestion de la connexion
-        function updateConnectionStatus() {
-            const statusIndicator = document.getElementById('statusIndicator');
-            if (statusIndicator) {
-                statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
-                statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
-            }
-        }
-
-        database.ref(".info/connected").on("value", (snap) => {
-            isConnected = snap.val() === true;
-            updateConnectionStatus();
+            io.unobserve(img);
+          }
         });
-
-        // Vérification de l'inscription utilisateur
-        function checkUserRegistration() {
-            const stored = sessionStorage.getItem('expressExchangeUser') || localStorage.getItem('expressExchangeUser');
-            if (stored) {
-                userData = JSON.parse(stored);
-                showMainApp();
-            }
-        }
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            checkUserRegistration();
-            
-            // Actualisation périodique optimisée
-            setInterval(() => {
-                if (document.getElementById('mainApp').style.display !== 'none') {
-                    renderPosts();
-                }
-            }, 30000); // Réduit à 30 secondes pour plus de réactivité
-        });
-
-        // Inscription utilisateur
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nom = document.getElementById('nom').value.trim();
-            const prenom = document.getElementById('prenom').value.trim();
-            const contact = document.getElementById('contact').value.trim();
-            
-            if (nom && prenom && contact) {
-                userData = {
-                    id: Date.now().toString(),
-                    nom: nom,
-                    prenom: prenom,
-                    contact: contact,
-                    fullName: `${prenom} ${nom}`,
-                    avatar: `${prenom[0]}${nom[0]}`.toUpperCase(),
-                    registeredAt: new Date().toISOString()
-                };
-                
-                // Sauvegarde en session et local storage
-                sessionStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-                localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-                
-                if (isConnected) {
-                    database.ref('users/' + userData.id).set(userData);
-                }
-                showMainApp();
-            }
-        });
-
-        function showMainApp() {
-            document.getElementById('registrationOverlay').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
-            updateConnectionStatus();
-            loadPosts();
-        }
-
-        function loadPosts() {
-            if (postsListener) postsListener.off();
-            postsListener = database.ref('posts').orderByChild('timestamp').limitToLast(50); // Limite pour optimiser
-            postsListener.on('value', (snapshot) => {
-                posts = [];
-                snapshot.forEach((childSnapshot) => {
-                    const post = childSnapshot.val();
-                    posts.unshift(post);
-                });
-                renderPosts();
-            });
-        }
-
-        // Publication avec affichage immédiat de l'image originale
-        document.getElementById('publishBtn').addEventListener('click', async function() {
-            const text = document.getElementById('postText').value.trim();
-            const fileInput = document.getElementById('fileInput');
-            const publishBtn = document.getElementById('publishBtn');
-            
-            if (!text && !fileInput.files[0]) {
-                alert('Veuillez ajouter du texte ou une image');
-                return;
-            }
-            
-            if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-                alert("Seules les images sont autorisées.");
-                return;
-            }
-
-            // === ÉTAPE 1: AFFICHAGE IMMÉDIAT AVEC IMAGE ORIGINALE ===
-            const postId = Date.now().toString();
-            const hasImage = !!fileInput.files[0];
-            let originalImageUrl = null;
-
-            // Si il y a une image, on la lit immédiatement pour l'affichage
-            if (hasImage) {
-                originalImageUrl = await readFileAsDataURL(fileInput.files[0]);
-            }
-
-            // Création du post optimiste avec l'image originale
-            const optimisticPost = {
-                id: postId,
-                author: userData.fullName,
-                authorId: userData.id,
-                avatar: userData.avatar,
-                text: text,
-                imageUrl: originalImageUrl, // Image originale pour affichage immédiat
-                timestamp: new Date().toISOString(),
-                isOptimistic: true,
-                imageProcessing: hasImage, // Indique que l'image est en cours d'optimisation
-                originalImage: hasImage // Flag pour savoir qu'on a une image originale
-            };
-
-            // Ajout immédiat au fil local
-            posts.unshift(optimisticPost);
-            renderPosts();
-
-            // Nettoyage immédiat de l'interface
-            clearPostForm();
-            resetPublishButton();
-
-            // === ÉTAPE 2: OPTIMISATION EN ARRIÈRE-PLAN ===
-            try {
-                let finalPost = { ...optimisticPost };
-                delete finalPost.isOptimistic;
-                delete finalPost.imageProcessing;
-                delete finalPost.originalImage;
-
-                // Si pas d'image, sauvegarde immédiate
-                if (!hasImage) {
-                    finalPost.imageUrl = null;
-                    await database.ref('posts/' + postId).set(removeUndefinedDeep(finalPost));
-                    
-                    // Mise à jour du post local
-                    updateLocalPost(postId, finalPost);
-                } else {
-                    // Traitement et optimisation de l'image en arrière-plan
-                    processImageInBackground(fileInput.files[0], postId, finalPost);
-                }
-
-            } catch (error) {
-                console.error('Erreur lors de la publication:', error);
-                
-                // Suppression du post optimiste en cas d'erreur
-                removeOptimisticPost(postId);
-                alert('Erreur lors de la publication. Vérifiez votre connexion.');
-            }
-        });
-
-        // Fonction pour lire un fichier comme Data URL
-        function readFileAsDataURL(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (event) => resolve(event.target.result);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Traitement d'image en arrière-plan avec remplacement progressif
-        async function processImageInBackground(file, postId, post) {
-            try {
-                // Mise à jour du statut visuel (avec indicateur discret)
-                updateImageProcessingStatus(postId, 'optimizing');
-                
-                // Compression de l'image
-                const optimizedImageUrl = await imageProcessor.resizeImageOptimized(
-                    file, 
-                    150,
-                    600,
-                    (progress) => {
-                        updateImageProcessingProgress(postId, progress);
-                    }
-                );
-
-                // Mise à jour du statut
-                updateImageProcessingStatus(postId, 'saving');
-
-                // Sauvegarde finale en base avec l'image optimisée
-                post.imageUrl = optimizedImageUrl;
-                await database.ref('posts/' + postId).set(removeUndefinedDeep(post));
-
-                // Remplacement de l'image dans le post local
-                const postIndex = posts.findIndex(p => p.id === postId);
-                if (postIndex !== -1) {
-                    posts[postIndex] = post;
-                    
-                    // Animation douce de remplacement d'image
-                    smoothImageTransition(postId, optimizedImageUrl);
-                }
-
-            } catch (error) {
-                console.error('Erreur traitement image:', error);
-                
-                // En cas d'erreur, on garde le post avec l'image originale
-                const postIndex = posts.findIndex(p => p.id === postId);
-                if (postIndex !== -1) {
-                    posts[postIndex].imageProcessing = false;
-                    posts[postIndex].processingError = true;
-                    posts[postIndex].isOptimistic = false;
-                    renderPosts();
-                    
-                    // Sauvegarde avec l'image originale (plus grande mais fonctionnelle)
-                    const fallbackPost = { ...post };
-                    fallbackPost.imageUrl = posts[postIndex].imageUrl; // Image originale
-                    database.ref('posts/' + postId).set(removeUndefinedDeep(fallbackPost));
-                }
-            }
-        }
-
-        // Animation douce pour le remplacement d'image
-        function smoothImageTransition(postId, newImageUrl) {
-            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-            if (!postElement) return;
-
-            const imageElement = postElement.querySelector('.image-link img');
-            if (!imageElement) return;
-
-            // Préchargement de la nouvelle image
-            const newImg = new Image();
-            newImg.onload = () => {
-                // Transition douce
-                imageElement.style.transition = 'opacity 0.3s ease';
-                imageElement.style.opacity = '0.7';
-                
-                setTimeout(() => {
-                    imageElement.src = newImageUrl;
-                    imageElement.style.opacity = '1';
-                    
-                    // Suppression de l'indicateur d'optimisation
-                    const indicator = postElement.querySelector('.optimization-indicator');
-                    if (indicator) {
-                        indicator.style.opacity = '0';
-                        setTimeout(() => indicator.remove(), 300);
-                    }
-                }, 150);
-            };
-            newImg.src = newImageUrl;
-        }
-
-        // Mise à jour locale d'un post
-        function updateLocalPost(postId, updatedPost) {
-            const postIndex = posts.findIndex(p => p.id === postId);
-            if (postIndex !== -1) {
-                posts[postIndex] = updatedPost;
-                renderPosts();
-            }
-        }
-
-        // Suppression d'un post optimiste
-        function removeOptimisticPost(postId) {
-            const postIndex = posts.findIndex(p => p.id === postId);
-            if (postIndex !== -1) {
-                posts.splice(postIndex, 1);
-                renderPosts();
-            }
-        }
-
-        // Mise à jour du statut de traitement (plus discret)
-        function updateImageProcessingStatus(postId, status) {
-            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-            if (!postElement) return;
-
-            let indicator = postElement.querySelector('.optimization-indicator');
-            if (!indicator) {
-                indicator = document.createElement('div');
-                indicator.className = 'optimization-indicator';
-                const imageContainer = postElement.querySelector('.image-link');
-                if (imageContainer) {
-                    imageContainer.appendChild(indicator);
-                }
-            }
-
-            switch (status) {
-                case 'optimizing':
-                    indicator.innerHTML = '<div class="opt-badge">🔄 Optimisation...</div>';
-                    break;
-                case 'saving':
-                    indicator.innerHTML = '<div class="opt-badge">💾 Sauvegarde...</div>';
-                    break;
-            }
-        }
-
-        // Mise à jour de la progression (optionnel, plus discret)
-        function updateImageProcessingProgress(postId, progress) {
-            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-            if (!postElement) return;
-
-            const indicator = postElement.querySelector('.optimization-indicator');
-            if (indicator && progress < 100) {
-                const badge = indicator.querySelector('.opt-badge');
-                if (badge) {
-                    badge.innerHTML = `🔄 ${Math.round(progress)}%`;
-                }
-            }
-        }
-
-        function resetPublishButton() {
-            const publishBtn = document.getElementById('publishBtn');
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'Publier';
-        }
-
-        // Aperçu de fichier optimisé
-        document.getElementById('fileInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            const fileName = document.getElementById('fileName');
-            const preview = document.getElementById('mediaPreview');
-            
-            if (file) {
-                fileName.textContent = file.name;
-                
-                // Aperçu rapide sans compression complète
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 10px; object-fit: cover;">`;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                fileName.textContent = '';
-                preview.innerHTML = '';
-            }
-        });
-
-        function clearPostForm() {
-            document.getElementById('postText').value = '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('fileName').textContent = '';
-            document.getElementById('mediaPreview').innerHTML = '';
-        }
-
-        // Modal pour images
-        window.openImageModal = function(imgUrl) {
-            const modal = document.getElementById('modalImageView');
-            const modalImg = document.getElementById('modalImageBig');
-            modal.style.display = 'flex';
-            modalImg.src = imgUrl;
-        };
-
-        window.closeImageModal = function() {
-            document.getElementById('modalImageView').style.display = 'none';
-        };
-
-        document.getElementById('modalImageView').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeImageModal();
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
-            }
-        });
-
-        // Système de likes et commentaires optimisé avec debouncing
-        function listenLikesAndComments(postId) {
-            const cached = cacheManager.get(`likes_comments_${postId}`);
-            if (cached) return;
-
-            // Likes avec debouncing
-            database.ref('likes/' + postId).on('value', 
-                debounce((snap) => {
-                    const likes = snap.val() || {};
-                    const cleanedLikes = removeUndefinedDeep(likes);
-                    const post = posts.find(p => p.id === postId);
-                    if (post) {
-                        post.likes = cleanedLikes;
-                        renderPostsOptimized();
-                    }
-                }, 100)
-            );
-
-            // Comments avec debouncing
-            database.ref('comments/' + postId).on('value', 
-                debounce((snap) => {
-                    const comments = snap.val() || {};
-                    const cleanedComments = removeUndefinedDeep(comments);
-                    const post = posts.find(p => p.id === postId);
-                    if (post) {
-                        post.comments = cleanedComments;
-                        renderPostsOptimized();
-                    }
-                }, 100)
-            );
-
-            cacheManager.set(`likes_comments_${postId}`, true);
-        }
-
-        // Fonction debounce pour optimiser les mises à jour
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Rendu optimisé avec affichage immédiat des images originales
-        const renderPostsOptimized = debounce(renderPosts, 200);
-
-        function renderPosts() {
-            const feed = document.getElementById('feed');
-            const fragment = document.createDocumentFragment();
-            
-            posts.forEach(post => {
-                // Configuration des listeners si nécessaire (sauf pour posts optimistes)
-                if (!post._listeners && !post.isOptimistic) {
-                    listenLikesAndComments(post.id);
-                    post._listeners = true;
-                }
-
-                const likesCount = post.likes ? Object.keys(post.likes).length : 0;
-                const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
-                const isLiked = post.likes && post.likes[userData.id];
-                const timeAgo = getTimeAgo(post.timestamp);
-
-                // Gestion des images : affichage immédiat puis optimisation
-                let imageHTML = '';
-                if (post.imageUrl && post.imageUrl !== 'PROCESSING') {
-                    // Image présente (originale ou optimisée)
-                    imageHTML = `
-                        <div style="position: relative;">
-                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                                <img src="${post.imageUrl}" alt="Image publication" loading="lazy" 
-                                     style="${post.imageProcessing ? 'filter: brightness(0.95);' : ''}">
-                            </a>
-                            ${post.imageProcessing ? '<div class="optimization-indicator"></div>' : ''}
-                        </div>
-                    `;
-                } else if (post.imageUrl === 'PROCESSING') {
-                    // Fallback si jamais on a encore l'ancien système
-                    imageHTML = `
-                        <div class="image-processing">
-                            <div class="processing-placeholder">
-                                <div class="processing-icon">🖼️</div>
-                                <div class="processing-status">🔄 Traitement de l'image...</div>
-                                <div class="processing-progress">
-                                    <div class="processing-progress-bar" style="width: 0%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else if (post.processingError) {
-                    // Erreur de traitement d'image (garde l'image originale)
-                    imageHTML = `
-                        <div>
-                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                                <img src="${post.imageUrl}" alt="Image publication" loading="lazy">
-                            </a>
-                            <div class="image-error-notice">
-                                ⚠️ Image non optimisée (fichier original conservé)
-                            </div>
-                        </div>
-                    `;
-                }
-
-                let commentsHTML = '';
-                if (post.comments && !post.isOptimistic) {
-                    const commentsList = Object.values(post.comments)
-                        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-                        .slice(-5);
-                    
-                    commentsHTML = commentsList.map(comment => `
-                        <div class="comment">
-                            <div class="comment-header">
-                                <div class="comment-avatar">${comment.avatar}</div>
-                                <div class="comment-username">${escapeHtml(comment.author)}</div>
-                                <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
-                            </div>
-                            <div class="comment-text">${escapeHtml(comment.text)}</div>
-                        </div>
-                    `).join('');
-                }
-
-                // Indicateur plus discret pour les posts en cours d'optimisation
-                const optimisticIndicator = post.isOptimistic && post.imageProcessing ? 
-                    '<div class="optimistic-indicator">✨ Image en cours d\'optimisation...</div>' : 
-                    (post.isOptimistic ? '<div class="optimistic-indicator">📤 Publication en cours...</div>' : '');
-
-                const postElement = document.createElement('div');
-                postElement.className = `publication${post.isOptimistic ? ' optimistic-post' : ''}`;
-                postElement.setAttribute('data-post-id', post.id);
-                postElement.innerHTML = `
-                    ${optimisticIndicator}
-                    <div class="pub-header">
-                        <div class="pub-avatar">${post.avatar}</div>
-                        <div class="pub-info">
-                            <div class="pub-username">${escapeHtml(post.author)}</div>
-                            <div class="pub-time">${timeAgo}</div>
-                        </div>
-                    </div>
-                    <div class="pub-text">${escapeHtml(post.text)}</div>
-                    ${imageHTML}
-                    <div class="pub-actions">
-                        <button class="action-btn ${isLiked ? 'liked' : ''}" 
-                                onclick="toggleLike('${post.id}')" 
-                                id="like-btn-${post.id}"
-                                ${post.isOptimistic ? 'disabled' : ''}>
-                            ${isLiked ? '❤️' : '🤍'} ${likesCount}
-                        </button>
-                        <button class="action-btn" 
-                                onclick="toggleComments('${post.id}')"
-                                ${post.isOptimistic ? 'disabled' : ''}>
-                            💬 ${commentsCount}
-                        </button>
-                    </div>
-                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                        ${commentsHTML}
-                        ${!post.isOptimistic ? `
-                            <div class="comment-form">
-                                <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-                                <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                
-                fragment.appendChild(postElement);
-            });
-
-            // Remplacement en une seule opération DOM
-            feed.innerHTML = '';
-            feed.appendChild(fragment);
-        }
-
-        // Fonction d'échappement HTML pour la sécurité
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Gestion optimisée des likes avec throttling
-        const likeThrottled = throttle(toggleLikeAction, 1000);
-
-        window.toggleLike = function(postId) {
-            likeThrottled(postId);
-        };
-
-        function toggleLikeAction(postId) {
-            const btn = document.getElementById('like-btn-' + postId);
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-            }
-
-            const likeRef = database.ref('likes/' + postId + '/' + userData.id);
-            
-            likeRef.once('value').then(snapshot => {
-                const likeData = {
-                    userId: userData.id,
-                    username: userData.fullName,
-                    timestamp: new Date().toISOString()
-                };
-
-                if (snapshot.exists()) {
-                    likeRef.remove();
-                } else {
-                    likeRef.set(removeUndefinedDeep(likeData));
-                }
-            }).finally(() => {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            });
-        }
-
-        // Fonction throttle pour limiter les actions rapides
-        function throttle(func, limit) {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-
-        window.toggleComments = function(postId) {
-            const commentsSection = document.getElementById(`comments-${postId}`);
-            const isVisible = commentsSection.style.display !== 'none';
-            commentsSection.style.display = isVisible ? 'none' : 'block';
-            
-            // Auto-focus sur l'input si on ouvre les commentaires
-            if (!isVisible) {
-                setTimeout(() => {
-                    const input = document.getElementById(`comment-input-${postId}`);
-                    if (input) input.focus();
-                }, 100);
-            }
-        };
-
-        // Soumission de commentaire optimisée
-        window.submitComment = function(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const commentText = input.value.trim();
-            
-            if (!commentText) return;
-            if (commentText.length > 500) {
-                alert('Commentaire trop long (max 500 caractères)');
-                return;
-            }
-
-            // Désactivation temporaire de l'input
-            input.disabled = true;
-            const originalPlaceholder = input.placeholder;
-            input.placeholder = 'Envoi en cours...';
-
-            const commentsRef = database.ref('comments/' + postId);
-            const commentId = commentsRef.push().key;
-            
-            const comment = removeUndefinedDeep({
-                id: commentId,
-                author: userData.fullName,
-                authorId: userData.id,
-                avatar: userData.avatar,
-                text: commentText,
-                timestamp: new Date().toISOString()
-            });
-
-            commentsRef.child(commentId).set(comment)
-                .then(() => {
-                    input.value = '';
-                })
-                .catch(() => {
-                    alert('Erreur lors de l\'envoi du commentaire');
-                })
-                .finally(() => {
-                    input.disabled = false;
-                    input.placeholder = originalPlaceholder;
-                });
-        };
-
-        // Gestion des touches pour les commentaires
-        document.addEventListener('keydown', function(e) {
-            if (e.target.classList.contains('comment-input') && e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const postId = e.target.id.replace('comment-input-', '');
-                window.submitComment(postId);
-            }
-        });
-
-        // Fonction d'affichage du temps optimisée
-        function getTimeAgo(timestamp) {
-            const now = new Date();
-            const time = new Date(timestamp);
-            const diffInSeconds = Math.floor((now - time) / 1000);
-            
-            if (diffInSeconds < 60) return 'À l\'instant';
-            if (diffInSeconds < 3600) {
-                const minutes = Math.floor(diffInSeconds / 60);
-                return `${minutes}min`;
-            } else if (diffInSeconds < 86400) {
-                const hours = Math.floor(diffInSeconds / 3600);
-                return `${hours}h`;
-            } else if (diffInSeconds < 604800) {
-                const days = Math.floor(diffInSeconds / 86400);
-                return `${days}j`;
-            } else {
-                return time.toLocaleDateString('fr-FR', { 
-                    day: 'numeric', 
-                    month: 'short' 
-                });
-            }
-        }
-
-        // Animation des particules optimisée
-        function createParticles() {
-            const particles = document.getElementById('particles');
-            if (!particles) return;
-            
-            // Réduction du nombre de particules sur mobile
-            const isMobile = window.innerWidth < 768;
-            const particleCount = isMobile ? 10 : 20;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                particles.appendChild(particle);
-            }
-        }
-
-        // Gestion redimensionnement optimisée
-        const handleResize = debounce(function() {
-            const particles = document.getElementById('particles');
-            if (particles) {
-                particles.innerHTML = '';
-                createParticles();
-            }
-        }, 300);
-
-        window.addEventListener('resize', handleResize);
-
-        // Gestion des publications utilisateur
-        document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-            showMyPostsModal();
-        });
-
-        document.getElementById('closeMyPostsModal').onclick = function() {
-            document.getElementById('myPostsModal').style.display = 'none';
-        };
-
-        document.getElementById('myPostsModal').onclick = function(e) {
-            if (e.target === this) this.style.display = 'none';
-        };
-
-        function showMyPostsModal() {
-            const listEl = document.getElementById('myPostsList');
-            const myPosts = posts.filter(p => p.authorId === userData.id);
-            
-            if (myPosts.length === 0) {
-                listEl.innerHTML = `
-                    <div style="color:#555; padding:18px; text-align:center;">
-                        Aucune publication trouvée.
-                    </div>
-                `;
-            } else {
-                const fragment = document.createDocumentFragment();
-                
-                myPosts.forEach(post => {
-                    const timeAgo = getTimeAgo(post.timestamp);
-                    const img = post.imageUrl ? 
-                        `<img src="${post.imageUrl}" alt="" style="max-width:80px; max-height:80px; border-radius:7px; margin-bottom:8px; display:block; object-fit:cover;">` : 
-                        "";
-                    
-                    const postElement = document.createElement('div');
-                    postElement.style.cssText = 'border-bottom:1px solid #eee; padding:10px 0 11px 0; display:flex; gap:14px; align-items:center;';
-                    postElement.innerHTML = `
-                        <div style="flex:0 0 80px;">
-                            ${img}
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:500; color:#222;">${escapeHtml(post.text) || "(aucun texte)"}</div>
-                            <div style="font-size:13px; color:#666; margin-top:3px;">${timeAgo}</div>
-                        </div>
-                        <button onclick="deleteMyPost('${post.id}')" style="margin-left:10px; background:linear-gradient(135deg, #e85c6b, #c44569); color:#fff; border:none; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer;">
-                            Supprimer
-                        </button>
-                    `;
-                    
-                    fragment.appendChild(postElement);
-                });
-                
-                listEl.innerHTML = '';
-                listEl.appendChild(fragment);
-            }
-            
-            document.getElementById('myPostsModal').style.display = 'flex';
-        }
-
-        // Suppression optimisée des publications
-        window.deleteMyPost = function(postId) {
-            if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) {
-                return;
-            }
-
-            // Feedback immédiat
-            const button = event.target;
-            button.disabled = true;
-            button.textContent = 'Suppression...';
-            button.style.opacity = '0.6';
-
-            // Suppression en batch pour optimiser
-            const updates = {};
-            updates['/posts/' + postId] = null;
-            updates['/likes/' + postId] = null;
-            updates['/comments/' + postId] = null;
-
-            firebase.database().ref().update(updates)
-                .then(() => {
-                    showMyPostsModal(); // Actualise la liste
-                })
-                .catch(() => {
-                    alert("Erreur lors de la suppression.");
-                    button.disabled = false;
-                    button.textContent = 'Supprimer';
-                    button.style.opacity = '1';
-                });
-        };
-
-        // Gestion de la visibilité de la page pour économiser les ressources
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                // Pause des listeners quand la page n'est pas visible
-                if (postsListener) {
-                    postsListener.off();
-                }
-                cacheManager.clear();
-            } else {
-                // Reprise quand la page redevient visible
-                if (userData && document.getElementById('mainApp').style.display !== 'none') {
-                    loadPosts();
-                }
-            }
-        });
-
-        // Détection de la connectivité réseau
-        if ('onLine' in navigator) {
-            function updateOnlineStatus() {
-                const statusEl = document.getElementById('statusIndicator');
-                if (!navigator.onLine && statusEl) {
-                    statusEl.textContent = '📶 Hors ligne';
-                    statusEl.className = 'status-indicator status-disconnected';
-                }
-            }
-
-            window.addEventListener('online', () => {
-                if (userData) loadPosts();
-            });
-            
-            window.addEventListener('offline', updateOnlineStatus);
-        }
-
-        // Préchargement intelligent des images
-        function preloadImages() {
-            posts.slice(0, 5).forEach(post => {
-                if (post.imageUrl && !cacheManager.get(`img_${post.id}`)) {
-                    const img = new Image();
-                    img.onload = () => cacheManager.set(`img_${post.id}`, true);
-                    img.src = post.imageUrl;
-                }
-            });
-        }
-
-        // Lancement du préchargement après le rendu initial
-        setTimeout(preloadImages, 2000);
-
-        // Service Worker pour mise en cache (si supporté)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {
-                console.log('Service Worker non disponible');
-            });
-        }
-
-    </script>
-</body>
-</html>
+      }, { rootMargin: '200px 0px' });
+    }
+  }
+
+  function renderPosts() {
+    const feed = document.getElementById('feed');
+    if (!feed) return;
+
+    feed.innerHTML = '';
+    posts.forEach(post => {
+      // écoute des likes & comments si pas déjà fait et si c'est un post réel
+      if (!post._listeners && post._pending !== true && !post._error) {
+        listenLikesAndComments(post.id);
+        post._listeners = true;
+      }
+
+      const likesCount = post.likes ? Object.keys(post.likes).length : 0;
+      const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
+      const isLiked = post.likes && userData && post.likes[userData.id];
+      const timeAgo = getTimeAgo(post.timestamp);
+
+      let imageHTML = '';
+      if (post.imageUrl) {
+        const thumb = post.imageUrl; // tu peux générer un thumb ultra-small si tu veux
+        imageHTML = `
+          <div>
+            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
+              <img class="lazy-img" data-src="${post.imageUrl}" src="${thumb}" alt="Image publication" style="min-height:120px; background:#f4f4f4;">
+            </a>
+          </div>
+        `;
+      }
+
+      let commentsHTML = '';
+      if (post.comments) {
+        const commentsList = Object.values(post.comments).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        commentsHTML = commentsList.map(comment => `
+          <div class="comment">
+            <div class="comment-header">
+              <div class="comment-avatar">${comment.avatar}</div>
+              <div class="comment-username">${comment.author}</div>
+              <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+          </div>
+        `).join('');
+      }
+
+      const pendingBadge = post._pending ? `<span class="pending-badge">⏳ Envoi…</span>` : '';
+      const errorBadge = post._error ? `<span class="error-badge">❌ Échec — <button onclick="retryPost('${post.id}')">Réessayer</button></span>` : '';
+
+      const postHtml = `
+        <div class="publication ${post._pending ? 'publication-pending' : ''}">
+          <div class="pub-header">
+            <div class="pub-avatar">${post.avatar}</div>
+            <div class="pub-info">
+              <div class="pub-username">${post.author} ${pendingBadge} ${errorBadge}</div>
+              <div class="pub-time">${timeAgo}</div>
+            </div>
+          </div>
+          <div class="pub-text">${post.text || ''}</div>
+          ${imageHTML}
+          <div class="pub-actions">
+            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')" id="like-btn-${post.id}" ${post._pending || post._error ? 'disabled' : ''}>
+              ${isLiked ? '❤️' : '🤍'} ${likesCount}
+            </button>
+            <button class="action-btn" onclick="toggleComments('${post.id}')" ${post._pending || post._error ? 'disabled' : ''}>
+              💬 ${commentsCount}
+            </button>
+          </div>
+          <div class="comments-section" id="comments-${post.id}" style="display: none;">
+            ${commentsHTML}
+            <div class="comment-form">
+              <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}" ${post._pending || post._error ? 'disabled' : ''}>
+              <button class="comment-btn" onclick="submitComment('${post.id}')" ${post._pending || post._error ? 'disabled' : ''}>Envoyer</button>
+            </div>
+          </div>
+        </div>
+      `;
+      feed.insertAdjacentHTML('beforeend', postHtml);
+    });
+
+    // Activer le lazy loading
+    if (io) {
+      document.querySelectorAll('img.lazy-img[data-src]').forEach(img => io.observe(img));
+    }
+  }
+
+  async function retryPost(tempId) {
+    const idx = posts.findIndex(p => p.id === tempId && p._error);
+    if (idx === -1) return;
+    const item = posts[idx];
+
+    // On repasse en pending
+    posts[idx]._error = false;
+    posts[idx]._pending = true;
+    renderPosts();
+
+    const realId = Date.now().toString();
+    const postForDb = {
+      id: realId,
+      author: item.author,
+      authorId: item.authorId,
+      avatar: item.avatar,
+      text: item.text,
+      imageUrl: item.imageUrl || null,
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      await database.ref('posts/' + realId).set(removeUndefinedDeep(postForDb));
+      posts[idx] = {...postForDb, _pending: false};
+      renderPosts();
+    } catch (e) {
+      console.error('Erreur retry publication:', e);
+      posts[idx]._error = true;
+      posts[idx]._pending = false;
+      renderPosts();
+    }
+  }
+
+  /******************************************************************
+   *  LISTENERS LIKES & COMMENTS
+   ******************************************************************/
+  function listenLikesAndComments(postId) {
+    // Likes
+    database.ref('likes/' + postId).on('value', snap => {
+      const likes = snap.val() || {};
+      const cleanedLikes = removeUndefinedDeep(likes);
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        post.likes = cleanedLikes;
+        renderPosts();
+      }
+    });
+    // Comments
+    database.ref('comments/' + postId).on('value', snap => {
+      const comments = snap.val() || {};
+      const cleanedComments = removeUndefinedDeep(comments);
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        post.comments = cleanedComments;
+        renderPosts();
+      }
+    });
+  }
+
+  window.toggleLike = function(postId) {
+    const btn = document.getElementById('like-btn-' + postId);
+    if (btn) btn.disabled = true;
+    const likeRef = database.ref('likes/' + postId + '/' + userData.id);
+    likeRef.once('value').then(snapshot => {
+      if (snapshot.exists()) {
+        likeRef.remove();
+      } else {
+        likeRef.set(removeUndefinedDeep({
+          userId: userData.id,
+          username: userData.fullName,
+          timestamp: new Date().toISOString()
+        }));
+      }
+      if (btn) btn.disabled = false;
+    });
+  };
+
+  window.toggleComments = function(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+  };
+
+  window.submitComment = function(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    if (!input) return;
+    const commentText = input.value.trim();
+    if (!commentText) return;
+    const commentsRef = database.ref('comments/' + postId);
+    const commentId = commentsRef.push().key;
+    const comment = removeUndefinedDeep({
+      id: commentId,
+      author: userData.fullName,
+      authorId: userData.id,
+      avatar: userData.avatar,
+      text: commentText,
+      timestamp: new Date().toISOString()
+    });
+    commentsRef.child(commentId).set(comment);
+    input.value = '';
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.classList.contains('comment-input') && e.key === 'Enter') {
+      const postId = e.target.id.replace('comment-input-', '');
+      window.submitComment(postId);
+    }
+  });
+
+  /******************************************************************
+   *  MODAL IMAGE
+   ******************************************************************/
+  window.openImageModal = function(imgUrl) {
+    const modal = document.getElementById('modalImageView');
+    const modalImg = document.getElementById('modalImageBig');
+    if (!modal || !modalImg) return;
+    modal.style.display = 'flex';
+    modalImg.src = imgUrl;
+  };
+  window.closeImageModal = function() {
+    const modal = document.getElementById('modalImageView');
+    if (modal) modal.style.display = 'none';
+  };
+  const modalImageView = document.getElementById('modalImageView');
+  if (modalImageView) {
+    modalImageView.addEventListener('click', function(e){
+      if(e.target === this){ closeImageModal(); }
+    });
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ closeImageModal(); }
+  });
+
+  /******************************************************************
+   *  MES PUBLICATIONS
+   ******************************************************************/
+  const showBtn = document.getElementById('showMyPostsBtn');
+  if (showBtn) {
+    showBtn.addEventListener('click', function() {
+      showMyPostsModal();
+    });
+  }
+
+  const closeMyPostsModalBtn = document.getElementById('closeMyPostsModal');
+  if (closeMyPostsModalBtn) {
+    closeMyPostsModalBtn.onclick = function() {
+      document.getElementById('myPostsModal').style.display = 'none';
+    };
+  }
+  const myPostsModal = document.getElementById('myPostsModal');
+  if (myPostsModal) {
+    myPostsModal.onclick = function(e) {
+      if (e.target === this) this.style.display = 'none';
+    };
+  }
+
+  function showMyPostsModal() {
+    const listEl = document.getElementById('myPostsList');
+    const myPosts = posts.filter(p => p.authorId === userData.id && !p._pending && !p._error);
+    if (!listEl) return;
+    if (myPosts.length === 0) {
+      listEl.innerHTML = `<div style="color:#555; padding:18px; text-align:center;">Aucune publication trouvée.</div>`;
+    } else {
+      listEl.innerHTML = myPosts.map(post => {
+        const timeAgo = getTimeAgo(post.timestamp);
+        let img = post.imageUrl ? `<img data-src="${post.imageUrl}" class="lazy-img" alt="" style="max-width:80px; max-height:80px; border-radius:7px; margin-bottom:8px; display:block;">` : "";
+        return `
+          <div style="border-bottom:1px solid #eee; padding:10px 0 11px 0; display:flex; gap:14px; align-items:center;">
+            <div style="flex:0 0 80px;">
+              ${img}
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:500; color:#222;">${post.text ? post.text : "(aucun texte)"}</div>
+              <div style="font-size:13px; color:#666; margin-top:3px;">${timeAgo}</div>
+            </div>
+            <button onclick="deleteMyPost('${post.id}')" style="margin-left:10px; background:linear-gradient(135deg, #e85c6b, #c44569); color:#fff; border:none; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer;">
+              Supprimer
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+    document.getElementById('myPostsModal').style.display = 'flex';
+
+    // active lazy loading dans la modale aussi
+    if (io) {
+      document.querySelectorAll('#myPostsModal img.lazy-img[data-src]').forEach(img => io.observe(img));
+    }
+  }
+
+  window.deleteMyPost = function(postId) {
+    if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) return;
+    const updates = {};
+    updates['/posts/' + postId] = null;
+    updates['/likes/' + postId] = null;
+    updates['/comments/' + postId] = null;
+    firebase.database().ref().update(updates)
+      .then(() => {
+        showMyPostsModal();
+      })
+      .catch(() => alert("Erreur lors de la suppression."));
+  };
+
+  /******************************************************************
+   *  PARTICULES (cosmétique)
+   ******************************************************************/
+  function createParticles() {
+    const particles = document.getElementById('particles');
+    if (!particles) return;
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 6 + 's';
+      particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+      particles.appendChild(particle);
+    }
+  }
+  window.addEventListener('resize', function() {
+    const particles = document.getElementById('particles');
+    if (particles) {
+      particles.innerHTML = '';
+      createParticles();
+    }
+  });
+</script>
+
+<!-- BARRE DE COMPRESSION -->
+<style>
+  #compressionProgressContainer {
+    display: none;
+    width: 100%;
+    background: #ddd;
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  #compressionProgress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.15s;
+  }
+
+  .pending-badge {
+    display: inline-block;
+    font-size: 12px;
+    color: #555;
+    margin-left: 6px;
+  }
+  .error-badge {
+    display: inline-block;
+    font-size: 12px;
+    color: #c62828;
+    margin-left: 6px;
+  }
+  .publication-pending {
+    opacity: 0.6;
+  }
+</style>
+
+<div id="compressionProgressContainer">
+  <div id="compressionProgress"></div>
+</div>
