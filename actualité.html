@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -58,7 +57,7 @@
             --glass-border: rgba(255, 255, 255, 0.2);
         }
 
-        /* Overlay inscription - Design glassmorphism */
+        /* Overlay inscription - Design glassmorphism amélioré */
         #registrationOverlay {
             position: fixed;
             top: 0; left: 0;
@@ -69,6 +68,7 @@
             align-items: center;
             z-index: 1000;
             backdrop-filter: blur(20px);
+            padding: 1rem;
         }
         
         .registration-card {
@@ -76,11 +76,11 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 24px;
             box-shadow: var(--shadow-xl);
             max-width: 420px;
-            width: 90%;
+            width: 100%;
             text-align: center;
             transform: translateY(0);
             animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -100,36 +100,37 @@
         .registration-card h2 {
             color: white;
             margin-bottom: 2rem;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
             letter-spacing: -0.025em;
         }
         
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             text-align: left;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             color: white;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         
         .form-group input {
             width: 100%;
-            padding: 1rem 1.25rem;
+            padding: 0.875rem 1rem;
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: var(--border-radius-sm);
             font-size: 1rem;
             transition: var(--transition);
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
-            color: white; /* Texte blanc pour meilleure visibilité */
+            color: white;
+            min-height: 48px; /* Meilleure accessibilité sur mobile */
         }
         
         .form-group input::placeholder {
@@ -158,6 +159,7 @@
             transform: translateZ(0);
             box-shadow: var(--shadow);
             margin-top: 1rem;
+            min-height: 48px;
         }
         
         .register-btn:hover {
@@ -190,7 +192,7 @@
         }
 
         .countdown-number {
-            font-size: 8rem;
+            font-size: 6rem;
             font-weight: 900;
             margin-bottom: 1rem;
             text-shadow: 0 4px 8px rgba(0,0,0,0.3);
@@ -202,14 +204,14 @@
         }
 
         .countdown-text {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
             opacity: 0.9;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .countdown-subtext {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.7;
             margin-top: 0.5rem;
         }
@@ -333,7 +335,7 @@
             background: var(--bg-secondary);
             transition: var(--transition);
             line-height: 1.6;
-            color: var(--text-color); /* Texte blanc pour meilleure visibilité */
+            color: var(--text-color);
         }
         
         .compose-textarea::placeholder {
@@ -445,6 +447,58 @@
             background: var(--bg-secondary);
             min-height: 100vh;
             padding: 1rem 0;
+            position: relative;
+        }
+
+        /* Indicateur de chargement des données */
+        .loading-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-xl);
+            z-index: 500;
+            animation: slideUpFade 0.5s ease-out;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid var(--text-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .loading-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
         }
         
         .publication {
@@ -687,7 +741,7 @@
             resize: none;
             min-height: 44px;
             max-height: 120px;
-            color: var(--text-color); /* Texte blanc pour meilleure visibilité */
+            color: var(--text-color);
         }
         
         .comment-input::placeholder {
@@ -753,16 +807,34 @@
         /* Responsive - Optimisé pour mobile */
         @media (max-width: 768px) {
             .registration-card {
-                padding: 2rem;
+                padding: 1.5rem;
                 margin: 1rem;
             }
             
             .registration-card h2 {
-                font-size: 1.8rem;
+                font-size: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-group input {
+                padding: 1rem;
+                font-size: 16px; /* Évite le zoom sur iOS */
             }
             
             .countdown-number {
-                font-size: 6rem;
+                font-size: 5rem;
+            }
+
+            .countdown-text {
+                font-size: 1.1rem;
+            }
+
+            .countdown-subtext {
+                font-size: 0.85rem;
             }
             
             #mainApp {
@@ -780,11 +852,35 @@
             .header-actions {
                 flex-direction: row;
                 justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
             
             .welcome-text {
                 font-size: 1.5rem;
                 text-align: center;
+            }
+
+            .my-posts-btn, .gbere-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+                flex: 1;
+                text-align: center;
+                min-width: 0;
+            }
+
+            .status-indicator {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .compose-section {
+                padding: 1rem;
+            }
+
+            .compose-textarea {
+                padding: 1rem;
+                font-size: 16px; /* Évite le zoom sur iOS */
             }
             
             .compose-footer {
@@ -814,6 +910,46 @@
             .pub-header, .pub-text, .pub-actions, .comments-section {
                 padding-left: 1rem;
                 padding-right: 1rem;
+            }
+
+            .loading-indicator {
+                bottom: 15px;
+                padding: 0.75rem 1.25rem;
+                font-size: 0.85rem;
+                border-radius: 40px;
+            }
+
+            .loading-spinner {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        /* Responsive très petits écrans */
+        @media (max-width: 480px) {
+            .registration-card {
+                padding: 1.25rem;
+            }
+
+            .registration-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-group input {
+                padding: 0.875rem;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .my-posts-btn, .gbere-btn {
+                width: 100%;
+            }
+
+            .countdown-number {
+                font-size: 4rem;
             }
         }
 
@@ -863,7 +999,8 @@
         .action-btn,
         .publish-btn,
         .register-btn,
-        .modal {
+        .modal,
+        .loading-indicator {
             transform: translateZ(0);
             will-change: transform;
         }
@@ -911,85 +1048,75 @@
     <!-- Overlay d'inscription -->
     <div id="registrationOverlay">
         <div class="registration-card">
-            <h2>📱 Express Exchange</h2>
+            <h2>Express Exchange</h2>
             <form id="registrationForm">
                 <div class="form-group">
-                    <label for="nom">Nom:</label>
-                    <input type="text" id="nom" placeholder="Votre nom" required>
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" placeholder="Votre nom d'utilisateur" required>
                 </div>
                 <div class="form-group">
-                    <label for="prenom">Prénom:</label>
-                    <input type="text" id="prenom" placeholder="Votre prénom" required>
+                    <label for="email">Adresse e-mail</label>
+                    <input type="email" id="email" name="email" placeholder="votre@email.com" required>
                 </div>
-                <div class="form-group">
-                    <label for="contact">Contact:</label>
-                    <input type="text" id="contact" placeholder="Email ou téléphone" required>
-                </div>
-                <button type="submit" class="register-btn">Rejoindre Express Exchange ✨</button>
+                <button type="submit" class="register-btn">Rejoindre Express Exchange</button>
             </form>
         </div>
     </div>
 
-    <!-- Décompte de connexion -->
+    <!-- Écran de décompte de connexion -->
     <div id="loadingCountdown">
         <div class="countdown-container">
-            <div class="countdown-number" id="countdownNumber">10</div>
+            <div class="countdown-number" id="countdownNumber">3</div>
             <div class="countdown-text">Connexion en cours...</div>
-            <div class="countdown-subtext">Chargement des publications</div>
+            <div class="countdown-subtext">Préparation de votre espace</div>
         </div>
     </div>
 
     <!-- Application principale -->
     <div id="mainApp">
-        <div class="header">
-            <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
+        <!-- Header -->
+        <header class="header">
+            <div class="welcome-text" id="welcomeText">Express Exchange</div>
             <div class="header-actions">
-                <a href="gbere.html" class="gbere-btn">🎓 Gbèrè Universitaire</a>
-                <button class="my-posts-btn" id="showMyPostsBtn">📝 Mes posts</button>
-                <div class="status-indicator" id="statusIndicator">🔴 Hors ligne</div>
+                <div class="status-indicator status-connected" id="statusIndicator">
+                    ● Connecté
+                </div>
+                <button class="my-posts-btn" onclick="showMyPosts()">Mes Posts</button>
+                <button class="gbere-btn" onclick="showGbere()">Gbèrè</button>
             </div>
-        </div>
+        </header>
 
         <!-- Section de composition -->
-        <div class="compose-section">
-            <textarea class="compose-textarea" id="postText" placeholder="Quoi de neuf ? Partagez vos pensées... ✨"></textarea>
-            
-            <div class="upload-progress" id="uploadProgress">
-                <div class="upload-progress-bar" id="uploadProgressBar"></div>
-            </div>
-            
-            <div id="mediaPreview"></div>
-            
+        <section class="compose-section">
+            <textarea class="compose-textarea" id="postText" placeholder="Que voulez-vous partager aujourd'hui ?"></textarea>
             <div class="compose-footer">
                 <div class="file-input-wrapper">
                     <label for="fileInput" class="file-input-label">
-                        📷 Ajouter une photo
+                        📷 Ajouter une image
                     </label>
                     <input type="file" id="fileInput" accept="image/*">
                     <span id="fileName"></span>
                 </div>
-                <button class="publish-btn" id="publishBtn">Publier ✨</button>
+                <button class="publish-btn" id="publishBtn" onclick="publishPost()">
+                    Publier
+                </button>
             </div>
-        </div>
+            <div id="mediaPreview"></div>
+        </section>
 
-        <!-- Fil d'actualités -->
-        <div id="feed"></div>
+        <!-- Feed des publications -->
+        <main id="feed">
+            <!-- Indicateur de chargement des données -->
+            <div class="loading-indicator" id="loadingIndicator">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Veuillez patienter, chargement des données...</div>
+            </div>
+        </main>
     </div>
 
-    <!-- Modal pour voir les images en grand -->
-    <div id="modalImageView" class="modal">
-        <img id="modalImageBig" src="" alt="Image agrandie">
-    </div>
-
-    <!-- Modal mes publications -->
-    <div id="myPostsModal" class="modal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 style="color: var(--text-color); font-size: 1.5rem; font-weight: 700;">Mes Publications</h3>
-                <button id="closeMyPostsModal" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-secondary); padding: 0.5rem;">&times;</button>
-            </div>
-            <div id="myPostsList"></div>
-        </div>
+    <!-- Modal pour l'affichage d'images -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <img id="modalImage" src="">
     </div>
 
     <!-- Firebase Scripts -->
@@ -1664,6 +1791,13 @@
                                 ${post.isOptimistic ? 'disabled' : ''}>
                             💬 ${commentsCount}
                         </button>
+                         <button class="action-btn"
+            onclick="chatWithUser('${post.authorId}')"
+            title="Discuter avec ${escapeHtml(post.author)}"
+            ${post.isOptimistic ? 'disabled' : ''}>
+        💬 Chatter
+    </button>
+</div>
                     </div>
                     <div class="comments-section" id="comments-${post.id}" style="display: none;">
                         ${commentsHTML}
@@ -2002,3 +2136,33 @@
 
     </script>
 </body>
+<script>
+    
+window.chatWithUser = function(authorId) {
+    // Cherche l'utilisateur dans la base
+    database.ref('users/' + authorId).once('value').then(snap => {
+        const user = snap.val();
+        if (!user || !user.contact) {
+            alert("Impossible de contacter cet utilisateur.");
+            return;
+        }
+        let contact = user.contact.trim();
+
+        // Si c'est un email
+        if (contact.includes('@')) {
+            window.open('mailto:' + contact, '_blank');
+        }
+        // Si c'est un numéro de téléphone (WhatsApp)
+        else if (/^[\d+\s-]+$/.test(contact.replace(/[\s-]/g, ''))) {
+            // Nettoyage du numéro
+            let phone = contact.replace(/[^+\d]/g, '');
+            // Ajoutez indicatif pays si besoin
+            if (phone.startsWith('0')) phone = '+225' + phone.slice(1); // Adaptez selon pays
+            window.open('https://wa.me/' + encodeURIComponent(phone), '_blank');
+        } else {
+            alert("Contact non reconnu : " + contact);
+        }
+    });
+};
+</script>
+
