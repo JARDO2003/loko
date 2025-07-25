@@ -2861,65 +2861,119 @@ console.log('🚀 Système vidéo base64 initialisé - Publication ultra-rapide 
 
 
 <script>
-/* Correctif Express Exchange - Réparation des images disparues */
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Début du correctif pour les images manquantes...');
+/* Correctif Global Express Exchange v2.0 */
+class MediaFixer {
+  constructor() {
+    this.originalPosts = [];
+    this.observedElements = new Set();
+    this.init();
+  }
 
-    // 1. Réparation des URLs d'images corrompues
-    function repairImageUrls() {
-        const images = document.querySelectorAll('.publication img, .image-link img');
-        console.log(`Vérification de ${images.length} images...`);
-
-        images.forEach(img => {
-            if (!img.src || img.naturalWidth === 0) {
-                console.log(`Image corrompue détectée: ${img.src}`);
-                
-                // Trouve le post parent pour récupérer l'ID
-                const post = img.closest('.publication');
-                if (post) {
-                    const postId = post.dataset.postId;
-                    console.log(`Tentative de réparation pour le post ${postId}`);
-
-                    // Essaie de récupérer l'URL originale depuis les données Firebase
-                    if (window.postsData && postId) {
-                        const postData = window.postsData.find(p => p.id === postId);
-                        if (postData && postData.imageUrl) {
-                            console.log(`Restauration de l'image originale pour ${postId}`);
-                            img.src = postData.imageUrl;
-                            img.onerror = function() {
-                                console.log(`Échec du chargement de l'image pour ${postId}`);
-                                this.style.display = 'none';
-                            };
-                        }
-                    }
-                }
-            }
-        });
+  init() {
+    // 1. Sauvegarde initiale
+    if (typeof posts !== 'undefined') {
+      this.originalPosts = JSON.parse(JSON.stringify(posts));
+      console.log('[MediaFixer] Backup initial', this.originalPosts.length, 'posts');
     }
 
-    // 2. Surveille les erreurs de chargement en temps réel
-    document.addEventListener('error', function(e) {
-        if (e.target.tagName === 'IMG' && e.target.src) {
-            console.log('Erreur de chargement détectée:', e.target.src);
-            setTimeout(() => {
-                e.target.src = e.target.src.split('?')[0] + '?retry=' + Date.now();
-            }, 1000);
-        }
+    // 2. Observation des mutations du DOM
+    this.observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1 && node.classList?.contains('publication')) {
+            this.fixPostMedia(node);
+          }
+        });
+      });
+    });
+
+    this.observer.observe(document.getElementById('feed'), {
+      childList: true,
+      subtree: true
+    });
+
+    // 3. Réparation initiale
+    document.querySelectorAll('.publication').forEach(post => this.fixPostMedia(post));
+    
+    // 4. Gestion des erreurs média
+    document.addEventListener('error', (e) => {
+      if (['IMG', 'VIDEO'].includes(e.target.tagName)) {
+        this.repairMediaElement(e.target);
+      }
     }, true);
+  }
 
-    // 3. Recharge périodiquement les images problématiques
-    setInterval(() => {
-        repairImageUrls();
-    }, 3000);
+  fixPostMedia(postElement) {
+    if (this.observedElements.has(postElement)) return;
+    this.observedElements.add(postElement);
 
-    // 4. Initialisation
-    setTimeout(repairImageUrls, 2000);
-    console.log('Correctif des images activé avec surveillance active');
-});
+    const postId = postElement.dataset.postId;
+    const postData = this.findPostData(postId);
 
-// Backup des données posts si nécessaire
-if (typeof posts !== 'undefined') {
-    window.postsData = [...posts];
-    console.log(`Backup des ${posts.length} publications effectué`);
+    // Réparation des images
+    const img = postElement.querySelector('img');
+    if (img && postData?.imageUrl) {
+      this.ensureMediaLoad(img, postData.imageUrl);
+    }
+
+    // Réparation des vidéos
+    const videoPlaceholder = postElement.querySelector('.video-thumbnail-display');
+    if (videoPlaceholder && postData?.videoBase64) {
+      this.replaceVideoPlaceholder(videoPlaceholder, postData);
+    }
+  }
+
+  findPostData(postId) {
+    return this.originalPosts.find(p => p.id === postId) || 
+           (typeof posts !== 'undefined' && posts.find(p => p.id === postId));
+  }
+
+  ensureMediaLoad(element, url) {
+    if (!element.src || element.naturalWidth === 0) {
+      element.src = url + (url.includes('?') ? '&' : '?') + 'fix=' + Date.now();
+      element.onerror = () => {
+        element.style.display = 'none';
+        console.warn('[MediaFixer] Échec chargement média', url);
+      };
+    }
+  }
+
+  replaceVideoPlaceholder(placeholder, postData) {
+    const videoHtml = `
+      <video controls preload="metadata" class="video-player">
+        <source src="${postData.videoBase64}" type="${postData.videoType || 'video/mp4'}">
+      </video>
+      <div class="video-info">
+        ${postData.videoFileName} (${postData.videoSize}) - ${postData.videoDurationFormatted}
+      </div>
+    `;
+    
+    placeholder.parentElement.innerHTML = videoHtml;
+    console.log('[MediaFixer] Vidéo restaurée', postData.id);
+  }
+
+  repairMediaElement(element) {
+    setTimeout(() => {
+      const post = element.closest('.publication');
+      if (post) {
+        const postId = post.dataset.postId;
+        const postData = this.findPostData(postId);
+        
+        if (postData) {
+          if (element.tagName === 'IMG' && postData.imageUrl) {
+            element.src = postData.imageUrl;
+          } else if (element.tagName === 'VIDEO' && postData.videoBase64) {
+            element.innerHTML = `<source src="${postData.videoBase64}" type="${postData.videoType}">`;
+          }
+        }
+      }
+    }, 1000);
+  }
 }
+
+// Initialisation différée pour compatibilité
+setTimeout(() => {
+  window.MediaFixerInstance = new MediaFixer();
+  console.log('[MediaFixer] Initialisation complète');
+}, 500);
 </script>
