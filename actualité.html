@@ -995,7 +995,6 @@
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-    
     <script>
         // Configuration Firebase
         const firebaseConfig = {
@@ -1016,43 +1015,284 @@
         let posts = [];
         let postsListener = null;
         let isConnected = false;
+        let isLowBandwidth = false;
+        let connectionQuality = 'good';
+        let offlineMode = false;
 
-        // Optimisation: Classe pour gérer le redimensionnement d'images avec Web Workers
+        // === SYSTÈME DE DÉTECTION DE CONNEXION AVANCÉ ===
+        class ConnectionManager {
+            constructor() {
+                this.quality = 'good';
+                this.isOnline = navigator.onLine;
+                this.bandwidth = null;
+                this.latency = null;
+                this.retryAttempts = 0;
+                this.maxRetries = 3;
+                this.reconnectDelay = 1000;
+                
+                this.initConnectionMonitoring();
+            }
+
+            initConnectionMonitoring() {
+                // Détection rapide de la qualité de connexion
+                this.detectConnectionQuality();
+                
+                // Monitoring continu
+                setInterval(() => {
+                    if (this.isOnline) {
+                        this.detectConnectionQuality();
+                    }
+                }, 30000); // Test toutes les 30 secondes
+
+                // Événements réseau
+                window.addEventListener('online', () => {
+                    this.isOnline = true;
+                    this.handleOnline();
+                });
+
+                window.addEventListener('offline', () => {
+                    this.isOnline = false;
+                    this.handleOffline();
+                });
+            }
+
+            async detectConnectionQuality() {
+                try {
+                    const startTime = performance.now();
+                    
+                    // Test avec une petite image de Firebase
+                    const testUrl = `https://data-com-a94a8-default-rtdb.firebaseio.com/.info/connected.json?t=${Date.now()}`;
+                    
+                    const response = await fetch(testUrl, {
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+
+                    const endTime = performance.now();
+                    this.latency = endTime - startTime;
+
+                    if (response.ok) {
+                        // Classification de la qualité
+                        if (this.latency < 300) {
+                            this.quality = 'good';
+                            isLowBandwidth = false;
+                        } else if (this.latency < 1000) {
+                            this.quality = 'medium';
+                            isLowBandwidth = true;
+                        } else {
+                            this.quality = 'poor';
+                            isLowBandwidth = true;
+                        }
+
+                        connectionQuality = this.quality;
+                        this.retryAttempts = 0;
+                        this.updateUI();
+                    }
+                } catch (error) {
+                    this.quality = 'offline';
+                    connectionQuality = 'offline';
+                    this.handleConnectionError();
+                }
+            }
+
+            handleOnline() {
+                offlineMode = false;
+                this.retryAttempts = 0;
+                this.detectConnectionQuality();
+                
+                // Reconnexion progressive
+                setTimeout(() => {
+                    if (userData) {
+                        this.reconnectToFirebase();
+                    }
+                }, 1000);
+            }
+
+            handleOffline() {
+                offlineMode = true;
+                this.quality = 'offline';
+                connectionQuality = 'offline';
+                this.updateUI();
+            }
+
+            async reconnectToFirebase() {
+                try {
+                    // Force la reconnexion Firebase
+                    database.goOnline();
+                    
+                    // Rechargement des posts avec retry
+                    await this.retryOperation(() => loadPostsOptimized());
+                    
+                } catch (error) {
+                    console.log('Erreur reconnexion:', error);
+                    this.scheduleRetry();
+                }
+            }
+
+            async retryOperation(operation) {
+                for (let i = 0; i < this.maxRetries; i++) {
+                    try {
+                        await operation();
+                        return;
+                    } catch (error) {
+                        if (i === this.maxRetries - 1) throw error;
+                        await this.delay(this.reconnectDelay * Math.pow(2, i));
+                    }
+                }
+            }
+
+            scheduleRetry() {
+                if (this.retryAttempts < this.maxRetries) {
+                    this.retryAttempts++;
+                    const delay = this.reconnectDelay * Math.pow(2, this.retryAttempts);
+                    
+                    setTimeout(() => {
+                        if (navigator.onLine) {
+                            this.reconnectToFirebase();
+                        }
+                    }, delay);
+                }
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            handleConnectionError() {
+                this.updateUI();
+                this.scheduleRetry();
+            }
+
+            updateUI() {
+                updateConnectionStatus();
+            }
+        }
+
+        const connectionManager = new ConnectionManager();
+
+        // === CACHE LOCAL AVANCÉ POUR MODE HORS LIGNE ===
+        class OfflineStorage {
+            constructor() {
+                this.storageKey = 'expressExchange_offline';
+                this.maxPosts = 50;
+            }
+
+            savePosts(posts) {
+                try {
+                    const dataToSave = {
+                        posts: posts.slice(0, this.maxPosts),
+                        timestamp: Date.now(),
+                        version: '1.0'
+                    };
+                    localStorage.setItem(this.storageKey, JSON.stringify(dataToSave));
+                } catch (error) {
+                    console.log('Erreur sauvegarde locale:', error);
+                }
+            }
+
+            loadPosts() {
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        const dayOld = Date.now() - (24 * 60 * 60 * 1000);
+                        
+                        // Données valides si moins de 24h
+                        if (data.timestamp > dayOld && data.posts) {
+                            return data.posts;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Erreur chargement local:', error);
+                }
+                return [];
+            }
+
+            saveUserData(user) {
+                try {
+                    localStorage.setItem('expressExchange_user_backup', JSON.stringify(user));
+                } catch (error) {
+                    console.log('Erreur sauvegarde utilisateur:', error);
+                }
+            }
+
+            loadUserData() {
+                try {
+                    const saved = localStorage.getItem('expressExchange_user_backup');
+                    return saved ? JSON.parse(saved) : null;
+                } catch (error) {
+                    return null;
+                }
+            }
+        }
+
+        const offlineStorage = new OfflineStorage();
+
+        // === OPTIMISATION DES IMAGES POUR CONNEXIONS LENTES ===
         class ImageProcessor {
             constructor() {
                 this.canvas = document.createElement('canvas');
                 this.ctx = this.canvas.getContext('2d');
             }
 
-            // Redimensionnement optimisé avec compression progressive
-            async resizeImageOptimized(file, maxSizeKB = 200, maxPixels = 800, onProgress = null) {
+            async resizeImageOptimized(file, maxSizeKB = null, maxPixels = null, onProgress = null) {
+                // Adaptation selon la qualité de connexion
+                const settings = this.getCompressionSettings();
+                maxSizeKB = maxSizeKB || settings.maxSize;
+                maxPixels = maxPixels || settings.maxPixels;
+
                 return new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onload = (event) => {
                         const img = new Image();
                         img.onload = () => {
-                            // Calcul des dimensions optimales
-                            let { width, height } = this.calculateOptimalSize(img.width, img.height, maxPixels);
+                            let { width, height } = this.calculateOptimalSize(
+                                img.width, 
+                                img.height, 
+                                maxPixels
+                            );
                             
-                            // Configuration du canvas
                             this.canvas.width = width;
                             this.canvas.height = height;
                             
-                            // Utilisation de requestAnimationFrame pour éviter le blocage
                             requestAnimationFrame(() => {
-                                // Redimensionnement avec lissage
                                 this.ctx.imageSmoothingEnabled = true;
-                                this.ctx.imageSmoothingQuality = 'high';
+                                this.ctx.imageSmoothingQuality = settings.quality;
                                 this.ctx.drawImage(img, 0, 0, width, height);
                                 
-                                // Compression progressive
-                                this.compressProgressively(maxSizeKB, onProgress, resolve);
+                                this.compressProgressively(maxSizeKB, onProgress, resolve, settings.initialQuality);
                             });
                         };
                         img.src = event.target.result;
                     };
                     reader.readAsDataURL(file);
                 });
+            }
+
+            getCompressionSettings() {
+                switch (connectionQuality) {
+                    case 'poor':
+                        return {
+                            maxSize: 50,    // 50KB max
+                            maxPixels: 400, // 400px max
+                            quality: 'low',
+                            initialQuality: 0.3
+                        };
+                    case 'medium':
+                        return {
+                            maxSize: 100,   // 100KB max
+                            maxPixels: 600, // 600px max
+                            quality: 'medium',
+                            initialQuality: 0.5
+                        };
+                    default:
+                        return {
+                            maxSize: 200,   // 200KB max
+                            maxPixels: 800, // 800px max
+                            quality: 'high',
+                            initialQuality: 0.7
+                        };
+                }
             }
 
             calculateOptimalSize(originalWidth, originalHeight, maxPixels) {
@@ -1068,30 +1308,29 @@
                 return { width, height };
             }
 
-            compressProgressively(maxSizeKB, onProgress, resolve) {
-                let quality = 0.9;
+            compressProgressively(maxSizeKB, onProgress, resolve, initialQuality = 0.7) {
+                let quality = initialQuality;
                 let attempts = 0;
-                const maxAttempts = 10;
+                const maxAttempts = connectionQuality === 'poor' ? 5 : 10;
                 
                 const compress = () => {
                     const dataUrl = this.canvas.toDataURL('image/jpeg', quality);
-                    const sizeKB = (dataUrl.length * 0.75) / 1024; // Estimation taille
+                    const sizeKB = (dataUrl.length * 0.75) / 1024;
                     
                     if (onProgress) {
                         onProgress(Math.min(90, (attempts / maxAttempts) * 100));
                     }
                     
-                    if (sizeKB <= maxSizeKB || quality <= 0.3 || attempts >= maxAttempts) {
+                    if (sizeKB <= maxSizeKB || quality <= 0.1 || attempts >= maxAttempts) {
                         if (onProgress) onProgress(100);
                         resolve(dataUrl);
                         return;
                     }
                     
-                    quality -= 0.1;
+                    quality -= (connectionQuality === 'poor' ? 0.05 : 0.1);
                     attempts++;
                     
-                    // Utilisation de setTimeout pour éviter le blocage
-                    setTimeout(compress, 10);
+                    setTimeout(compress, connectionQuality === 'poor' ? 50 : 10);
                 };
                 
                 compress();
@@ -1100,33 +1339,59 @@
 
         const imageProcessor = new ImageProcessor();
 
-        // Gestionnaire de cache intelligent
+        // === CACHE INTELLIGENT ADAPTATIF ===
         class CacheManager {
             constructor() {
                 this.cache = new Map();
-                this.maxSize = 50; // Nombre max d'éléments en cache
+                this.maxSize = connectionQuality === 'poor' ? 20 : 50;
+                this.ttl = connectionQuality === 'poor' ? 300000 : 600000; // 5-10 min
             }
 
             set(key, value) {
+                // Nettoyage si cache plein
                 if (this.cache.size >= this.maxSize) {
                     const firstKey = this.cache.keys().next().value;
                     this.cache.delete(firstKey);
                 }
-                this.cache.set(key, value);
+                
+                this.cache.set(key, {
+                    value,
+                    timestamp: Date.now()
+                });
             }
 
             get(key) {
-                return this.cache.get(key);
+                const item = this.cache.get(key);
+                if (!item) return null;
+                
+                // Vérification TTL
+                if (Date.now() - item.timestamp > this.ttl) {
+                    this.cache.delete(key);
+                    return null;
+                }
+                
+                return item.value;
             }
 
             clear() {
                 this.cache.clear();
             }
+
+            adaptToConnection() {
+                this.maxSize = connectionQuality === 'poor' ? 20 : 50;
+                this.ttl = connectionQuality === 'poor' ? 300000 : 600000;
+                
+                // Nettoyage si nécessaire
+                if (this.cache.size > this.maxSize) {
+                    const keysToDelete = Array.from(this.cache.keys()).slice(0, this.cache.size - this.maxSize);
+                    keysToDelete.forEach(key => this.cache.delete(key));
+                }
+            }
         }
 
         const cacheManager = new CacheManager();
 
-        // Fonction utilitaire pour nettoyer les objets
+        // === FONCTION UTILITAIRE OPTIMISÉE ===
         function removeUndefinedDeep(obj) {
             if (Array.isArray(obj)) {
                 return obj.map(removeUndefinedDeep);
@@ -1142,43 +1407,83 @@
             return obj;
         }
 
-        // Gestion de la connexion
+        // === GESTION CONNEXION FIREBASE OPTIMISÉE ===
         function updateConnectionStatus() {
             const statusIndicator = document.getElementById('statusIndicator');
             if (statusIndicator) {
-                statusIndicator.textContent = isConnected ? '🟢 Connecté' : '🔴 Hors ligne';
-                statusIndicator.className = isConnected ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
+                let statusText, statusClass;
+                
+                if (offlineMode) {
+                    statusText = '📱 Mode hors ligne';
+                    statusClass = 'status-offline';
+                } else {
+                    switch (connectionQuality) {
+                        case 'good':
+                            statusText = '🟢 Connexion rapide';
+                            statusClass = 'status-connected';
+                            break;
+                        case 'medium':
+                            statusText = '🟡 Connexion moyenne';
+                            statusClass = 'status-medium';
+                            break;
+                        case 'poor':
+                            statusText = '🔴 Connexion lente';
+                            statusClass = 'status-slow';
+                            break;
+                        default:
+                            statusText = '⚫ Hors ligne';
+                            statusClass = 'status-disconnected';
+                    }
+                }
+                
+                statusIndicator.textContent = statusText;
+                statusIndicator.className = `status-indicator ${statusClass}`;
             }
         }
 
+        // Surveillance connexion Firebase avec timeout
         database.ref(".info/connected").on("value", (snap) => {
             isConnected = snap.val() === true;
             updateConnectionStatus();
         });
 
-        // Vérification de l'inscription utilisateur
+        // === CHARGEMENT INITIAL OPTIMISÉ ===
         function checkUserRegistration() {
-            const stored = sessionStorage.getItem('expressExchangeUser') || localStorage.getItem('expressExchangeUser');
+            const stored = sessionStorage.getItem('expressExchangeUser') || 
+                          localStorage.getItem('expressExchangeUser') ||
+                          (function() {
+                              const backup = offlineStorage.loadUserData();
+                              return backup ? JSON.stringify(backup) : null;
+                          })();
+            
             if (stored) {
                 userData = JSON.parse(stored);
                 showMainApp();
             }
         }
 
-        // Initialisation
+        // === INITIALISATION AVEC CHARGEMENT PROGRESSIF ===
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             checkUserRegistration();
             
-            // Actualisation périodique optimisée
-            setInterval(() => {
-                if (document.getElementById('mainApp').style.display !== 'none') {
-                    renderPosts();
+            // Chargement différé pour ne pas bloquer l'interface
+            setTimeout(() => {
+                if (userData) {
+                    loadPostsOptimized();
                 }
-            }, 30000); // Réduit à 30 secondes pour plus de réactivité
+            }, 500);
+            
+            // Actualisation adaptée à la connexion
+            const refreshInterval = connectionQuality === 'poor' ? 60000 : 30000;
+            setInterval(() => {
+                if (document.getElementById('mainApp').style.display !== 'none' && !offlineMode) {
+                    loadPostsOptimized();
+                }
+            }, refreshInterval);
         });
 
-        // Inscription utilisateur
+        // === INSCRIPTION AVEC SAUVEGARDE LOCALE ===
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const nom = document.getElementById('nom').value.trim();
@@ -1196,13 +1501,22 @@
                     registeredAt: new Date().toISOString()
                 };
                 
-                // Sauvegarde en session et local storage
-                sessionStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-                localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
-                
-                if (isConnected) {
-                    database.ref('users/' + userData.id).set(userData);
+                // Sauvegarde triple sécurité
+                try {
+                    sessionStorage.setItem('expressExchangeUser', JSON.stringify(userData));
+                    localStorage.setItem('expressExchangeUser', JSON.stringify(userData));
+                    offlineStorage.saveUserData(userData);
+                } catch (error) {
+                    console.log('Erreur sauvegarde utilisateur:', error);
                 }
+                
+                // Inscription Firebase seulement si connecté
+                if (isConnected && !offlineMode) {
+                    database.ref('users/' + userData.id).set(userData).catch(error => {
+                        console.log('Erreur inscription Firebase:', error);
+                    });
+                }
+                
                 showMainApp();
             }
         });
@@ -1212,23 +1526,100 @@
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('welcomeMessage').textContent = `Bienvenue ${userData.fullName} 👋`;
             updateConnectionStatus();
-            loadPosts();
+            
+            // Chargement intelligent selon la connexion
+            if (offlineMode || connectionQuality === 'offline') {
+                loadOfflinePosts();
+            } else {
+                loadPostsOptimized();
+            }
         }
 
-        function loadPosts() {
+        // === CHARGEMENT POSTS OPTIMISÉ POUR CONNEXIONS LENTES ===
+        function loadPostsOptimized() {
             if (postsListener) postsListener.off();
-            postsListener = database.ref('posts').orderByChild('timestamp').limitToLast(50); // Limite pour optimiser
-            postsListener.on('value', (snapshot) => {
-                posts = [];
-                snapshot.forEach((childSnapshot) => {
-                    const post = childSnapshot.val();
-                    posts.unshift(post);
+            
+            // Paramètres adaptatifs selon la connexion
+            const limit = connectionQuality === 'poor' ? 20 : 
+                         connectionQuality === 'medium' ? 35 : 50;
+            
+            try {
+                postsListener = database.ref('posts')
+                    .orderByChild('timestamp')
+                    .limitToLast(limit);
+                
+                // Timeout pour connexions très lentes
+                const timeoutDelay = connectionQuality === 'poor' ? 15000 : 10000;
+                const timeoutId = setTimeout(() => {
+                    console.log('Timeout chargement, passage en mode offline');
+                    loadOfflinePosts();
+                }, timeoutDelay);
+                
+                postsListener.on('value', (snapshot) => {
+                    clearTimeout(timeoutId);
+                    
+                    posts = [];
+                    snapshot.forEach((childSnapshot) => {
+                        const post = childSnapshot.val();
+                        posts.unshift(post);
+                    });
+                    
+                    // Sauvegarde locale pour mode offline
+                    offlineStorage.savePosts(posts);
+                    
+                    renderPosts();
+                }, (error) => {
+                    clearTimeout(timeoutId);
+                    console.log('Erreur chargement posts:', error);
+                    loadOfflinePosts();
                 });
-                renderPosts();
-            });
+                
+            } catch (error) {
+                console.log('Erreur listener:', error);
+                loadOfflinePosts();
+            }
         }
 
-        // Publication avec affichage immédiat de l'image originale
+        function loadOfflinePosts() {
+            const offlinePosts = offlineStorage.loadPosts();
+            if (offlinePosts.length > 0) {
+                posts = offlinePosts;
+                renderPosts();
+                
+                // Message discret mode offline
+                const feed = document.getElementById('feed');
+                if (feed && !feed.querySelector('.offline-notice')) {
+                    const notice = document.createElement('div');
+                    notice.className = 'offline-notice';
+                    notice.style.cssText = `
+                        background: #fff3cd;
+                        color: #856404;
+                        padding: 10px;
+                        margin: 10px 0;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        text-align: center;
+                        border: 1px solid #ffeaa7;
+                    `;
+                    notice.textContent = '📱 Mode hors ligne - Publications sauvegardées';
+                    feed.insertBefore(notice, feed.firstChild);
+                }
+            } else {
+                // Aucune donnée locale disponible
+                document.getElementById('feed').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📶</div>
+                        <h3>Connexion nécessaire</h3>
+                        <p>Aucune donnée locale disponible.<br>Vérifiez votre connexion internet.</p>
+                        <button onclick="location.reload()" style="margin-top: 16px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Réessayer
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // === PUBLICATION AVEC OPTIMISATION CONNEXION LENTE ===
         document.getElementById('publishBtn').addEventListener('click', async function() {
             const text = document.getElementById('postText').value.trim();
             const fileInput = document.getElementById('fileInput');
@@ -1244,67 +1635,114 @@
                 return;
             }
 
-            // === ÉTAPE 1: AFFICHAGE IMMÉDIAT AVEC IMAGE ORIGINALE ===
+            // Vérification connexion
+            if (offlineMode) {
+                alert('Publication impossible en mode hors ligne. Votre message sera publié dès le retour de la connexion.');
+                return;
+            }
+
+            publishBtn.disabled = true;
+            publishBtn.textContent = connectionQuality === 'poor' ? 'Publication (lente)...' : 'Publication...';
+
             const postId = Date.now().toString();
             const hasImage = !!fileInput.files[0];
             let originalImageUrl = null;
 
-            // Si il y a une image, on la lit immédiatement pour l'affichage
-            if (hasImage) {
+            // Pour connexions lentes, pas d'affichage immédiat d'image
+            if (hasImage && connectionQuality !== 'poor') {
                 originalImageUrl = await readFileAsDataURL(fileInput.files[0]);
             }
 
-            // Création du post optimiste avec l'image originale
             const optimisticPost = {
                 id: postId,
                 author: userData.fullName,
                 authorId: userData.id,
                 avatar: userData.avatar,
                 text: text,
-                imageUrl: originalImageUrl, // Image originale pour affichage immédiat
+                imageUrl: originalImageUrl,
                 timestamp: new Date().toISOString(),
                 isOptimistic: true,
-                imageProcessing: hasImage, // Indique que l'image est en cours d'optimisation
-                originalImage: hasImage // Flag pour savoir qu'on a une image originale
+                imageProcessing: hasImage,
+                originalImage: hasImage
             };
 
-            // Ajout immédiat au fil local
             posts.unshift(optimisticPost);
             renderPosts();
-
-            // Nettoyage immédiat de l'interface
             clearPostForm();
-            resetPublishButton();
 
-            // === ÉTAPE 2: OPTIMISATION EN ARRIÈRE-PLAN ===
             try {
                 let finalPost = { ...optimisticPost };
                 delete finalPost.isOptimistic;
                 delete finalPost.imageProcessing;
                 delete finalPost.originalImage;
 
-                // Si pas d'image, sauvegarde immédiate
                 if (!hasImage) {
                     finalPost.imageUrl = null;
                     await database.ref('posts/' + postId).set(removeUndefinedDeep(finalPost));
-                    
-                    // Mise à jour du post local
                     updateLocalPost(postId, finalPost);
                 } else {
-                    // Traitement et optimisation de l'image en arrière-plan
-                    processImageInBackground(fileInput.files[0], postId, finalPost);
+                    // Traitement d'image optimisé pour connexion lente
+                    await processImageOptimized(fileInput.files[0], postId, finalPost);
                 }
 
             } catch (error) {
-                console.error('Erreur lors de la publication:', error);
-                
-                // Suppression du post optimiste en cas d'erreur
+                console.error('Erreur publication:', error);
                 removeOptimisticPost(postId);
                 alert('Erreur lors de la publication. Vérifiez votre connexion.');
+            } finally {
+                publishBtn.disabled = false;
+                publishBtn.textContent = 'Publier';
             }
         });
 
-        // Fonction pour lire un fichier comme Data URL
+        async function processImageOptimized(file, postId, post) {
+            try {
+                updateImageProcessingStatus(postId, 'optimizing');
+                
+                // Compression agressive pour connexions lentes
+                const optimizedImageUrl = await imageProcessor.resizeImageOptimized(
+                    file, 
+                    null, // Utilise les paramètres automatiques selon la connexion
+                    null,
+                    (progress) => {
+                        if (connectionQuality !== 'poor') {
+                            updateImageProcessingProgress(postId, progress);
+                        }
+                    }
+                );
+
+                updateImageProcessingStatus(postId, 'saving');
+
+                // Upload avec retry automatique
+                await connectionManager.retryOperation(async () => {
+                    post.imageUrl = optimizedImageUrl;
+                    await database.ref('posts/' + postId).set(removeUndefinedDeep(post));
+                });
+
+                const postIndex = posts.findIndex(p => p.id === postId);
+                if (postIndex !== -1) {
+                    posts[postIndex] = post;
+                    if (connectionQuality !== 'poor') {
+                        smoothImageTransition(postId, optimizedImageUrl);
+                    } else {
+                        renderPosts(); // Rendu complet pour connexions lentes
+                    }
+                }
+
+            } catch (error) {
+                console.error('Erreur traitement image:', error);
+                
+                const postIndex = posts.findIndex(p => p.id === postId);
+                if (postIndex !== -1) {
+                    posts[postIndex].imageProcessing = false;
+                    posts[postIndex].processingError = true;
+                    posts[postIndex].isOptimistic = false;
+                    renderPosts();
+                }
+            }
+        }
+
+        // === FONCTIONS UTILITAIRES (INCHANGÉES) ===
         function readFileAsDataURL(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -1313,69 +1751,17 @@
             });
         }
 
-        // Traitement d'image en arrière-plan avec remplacement progressif
-        async function processImageInBackground(file, postId, post) {
-            try {
-                // Mise à jour du statut visuel (avec indicateur discret)
-                updateImageProcessingStatus(postId, 'optimizing');
-                
-                // Compression de l'image
-                const optimizedImageUrl = await imageProcessor.resizeImageOptimized(
-                    file, 
-                    150,
-                    600,
-                    (progress) => {
-                        updateImageProcessingProgress(postId, progress);
-                    }
-                );
-
-                // Mise à jour du statut
-                updateImageProcessingStatus(postId, 'saving');
-
-                // Sauvegarde finale en base avec l'image optimisée
-                post.imageUrl = optimizedImageUrl;
-                await database.ref('posts/' + postId).set(removeUndefinedDeep(post));
-
-                // Remplacement de l'image dans le post local
-                const postIndex = posts.findIndex(p => p.id === postId);
-                if (postIndex !== -1) {
-                    posts[postIndex] = post;
-                    
-                    // Animation douce de remplacement d'image
-                    smoothImageTransition(postId, optimizedImageUrl);
-                }
-
-            } catch (error) {
-                console.error('Erreur traitement image:', error);
-                
-                // En cas d'erreur, on garde le post avec l'image originale
-                const postIndex = posts.findIndex(p => p.id === postId);
-                if (postIndex !== -1) {
-                    posts[postIndex].imageProcessing = false;
-                    posts[postIndex].processingError = true;
-                    posts[postIndex].isOptimistic = false;
-                    renderPosts();
-                    
-                    // Sauvegarde avec l'image originale (plus grande mais fonctionnelle)
-                    const fallbackPost = { ...post };
-                    fallbackPost.imageUrl = posts[postIndex].imageUrl; // Image originale
-                    database.ref('posts/' + postId).set(removeUndefinedDeep(fallbackPost));
-                }
-            }
-        }
-
-        // Animation douce pour le remplacement d'image
         function smoothImageTransition(postId, newImageUrl) {
+            if (connectionQuality === 'poor') return; // Pas d'animation sur connexions lentes
+            
             const postElement = document.querySelector(`[data-post-id="${postId}"]`);
             if (!postElement) return;
 
             const imageElement = postElement.querySelector('.image-link img');
             if (!imageElement) return;
 
-            // Préchargement de la nouvelle image
             const newImg = new Image();
             newImg.onload = () => {
-                // Transition douce
                 imageElement.style.transition = 'opacity 0.3s ease';
                 imageElement.style.opacity = '0.7';
                 
@@ -1383,7 +1769,6 @@
                     imageElement.src = newImageUrl;
                     imageElement.style.opacity = '1';
                     
-                    // Suppression de l'indicateur d'optimisation
                     const indicator = postElement.querySelector('.optimization-indicator');
                     if (indicator) {
                         indicator.style.opacity = '0';
@@ -1394,7 +1779,6 @@
             newImg.src = newImageUrl;
         }
 
-        // Mise à jour locale d'un post
         function updateLocalPost(postId, updatedPost) {
             const postIndex = posts.findIndex(p => p.id === postId);
             if (postIndex !== -1) {
@@ -1403,7 +1787,6 @@
             }
         }
 
-        // Suppression d'un post optimiste
         function removeOptimisticPost(postId) {
             const postIndex = posts.findIndex(p => p.id === postId);
             if (postIndex !== -1) {
@@ -1412,8 +1795,9 @@
             }
         }
 
-        // Mise à jour du statut de traitement (plus discret)
         function updateImageProcessingStatus(postId, status) {
+            if (connectionQuality === 'poor') return; // Pas d'indicateurs sur connexions lentes
+            
             const postElement = document.querySelector(`[data-post-id="${postId}"]`);
             if (!postElement) return;
 
@@ -1437,8 +1821,9 @@
             }
         }
 
-        // Mise à jour de la progression (optionnel, plus discret)
         function updateImageProcessingProgress(postId, progress) {
+            if (connectionQuality === 'poor') return;
+            
             const postElement = document.querySelector(`[data-post-id="${postId}"]`);
             if (!postElement) return;
 
@@ -1451,13 +1836,7 @@
             }
         }
 
-        function resetPublishButton() {
-            const publishBtn = document.getElementById('publishBtn');
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'Publier';
-        }
-
-        // Aperçu de fichier optimisé
+        // === APERÇU FICHIER OPTIMISÉ ===
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             const fileName = document.getElementById('fileName');
@@ -1466,14 +1845,18 @@
             if (file) {
                 fileName.textContent = file.name;
                 
-                // Aperçu rapide sans compression complète
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 10px; object-fit: cover;">`;
-                };
-                reader.readAsDataURL(file);
+                // Aperçu adapté à la connexion
+                if (connectionQuality === 'poor') {
+                    preview.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">📸 Image sélectionnée<br><small>Aperçu désactivé (connexion lente)</small></div>`;
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+             preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
             } else {
-                fileName.textContent = '';
+                fileName.textContent = 'Aucun fichier sélectionné';
                 preview.innerHTML = '';
             }
         });
@@ -1481,524 +1864,447 @@
         function clearPostForm() {
             document.getElementById('postText').value = '';
             document.getElementById('fileInput').value = '';
-            document.getElementById('fileName').textContent = '';
+            document.getElementById('fileName').textContent = 'Aucun fichier sélectionné';
             document.getElementById('mediaPreview').innerHTML = '';
+            autoResize(document.getElementById('postText'));
         }
 
-        // Modal pour images
-        window.openImageModal = function(imgUrl) {
-            const modal = document.getElementById('modalImageView');
-            const modalImg = document.getElementById('modalImageBig');
-            modal.style.display = 'flex';
-            modalImg.src = imgUrl;
-        };
-
-        window.closeImageModal = function() {
-            document.getElementById('modalImageView').style.display = 'none';
-        };
-
-        document.getElementById('modalImageView').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeImageModal();
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
-            }
-        });
-
-        // Système de likes et commentaires optimisé avec debouncing
-        function listenLikesAndComments(postId) {
-            const cached = cacheManager.get(`likes_comments_${postId}`);
-            if (cached) return;
-
-            // Likes avec debouncing
-            database.ref('likes/' + postId).on('value', 
-                debounce((snap) => {
-                    const likes = snap.val() || {};
-                    const cleanedLikes = removeUndefinedDeep(likes);
-                    const post = posts.find(p => p.id === postId);
-                    if (post) {
-                        post.likes = cleanedLikes;
-                        renderPostsOptimized();
-                    }
-                }, 100)
-            );
-
-            // Comments avec debouncing
-            database.ref('comments/' + postId).on('value', 
-                debounce((snap) => {
-                    const comments = snap.val() || {};
-                    const cleanedComments = removeUndefinedDeep(comments);
-                    const post = posts.find(p => p.id === postId);
-                    if (post) {
-                        post.comments = cleanedComments;
-                        renderPostsOptimized();
-                    }
-                }, 100)
-            );
-
-            cacheManager.set(`likes_comments_${postId}`, true);
-        }
-
-        // Fonction debounce pour optimiser les mises à jour
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Rendu optimisé avec affichage immédiat des images originales
-        const renderPostsOptimized = debounce(renderPosts, 200);
-
+        // === RENDU POSTS OPTIMISÉ ===
         function renderPosts() {
             const feed = document.getElementById('feed');
-            const fragment = document.createDocumentFragment();
             
-            posts.forEach(post => {
-                // Configuration des listeners si nécessaire (sauf pour posts optimistes)
-                if (!post._listeners && !post.isOptimistic) {
-                    listenLikesAndComments(post.id);
-                    post._listeners = true;
-                }
-
-                const likesCount = post.likes ? Object.keys(post.likes).length : 0;
-                const commentsCount = post.comments ? Object.keys(post.comments).length : 0;
-                const isLiked = post.likes && post.likes[userData.id];
-                const timeAgo = getTimeAgo(post.timestamp);
-
-                // Gestion des images : affichage immédiat puis optimisation
-                let imageHTML = '';
-                if (post.imageUrl && post.imageUrl !== 'PROCESSING') {
-                    // Image présente (originale ou optimisée)
-                    imageHTML = `
-                        <div style="position: relative;">
-                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                                <img src="${post.imageUrl}" alt="Image publication" loading="lazy" 
-                                     style="${post.imageProcessing ? 'filter: brightness(0.95);' : ''}">
-                            </a>
-                            ${post.imageProcessing ? '<div class="optimization-indicator"></div>' : ''}
-                        </div>
-                    `;
-                } else if (post.imageUrl === 'PROCESSING') {
-                    // Fallback si jamais on a encore l'ancien système
-                    imageHTML = `
-                        <div class="image-processing">
-                            <div class="processing-placeholder">
-                                <div class="processing-icon">🖼️</div>
-                                <div class="processing-status">🔄 Traitement de l'image...</div>
-                                <div class="processing-progress">
-                                    <div class="processing-progress-bar" style="width: 0%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else if (post.processingError) {
-                    // Erreur de traitement d'image (garde l'image originale)
-                    imageHTML = `
-                        <div>
-                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                                <img src="${post.imageUrl}" alt="Image publication" loading="lazy">
-                            </a>
-                            <div class="image-error-notice">
-                                ⚠️ Image non optimisée (fichier original conservé)
-                            </div>
-                        </div>
-                    `;
-                }
-
-                let commentsHTML = '';
-                if (post.comments && !post.isOptimistic) {
-                    const commentsList = Object.values(post.comments)
-                        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-                        .slice(-5);
-                    
-                    commentsHTML = commentsList.map(comment => `
-                        <div class="comment">
-                            <div class="comment-header">
-                                <div class="comment-avatar">${comment.avatar}</div>
-                                <div class="comment-username">${escapeHtml(comment.author)}</div>
-                                <div class="comment-time">${getTimeAgo(comment.timestamp)}</div>
-                            </div>
-                            <div class="comment-text">${escapeHtml(comment.text)}</div>
-                        </div>
-                    `).join('');
-                }
-
-                // Indicateur plus discret pour les posts en cours d'optimisation
-                const optimisticIndicator = post.isOptimistic && post.imageProcessing ? 
-                    '<div class="optimistic-indicator">✨ Image en cours d\'optimisation...</div>' : 
-                    (post.isOptimistic ? '<div class="optimistic-indicator">📤 Publication en cours...</div>' : '');
-
-                const postElement = document.createElement('div');
-                postElement.className = `publication${post.isOptimistic ? ' optimistic-post' : ''}`;
-                postElement.setAttribute('data-post-id', post.id);
-                postElement.innerHTML = `
-                    ${optimisticIndicator}
-                    <div class="pub-header">
-                        <div class="pub-avatar">${post.avatar}</div>
-                        <div class="pub-info">
-                            <div class="pub-username">${escapeHtml(post.author)}</div>
-                            <div class="pub-time">${timeAgo}</div>
-                        </div>
-                    </div>
-                    <div class="pub-text">${escapeHtml(post.text)}</div>
-                    ${imageHTML}
-                    <div class="pub-actions">
-                        <button class="action-btn ${isLiked ? 'liked' : ''}" 
-                                onclick="toggleLike('${post.id}')" 
-                                id="like-btn-${post.id}"
-                                ${post.isOptimistic ? 'disabled' : ''}>
-                            ${isLiked ? '❤️' : '🤍'} ${likesCount}
-                        </button>
-                        <button class="action-btn" 
-                                onclick="toggleComments('${post.id}')"
-                                ${post.isOptimistic ? 'disabled' : ''}>
-                            💬 ${commentsCount}
-                        </button>
-                    </div>
-                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                        ${commentsHTML}
-                        ${!post.isOptimistic ? `
-                            <div class="comment-form">
-                                <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-                                <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-                            </div>
-                        ` : ''}
+            // Nettoyage des anciennes notifications
+            const oldNotice = feed.querySelector('.offline-notice');
+            if (oldNotice) oldNotice.remove();
+            
+            if (posts.length === 0) {
+                feed.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                        <h3>Aucune publication</h3>
+                        <p>Soyez le premier à partager quelque chose !</p>
                     </div>
                 `;
-                
-                fragment.appendChild(postElement);
-            });
+                return;
+            }
 
-            // Remplacement en une seule opération DOM
-            feed.innerHTML = '';
-            feed.appendChild(fragment);
+            // Rendu par batch pour les connexions lentes
+            if (connectionQuality === 'poor') {
+                renderPostsBatch(feed, 0, 10);
+            } else {
+                feed.innerHTML = posts.map(createPostHTML).join('');
+                
+                // Animation différée pour éviter les blocages
+                if (connectionQuality !== 'poor') {
+                    setTimeout(() => {
+                        feed.querySelectorAll('.post-card').forEach((card, index) => {
+                            card.style.animationDelay = `${index * 50}ms`;
+                            card.classList.add('slide-in');
+                        });
+                    }, 50);
+                }
+            }
         }
 
-        // Fonction d'échappement HTML pour la sécurité
+        function renderPostsBatch(feed, startIndex, batchSize) {
+            const endIndex = Math.min(startIndex + batchSize, posts.length);
+            const batchPosts = posts.slice(startIndex, endIndex);
+            
+            if (startIndex === 0) {
+                feed.innerHTML = '';
+            }
+            
+            const batchHTML = batchPosts.map(createPostHTML).join('');
+            feed.insertAdjacentHTML('beforeend', batchHTML);
+            
+            // Continuer le rendu par batch
+            if (endIndex < posts.length) {
+                setTimeout(() => {
+                    renderPostsBatch(feed, endIndex, batchSize);
+                }, 100);
+            }
+        }
+
+        function createPostHTML(post) {
+            const timeAgo = getTimeAgo(new Date(post.timestamp));
+            const isOptimistic = post.isOptimistic || false;
+            const isProcessing = post.imageProcessing || false;
+            const hasError = post.processingError || false;
+            
+            let imageHTML = '';
+            if (post.imageUrl || isProcessing) {
+                if (isProcessing && connectionQuality !== 'poor') {
+                    imageHTML = `
+                        <div class="image-link" style="position: relative;">
+                            <img src="${post.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjhmOWZhIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2IiBmb250LXNpemU9IjE0Ij7ijIAgVHJhaXRlbWVudC4uLjwvdGV4dD4KPHN2Zz4='}" alt="Image en cours de traitement" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; opacity: ${post.imageUrl ? '1' : '0.5'};">
+                            <div class="optimization-indicator"></div>
+                        </div>
+                    `;
+                } else if (post.imageUrl) {
+                    imageHTML = `
+                        <div class="image-link">
+                            <img src="${post.imageUrl}" alt="Image partagée" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; cursor: pointer;" onclick="openImageModal('${post.imageUrl}')">
+                        </div>
+                    `;
+                }
+            }
+
+            const statusIndicator = isOptimistic ? 
+                `<span style="color: #ffa500; font-size: 12px;">⏳ En cours...</span>` :
+                hasError ? 
+                `<span style="color: #dc3545; font-size: 12px;">❌ Erreur</span>` : 
+                '';
+
+            return `
+                <div class="post-card" data-post-id="${post.id}" style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 20px;
+                    margin-bottom: 16px;
+                    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+                    border: 1px solid #e1e8ed;
+                    opacity: ${isOptimistic ? '0.8' : '1'};
+                    transition: all 0.3s ease;
+                ">
+                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                        <div style="
+                            width: 45px;
+                            height: 45px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 16px;
+                            margin-right: 12px;
+                            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+                        ">${post.avatar}</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #1a1a1a; font-size: 15px;">${post.author}</div>
+                            <div style="color: #657786; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                                ${timeAgo} ${statusIndicator}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${post.text ? `<div style="color: #1a1a1a; line-height: 1.5; margin-bottom: ${imageHTML ? '16px' : '0'}; font-size: 15px; white-space: pre-wrap;">${escapeHtml(post.text)}</div>` : ''}
+                    
+                    ${imageHTML}
+                </div>
+            `;
+        }
+
+        // === MODAL IMAGE OPTIMISÉE ===
+        function openImageModal(imageSrc) {
+            if (connectionQuality === 'poor') {
+                // Ouverture dans nouvel onglet pour connexions lentes
+                window.open(imageSrc, '_blank');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                cursor: pointer;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            const img = document.createElement('img');
+            img.src = imageSrc;
+            img.style.cssText = `
+                max-width: 90%;
+                max-height: 90%;
+                object-fit: contain;
+                border-radius: 8px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                animation: scaleIn 0.3s ease;
+            `;
+            
+            modal.appendChild(img);
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', () => {
+                modal.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => document.body.removeChild(modal), 300);
+            });
+        }
+
+        // === FONCTIONS UTILITAIRES ===
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // Gestion optimisée des likes avec throttling
-        const likeThrottled = throttle(toggleLikeAction, 1000);
-
-        window.toggleLike = function(postId) {
-            likeThrottled(postId);
-        };
-
-        function toggleLikeAction(postId) {
-            const btn = document.getElementById('like-btn-' + postId);
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-            }
-
-            const likeRef = database.ref('likes/' + postId + '/' + userData.id);
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
             
-            likeRef.once('value').then(snapshot => {
-                const likeData = {
-                    userId: userData.id,
-                    username: userData.fullName,
-                    timestamp: new Date().toISOString()
-                };
-
-                if (snapshot.exists()) {
-                    likeRef.remove();
-                } else {
-                    likeRef.set(removeUndefinedDeep(likeData));
-                }
-            }).finally(() => {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            });
+            if (minutes < 1) return 'À l\'instant';
+            if (minutes < 60) return `${minutes}min`;
+            if (hours < 24) return `${hours}h`;
+            if (days < 7) return `${days}j`;
+            return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
         }
 
-        // Fonction throttle pour limiter les actions rapides
-        function throttle(func, limit) {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
+        // === AUTO-RESIZE TEXTAREA ===
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
         }
 
-        window.toggleComments = function(postId) {
-            const commentsSection = document.getElementById(`comments-${postId}`);
-            const isVisible = commentsSection.style.display !== 'none';
-            commentsSection.style.display = isVisible ? 'none' : 'block';
-            
-            // Auto-focus sur l'input si on ouvre les commentaires
-            if (!isVisible) {
-                setTimeout(() => {
-                    const input = document.getElementById(`comment-input-${postId}`);
-                    if (input) input.focus();
-                }, 100);
-            }
-        };
-
-        // Soumission de commentaire optimisée
-        window.submitComment = function(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const commentText = input.value.trim();
-            
-            if (!commentText) return;
-            if (commentText.length > 500) {
-                alert('Commentaire trop long (max 500 caractères)');
-                return;
-            }
-
-            // Désactivation temporaire de l'input
-            input.disabled = true;
-            const originalPlaceholder = input.placeholder;
-            input.placeholder = 'Envoi en cours...';
-
-            const commentsRef = database.ref('comments/' + postId);
-            const commentId = commentsRef.push().key;
-            
-            const comment = removeUndefinedDeep({
-                id: commentId,
-                author: userData.fullName,
-                authorId: userData.id,
-                avatar: userData.avatar,
-                text: commentText,
-                timestamp: new Date().toISOString()
-            });
-
-            commentsRef.child(commentId).set(comment)
-                .then(() => {
-                    input.value = '';
-                })
-                .catch(() => {
-                    alert('Erreur lors de l\'envoi du commentaire');
-                })
-                .finally(() => {
-                    input.disabled = false;
-                    input.placeholder = originalPlaceholder;
-                });
-        };
-
-        // Gestion des touches pour les commentaires
-        document.addEventListener('keydown', function(e) {
-            if (e.target.classList.contains('comment-input') && e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const postId = e.target.id.replace('comment-input-', '');
-                window.submitComment(postId);
-            }
+        document.getElementById('postText').addEventListener('input', function() {
+            autoResize(this);
         });
 
-        // Fonction d'affichage du temps optimisée
-        function getTimeAgo(timestamp) {
-            const now = new Date();
-            const time = new Date(timestamp);
-            const diffInSeconds = Math.floor((now - time) / 1000);
-            
-            if (diffInSeconds < 60) return 'À l\'instant';
-            if (diffInSeconds < 3600) {
-                const minutes = Math.floor(diffInSeconds / 60);
-                return `${minutes}min`;
-            } else if (diffInSeconds < 86400) {
-                const hours = Math.floor(diffInSeconds / 3600);
-                return `${hours}h`;
-            } else if (diffInSeconds < 604800) {
-                const days = Math.floor(diffInSeconds / 86400);
-                return `${days}j`;
-            } else {
-                return time.toLocaleDateString('fr-FR', { 
-                    day: 'numeric', 
-                    month: 'short' 
-                });
-            }
-        }
-
-        // Animation des particules optimisée
+        // === ANIMATION PARTICULES OPTIMISÉE ===
         function createParticles() {
-            const particles = document.getElementById('particles');
-            if (!particles) return;
+            // Désactivation pour connexions très lentes
+            if (connectionQuality === 'poor') return;
             
-            // Réduction du nombre de particules sur mobile
-            const isMobile = window.innerWidth < 768;
-            const particleCount = isMobile ? 10 : 20;
+            const container = document.querySelector('.registration-overlay');
+            if (!container) return;
+            
+            const particleCount = window.innerWidth < 768 ? 15 : 25;
             
             for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                particles.appendChild(particle);
+                setTimeout(() => createParticle(container), i * 200);
             }
         }
 
-        // Gestion redimensionnement optimisée
-        const handleResize = debounce(function() {
-            const particles = document.getElementById('particles');
-            if (particles) {
-                particles.innerHTML = '';
-                createParticles();
+        function createParticle(container) {
+            const particle = document.createElement('div');
+            const size = Math.random() * 6 + 3;
+            const duration = Math.random() * 20 + 15;
+            const delay = Math.random() * 5;
+            
+            particle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: 100%;
+                animation: floatUp ${duration}s linear ${delay}s infinite;
+                pointer-events: none;
+            `;
+            
+            container.appendChild(particle);
+            
+            // Nettoyage périodique
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, (duration + delay) * 1000);
+        }
+
+        // === STYLES CSS INTÉGRÉS ===
+        const styles = document.createElement('style');
+        styles.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
             }
-        }, 300);
+            
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            
+            @keyframes scaleIn {
+                from { transform: scale(0.8); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            
+            @keyframes floatUp {
+                from {
+                    transform: translateY(0) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+            
+            @keyframes slideIn {
+                from {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            .slide-in {
+                animation: slideIn 0.5s ease forwards;
+            }
+            
+            .post-card:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.12) !important;
+            }
+            
+            .optimization-indicator {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                z-index: 10;
+            }
+            
+            .opt-badge {
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 500;
+                backdrop-filter: blur(10px);
+            }
+            
+            .status-indicator {
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 auto;
+                text-align: center;
+                max-width: 200px;
+                transition: all 0.3s ease;
+            }
+            
+            .status-connected {
+                background: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+            
+            .status-medium {
+                background: #fff3cd;
+                color: #856404;
+                border: 1px solid #ffeaa7;
+            }
+            
+            .status-slow {
+                background: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+            
+            .status-offline {
+                background: #e2e3e5;
+                color: #383d41;
+                border: 1px solid #d6d8db;
+            }
+            
+            .status-disconnected {
+                background: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.7; }
+                100% { opacity: 1; }
+            }
+            
+            /* Optimisations pour connexions lentes */
+            @media (max-width: 768px) {
+                .post-card {
+                    margin-bottom: 12px !important;
+                    padding: 16px !important;
+                }
+                
+                .optimization-indicator {
+                    top: 8px;
+                    right: 8px;
+                }
+                
+                .opt-badge {
+                    padding: 4px 8px;
+                    font-size: 11px;
+                }
+            }
+            
+            /* Mode sombre automatique selon l'heure */
+            @media (prefers-color-scheme: dark) {
+                .post-card {
+                    background: #1a1a1a !important;
+                    border-color: #333 !important;
+                    color: #e1e8ed !important;
+                }
+            }
+        `;
+        document.head.appendChild(styles);
 
-        window.addEventListener('resize', handleResize);
+        // === ADAPTATION AUTOMATIQUE À LA QUALITÉ DE CONNEXION ===
+        setInterval(() => {
+            cacheManager.adaptToConnection();
+        }, 60000);
 
-        // Gestion des publications utilisateur
-        document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-            showMyPostsModal();
+        // === NETTOYAGE MÉMOIRE PÉRIODIQUE ===
+        setInterval(() => {
+            if (posts.length > 100) {
+                posts = posts.slice(0, 50); // Garde seulement les 50 plus récents
+                renderPosts();
+            }
+        }, 300000); // Toutes les 5 minutes
+
+        // === GESTION ERREURS GLOBALES ===
+        window.addEventListener('error', function(e) {
+            console.log('Erreur globale:', e.error);
+            // Pas d'alerte pour ne pas gêner l'utilisateur
         });
 
-        document.getElementById('closeMyPostsModal').onclick = function() {
-            document.getElementById('myPostsModal').style.display = 'none';
-        };
-
-        document.getElementById('myPostsModal').onclick = function(e) {
-            if (e.target === this) this.style.display = 'none';
-        };
-
-        function showMyPostsModal() {
-            const listEl = document.getElementById('myPostsList');
-            const myPosts = posts.filter(p => p.authorId === userData.id);
-            
-            if (myPosts.length === 0) {
-                listEl.innerHTML = `
-                    <div style="color:#555; padding:18px; text-align:center;">
-                        Aucune publication trouvée.
-                    </div>
-                `;
-            } else {
-                const fragment = document.createDocumentFragment();
-                
-                myPosts.forEach(post => {
-                    const timeAgo = getTimeAgo(post.timestamp);
-                    const img = post.imageUrl ? 
-                        `<img src="${post.imageUrl}" alt="" style="max-width:80px; max-height:80px; border-radius:7px; margin-bottom:8px; display:block; object-fit:cover;">` : 
-                        "";
-                    
-                    const postElement = document.createElement('div');
-                    postElement.style.cssText = 'border-bottom:1px solid #eee; padding:10px 0 11px 0; display:flex; gap:14px; align-items:center;';
-                    postElement.innerHTML = `
-                        <div style="flex:0 0 80px;">
-                            ${img}
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:500; color:#222;">${escapeHtml(post.text) || "(aucun texte)"}</div>
-                            <div style="font-size:13px; color:#666; margin-top:3px;">${timeAgo}</div>
-                        </div>
-                        <button onclick="deleteMyPost('${post.id}')" style="margin-left:10px; background:linear-gradient(135deg, #e85c6b, #c44569); color:#fff; border:none; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer;">
-                            Supprimer
-                        </button>
-                    `;
-                    
-                    fragment.appendChild(postElement);
-                });
-                
-                listEl.innerHTML = '';
-                listEl.appendChild(fragment);
-            }
-            
-            document.getElementById('myPostsModal').style.display = 'flex';
-        }
-
-        // Suppression optimisée des publications
-        window.deleteMyPost = function(postId) {
-            if (!confirm("Voulez-vous vraiment supprimer cette publication ? Cette action est irréversible.")) {
-                return;
-            }
-
-            // Feedback immédiat
-            const button = event.target;
-            button.disabled = true;
-            button.textContent = 'Suppression...';
-            button.style.opacity = '0.6';
-
-            // Suppression en batch pour optimiser
-            const updates = {};
-            updates['/posts/' + postId] = null;
-            updates['/likes/' + postId] = null;
-            updates['/comments/' + postId] = null;
-
-            firebase.database().ref().update(updates)
-                .then(() => {
-                    showMyPostsModal(); // Actualise la liste
-                })
-                .catch(() => {
-                    alert("Erreur lors de la suppression.");
-                    button.disabled = false;
-                    button.textContent = 'Supprimer';
-                    button.style.opacity = '1';
-                });
-        };
-
-        // Gestion de la visibilité de la page pour économiser les ressources
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                // Pause des listeners quand la page n'est pas visible
-                if (postsListener) {
-                    postsListener.off();
-                }
-                cacheManager.clear();
-            } else {
-                // Reprise quand la page redevient visible
-                if (userData && document.getElementById('mainApp').style.display !== 'none') {
-                    loadPosts();
-                }
-            }
+        window.addEventListener('unhandledrejection', function(e) {
+            console.log('Promise rejetée:', e.reason);
+            e.preventDefault();
         });
 
-        // Détection de la connectivité réseau
-        if ('onLine' in navigator) {
-            function updateOnlineStatus() {
-                const statusEl = document.getElementById('statusIndicator');
-                if (!navigator.onLine && statusEl) {
-                    statusEl.textContent = '📶 Hors ligne';
-                    statusEl.className = 'status-indicator status-disconnected';
-                }
-            }
+        // === EXPORT POUR DEBUGGING (DÉVELOPPEMENT UNIQUEMENT) ===
+        window.ExpressExchange = {
+            connectionManager,
+            offlineStorage,
+            imageProcessor,
+            cacheManager,
+            userData: () => userData,
+            posts: () => posts,
+            connectionQuality: () => connectionQuality,
+            isOffline: () => offlineMode
+        };
 
-            window.addEventListener('online', () => {
-                if (userData) loadPosts();
-            });
-            
-            window.addEventListener('offline', updateOnlineStatus);
-        }
-
-        // Préchargement intelligent des images
-        function preloadImages() {
-            posts.slice(0, 5).forEach(post => {
-                if (post.imageUrl && !cacheManager.get(`img_${post.id}`)) {
-                    const img = new Image();
-                    img.onload = () => cacheManager.set(`img_${post.id}`, true);
-                    img.src = post.imageUrl;
-                }
-            });
-        }
-
-        // Lancement du préchargement après le rendu initial
-        setTimeout(preloadImages, 2000);
-
-        // Service Worker pour mise en cache (si supporté)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {
-                console.log('Service Worker non disponible');
-            });
-        }
-
+        console.log('✅ Express Exchange initialisé avec optimisations connexion lente');
     </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</body>
+</html>
 </body>
