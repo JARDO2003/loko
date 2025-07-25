@@ -2858,3 +2858,59 @@ document.head.appendChild(styleSheet);
 // Initialisation du système
 console.log('🚀 Système vidéo base64 initialisé - Publication ultra-rapide activée !');
 </script>
+<script>
+    function renderPosts() {
+    const feed = document.getElementById('feed');
+    const fragment = document.createDocumentFragment();
+    
+    posts.forEach(post => {
+        // ... (code existant)
+
+        // Rendu du média selon le type
+        let mediaHTML = '';
+        
+        if (post.mediaType === 'image' && post.imageUrl) {
+            mediaHTML = `
+                <div class="media-container">
+                    <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
+                        <img src="${post.imageUrl}" alt="Image publication" loading="lazy">
+                    </a>
+                </div>
+            `;
+        } else if (post.mediaType === 'video' && post.videoThumbnail) {
+            // Ajoutez ce bloc pour les vidéos
+            mediaHTML = `
+                <div class="video-container">
+                    <div class="video-thumbnail-display" onclick="playVideo('${post.id}')">
+                        <img src="${post.videoThumbnail}" alt="Miniature vidéo" class="thumbnail-image">
+                        <div class="video-overlay">
+                            <div class="play-icon">▶</div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        🎬 ${post.videoDurationFormatted}
+                    </div>
+                    <video id="video-${post.id}" controls style="display:none; width:100%">
+                        <source src="${post.videoBase64}" type="${post.videoType || 'video/mp4'}">
+                    </video>
+                </div>
+            `;
+        }
+
+        // ... (reste du code existant)
+    });
+}
+function playVideo(postId) {
+    const thumbnail = document.querySelector(`#video-${postId}`).previousElementSibling;
+    const video = document.getElementById(`video-${postId}`);
+    
+    thumbnail.style.display = 'none';
+    video.style.display = 'block';
+    video.play();
+}
+console.log('Video processed:', {
+    thumbnail: processedVideo.thumbnail,
+    video: processedVideo.video,
+    metadata: processedVideo.metadata
+});
+</script>
