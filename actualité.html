@@ -1664,13 +1664,6 @@
                                 ${post.isOptimistic ? 'disabled' : ''}>
                             💬 ${commentsCount}
                         </button>
-                         <button class="action-btn"
-            onclick="chatWithUser('${post.authorId}')"
-            title="Discuter avec ${escapeHtml(post.author)}"
-            ${post.isOptimistic ? 'disabled' : ''}>
-        💬 Chatter
-    </button>
-</div>
                     </div>
                     <div class="comments-section" id="comments-${post.id}" style="display: none;">
                         ${commentsHTML}
@@ -2009,33 +2002,3 @@
 
     </script>
 </body>
-<script>
-    
-window.chatWithUser = function(authorId) {
-    // Cherche l'utilisateur dans la base
-    database.ref('users/' + authorId).once('value').then(snap => {
-        const user = snap.val();
-        if (!user || !user.contact) {
-            alert("Impossible de contacter cet utilisateur.");
-            return;
-        }
-        let contact = user.contact.trim();
-
-        // Si c'est un email
-        if (contact.includes('@')) {
-            window.open('mailto:' + contact, '_blank');
-        }
-        // Si c'est un numéro de téléphone (WhatsApp)
-        else if (/^[\d+\s-]+$/.test(contact.replace(/[\s-]/g, ''))) {
-            // Nettoyage du numéro
-            let phone = contact.replace(/[^+\d]/g, '');
-            // Ajoutez indicatif pays si besoin
-            if (phone.startsWith('0')) phone = '+225' + phone.slice(1); // Adaptez selon pays
-            window.open('https://wa.me/' + encodeURIComponent(phone), '_blank');
-        } else {
-            alert("Contact non reconnu : " + contact);
-        }
-    });
-};
-</script>
-
