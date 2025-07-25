@@ -965,7 +965,7 @@
                     <label for="fileInput" class="file-input-label">
                         📷 Ajouter une photo
                     </label>
-                    <input type="file" id="fileInput" accept="image/*">
+                    <input type="file" id="fileInput" accept="image/*,video/*">
                     <span id="fileName"></span>
                 </div>
                 <button class="publish-btn" id="publishBtn">Publier ✨</button>
@@ -991,6 +991,9 @@
             <div id="myPostsList"></div>
         </div>
     </div>
+    <input type="file" id="fileInput" 
+       accept="image/*,video/*"
+       capture="environment">
 
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -2858,3 +2861,47 @@ document.head.appendChild(styleSheet);
 // Initialisation du système
 console.log('🚀 Système vidéo base64 initialisé - Publication ultra-rapide activée !');
 </script>
+<script>
+    document.getElementById('fileInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Vérifiez le type MIME
+    if (!file.type.match('image.*') && !file.type.match('video.*')) {
+        alert('Seules les images et vidéos sont autorisées');
+        this.value = ''; // Réinitialise l'input
+        return;
+    }
+
+    // Affichez l'aperçu
+    if (file.type.match('image.*')) {
+        // Traitement image existant
+    } else if (file.type.match('video.*')) {
+        const videoPreview = document.getElementById('mediaPreview');
+        videoPreview.innerHTML = `
+            <div class="video-preview">
+                <video controls style="max-width: 100%; max-height: 200px;">
+                    <source src="${URL.createObjectURL(file)}" type="${file.type}">
+                </video>
+                <div class="video-info">
+                    ${file.name} (${(file.size/1024/1024).toFixed(1)}MB)
+                </div>
+            </div>
+        `;
+    }
+});
+</script>
+<style>
+    .video-preview {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.video-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+</style>
