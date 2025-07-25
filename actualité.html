@@ -2857,6 +2857,123 @@ document.head.appendChild(styleSheet);
 // Initialisation du système
 console.log('🚀 Système vidéo base64 initialisé - Publication ultra-rapide activée !');
 </script>
+<script>
+/* Correctif Ultime - Problème Images Disparues */
+(function() {
+    // 1. Système de cache des URLs médias
+    const mediaCache = new Map();
+    
+    // 2. Observation des mutations du DOM
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1 && (node.classList.contains('publication') || node.querySelector('.publication'))) {
+                    processPostMedia(node);
+                }
+            });
+        });
+    });
 
+    // 3. Fonction principale de traitement
+    function processPostMedia(postElement) {
+        const post = postElement.classList.contains('publication') ? postElement : postElement.querySelector('.publication');
+        if (!post) return;
+
+        const postId = post.dataset.postId;
+        if (!postId) return;
+
+        // Traitement des images
+        const images = post.querySelectorAll('img');
+        images.forEach(function(img) {
+            if (!img.src || img.naturalWidth === 0) {
+                restoreImage(img, postId);
+            }
+        });
+
+        // Traitement des vidéos
+        const videoPlaceholders = post.querySelectorAll('.video-thumbnail-display');
+        videoPlaceholders.forEach(function(placeholder) {
+            restoreVideo(placeholder, postId);
+        });
+    }
+
+    // 4. Restauration des images
+    function restoreImage(imgElement, postId) {
+        const cachedUrl = mediaCache.get(`img_${postId}`);
+        if (cachedUrl) {
+            imgElement.src = cachedUrl;
+            return;
+        }
+
+        // Recherche dans les données existantes
+        if (typeof posts !== 'undefined') {
+            const postData = posts.find(p => p.id === postId);
+            if (postData && postData.imageUrl) {
+                mediaCache.set(`img_${postId}`, postData.imageUrl);
+                imgElement.src = postData.imageUrl + '?retry=' + Date.now();
+            }
+        }
+    }
+
+    // 5. Restauration des vidéos
+    function restoreVideo(placeholder, postId) {
+        const cachedUrl = mediaCache.get(`video_${postId}`);
+        if (cachedUrl) {
+            replaceWithRealVideo(placeholder, cachedUrl);
+            return;
+        }
+
+        if (typeof posts !== 'undefined') {
+            const postData = posts.find(p => p.id === postId);
+            if (postData && postData.videoBase64) {
+                mediaCache.set(`video_${postId}`, postData.videoBase64);
+                replaceWithRealVideo(placeholder, postData.videoBase64, postData.videoType);
+            }
+        }
+    }
+
+    // 6. Remplacement des placeholders vidéo
+    function replaceWithRealVideo(placeholder, videoData, type = 'video/mp4') {
+        const videoHtml = `
+            <video controls preload="metadata" style="width:100%;max-height:400px;border-radius:12px;">
+                <source src="${videoData}" type="${type}">
+            </video>
+        `;
+        placeholder.outerHTML = videoHtml;
+    }
+
+    // 7. Initialisation
+    function initMediaFixer() {
+        // Sauvegarde initiale des médias
+        if (typeof posts !== 'undefined') {
+            posts.forEach(post => {
+                if (post.imageUrl) mediaCache.set(`img_${post.id}`, post.imageUrl);
+                if (post.videoBase64) mediaCache.set(`video_${post.id}`, post.videoBase64);
+            });
+        }
+
+        // Configuration de l'observeur
+        const feed = document.getElementById('feed');
+        if (feed) {
+            observer.observe(feed, {
+                childList: true,
+                subtree: true
+            });
+
+            // Traitement initial des posts existants
+            document.querySelectorAll('.publication').forEach(processPostMedia);
+        }
+
+        console.log('[MediaFixer] Initialisé avec succès');
+    }
+
+    // Lancement différé pour compatibilité
+    if (document.readyState === 'complete') {
+        initMediaFixer();
+    } else {
+        window.addEventListener('load', initMediaFixer);
+    }
+})();
+</script>
 
 
