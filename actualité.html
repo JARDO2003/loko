@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -57,7 +56,7 @@
             }
         }
 
-        #registrationOverlay {
+        #loadingOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -68,15 +67,65 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            flex-direction: column;
         }
 
-        .registration-modal {
+        .loading-content {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .loading-spinner-big {
+            border: 4px solid #262626;
+            border-top: 4px solid #0095f6;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-subtitle {
+            font-size: 14px;
+            color: #8e8e8e;
+        }
+
+        #accessDeniedOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .access-denied-content {
             background: #1a1a1a;
             border: 1px solid #333333;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
             text-align: center;
             animation: slideIn 0.5s ease-out;
@@ -93,67 +142,39 @@
             }
         }
 
-        .registration-modal h2 {
-            color: #ffffff;
-            margin-bottom: 30px;
+        .access-denied-content h2 {
+            color: #ed4956;
+            margin-bottom: 20px;
             font-weight: 600;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+        .access-denied-content p {
             color: #ffffff;
-            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
 
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #333333;
-            border-radius: 8px;
-            font-size: 16px;
-            background: #262626;
-            color: #ffffff;
-            transition: border-color 0.3s ease;
+        .registration-links {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #0095f6;
-            background: #1a1a1a;
-        }
-
-        .form-group input::placeholder {
-            color: #8e8e8e;
-        }
-
-        .submit-btn {
+        .registration-links a {
             background: #0095f6;
             color: white;
-            padding: 14px 32px;
-            border: none;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 14px;
+            text-decoration: none;
             font-weight: 600;
-            cursor: pointer;
+            font-size: 14px;
             transition: all 0.2s ease;
-            width: 100%;
         }
 
-        .submit-btn:hover {
+        .registration-links a:hover {
             background: #1877f2;
-        }
-
-        .submit-btn:disabled {
-            background: #1a73e8;
-            opacity: 0.7;
-            cursor: not-allowed;
         }
 
         #mainApp {
@@ -342,6 +363,23 @@
             background: rgba(0, 149, 246, 0.1);
             border-color: #1877f2;
             color: #1877f2;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #ed4956;
+            padding: 6px 12px;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(237, 73, 86, 0.1);
+            border-color: #ed4956;
         }
 
         .feed {
@@ -621,11 +659,6 @@
             margin-right: 8px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .cloudinary-badge {
             position: absolute;
             top: 8px;
@@ -639,7 +672,6 @@
             z-index: 5;
         }
 
-        /* Styles pour mes publications */
         .my-post-item {
             border-bottom: 1px solid #262626;
             padding: 12px 0;
@@ -722,6 +754,22 @@
 
             .header {
                 padding: 12px 16px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+
+            .header-bottom {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
             }
 
             .welcome-text {
@@ -774,9 +822,18 @@
             .publish-btn {
                 width: 100%;
             }
+
+            .registration-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .registration-links a {
+                width: 200px;
+                text-align: center;
+            }
         }
 
-        /* Scrollbar dark */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -794,7 +851,6 @@
             background: #404040;
         }
 
-        /* Animations supplémentaires */
         .publication {
             animation: fadeIn 0.3s ease-out;
         }
@@ -810,7 +866,6 @@
             }
         }
 
-        /* États de focus améliorés */
         .form-group input:focus,
         .publisher textarea:focus,
         .comment-input:focus {
@@ -821,31 +876,36 @@
 <body>
     <div id="particles"></div>
 
-    <div id="registrationOverlay">
-        <div class="registration-modal">
-            <h2>Rejoignez Express Exchange</h2>
-            <form id="registrationForm">
-                <div class="form-group">
-                    <label for="nom">Nom</label>
-                    <input type="text" id="nom" required>
-                </div>
-                <div class="form-group">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" required>
-                </div>
-                <div class="form-group">
-                    <label for="contact">Contact</label>
-                    <input type="text" id="contact" required>
-                </div>
-                <button type="submit" class="submit-btn">S'inscrire</button>
-            </form>
+    <div id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner-big"></div>
+            <div class="loading-text">Express Exchange</div>
+            <div class="loading-subtitle">Vérification de votre accès...</div>
+        </div>
+    </div>
+
+    <div id="accessDeniedOverlay">
+        <div class="access-denied-content">
+            <h2>🚫 Accès Refusé</h2>
+            <p>Vous devez d'abord vous inscrire sur l'une de nos plateformes pour accéder à Express Exchange.</p>
+            <p>Veuillez vous inscrire sur l'une des pages suivantes :</p>
+            <div class="registration-links">
+                <a href="t.html">S'inscrire - Page T</a>
+                <a href="higes.html">S'inscrire - HIGES</a>
+                <a href="isfm.html">S'inscrire - ISFM</a>
+            </div>
         </div>
     </div>
 
     <div id="mainApp">
         <div class="header">
-            <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
-            <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
+            <div class="header-top">
+                <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
+                <button class="logout-btn" onclick="logout()">Déconnexion</button>
+            </div>
+            <div class="header-bottom">
+                <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
+            </div>
         </div>
 
         <div class="publisher">
@@ -985,7 +1045,7 @@
                 console.error('❌ userData est null ou undefined');
                 return false;
             }
-            const requiredFields = ['id', 'fullName', 'avatar'];
+            const requiredFields = ['id', 'fullName', 'avatar', 'contact'];
             for (const field of requiredFields) {
                 if (!userData[field] || userData[field].toString().trim() === '') {
                     console.error(`❌ Champ manquant ou vide: ${field}`, userData[field]);
@@ -1021,6 +1081,99 @@
             }
         }
 
+        // Fonction pour détecter automatiquement l'utilisateur depuis les pages d'inscription
+        async function detectUserFromRegistrationPages() {
+            console.log('🔍 Détection automatique de l\'utilisateur...');
+            
+            // Vérifier d'abord les données dans localStorage/sessionStorage des pages d'inscription
+            const registrationSources = [
+                'registrationData_t',
+                'registrationData_higes', 
+                'registrationData_isfm',
+                'userData_t',
+                'userData_higes',
+                'userData_isfm',
+                'currentUser',
+                'userRegistration'
+            ];
+            
+            // Chercher dans le stockage local d'abord
+            for (const source of registrationSources) {
+                try {
+                    const localData = localStorage.getItem(source) || sessionStorage.getItem(source);
+                    if (localData) {
+                        const parsedData = JSON.parse(localData);
+                        if (parsedData && parsedData.nom && parsedData.prenom && parsedData.contact) {
+                            console.log(`✅ Utilisateur trouvé dans ${source}:`, parsedData);
+                            return createUserFromRegistrationData(parsedData, source);
+                        }
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Erreur parsing ${source}:`, error);
+                }
+            }
+            
+            // Si pas trouvé dans le stockage local, chercher dans Firebase
+            return await findUserInFirebase();
+        }
+
+        function createUserFromRegistrationData(regData, source) {
+            const timestamp = Date.now();
+            const userData = {
+                id: `user_${regData.contact}_${timestamp}`,
+                nom: regData.nom,
+                prenom: regData.prenom,
+                contact: regData.contact,
+                fullName: `${regData.prenom} ${regData.nom}`,
+                avatar: `${regData.prenom[0].toUpperCase()}${regData.nom[0].toUpperCase()}`,
+                registeredAt: new Date().toISOString(),
+                username: `${regData.prenom.toLowerCase()}.${regData.nom.toLowerCase()}`,
+                email: `${regData.contact}@placeholder.com`,
+                source: source,
+                autoDetected: true
+            };
+            
+            console.log('👤 Utilisateur créé depuis les données d\'inscription:', userData);
+            return userData;
+        }
+
+        async function findUserInFirebase() {
+            console.log('🔍 Recherche dans Firebase...');
+            
+            // Vérifier le referrer pour savoir d'où vient l'utilisateur
+            const referrer = document.referrer;
+            console.log('🔗 Referrer:', referrer);
+            
+            // Chercher dans différentes collections Firebase
+            const collections = ['inscriptions', 'users', 'registrations', 't_registrations', 'higes_registrations', 'isfm_registrations'];
+            
+            for (const collectionName of collections) {
+                try {
+                    const usersQuery = query(
+                        collection(db, collectionName), 
+                        orderBy('timestamp', 'desc'),
+                        limit(50)
+                    );
+                    const usersSnapshot = await getDocs(usersQuery);
+                    
+                    // Prendre le plus récent (dernière inscription)
+                    if (!usersSnapshot.empty) {
+                        const latestDoc = usersSnapshot.docs[0];
+                        const userData = latestDoc.data();
+                        
+                        if (userData.nom && userData.prenom && userData.contact) {
+                            console.log(`✅ Utilisateur le plus récent trouvé dans ${collectionName}:`, userData);
+                            return createUserFromRegistrationData(userData, collectionName);
+                        }
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Erreur recherche dans ${collectionName}:`, error);
+                }
+            }
+            
+            return null;
+        }
+
         function updateConnectionStatus() {
             const statusIndicator = document.getElementById('statusIndicator');
             if (statusIndicator) {
@@ -1039,7 +1192,7 @@
                 particle.className = 'particle';
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particle.style.animationDelay = (Math.random() * 4 + 4) + 's';
                 particles.appendChild(particle);
             }
         }
@@ -1066,34 +1219,76 @@
 
         window.addEventListener('resize', handleResize);
 
-        function hideRegistrationForm() {
-            const overlay = document.getElementById('registrationOverlay');
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
             if (overlay) {
                 overlay.style.display = 'none';
-                console.log('🚫 Formulaire d\'inscription masqué');
+                console.log('🚫 Overlay de chargement masqué');
             }
         }
 
-        function showRegistrationForm() {
-            console.log('🔰 Affichage du formulaire d\'inscription');
-            const overlay = document.getElementById('registrationOverlay');
+        function showAccessDenied() {
+            console.log('🚫 Affichage de l\'accès refusé');
+            hideLoadingOverlay();
+            const overlay = document.getElementById('accessDeniedOverlay');
             const mainApp = document.getElementById('mainApp');
             if (overlay) overlay.style.display = 'flex';
             if (mainApp) mainApp.style.display = 'none';
-            isAppInitialized = false;
-            userData = null;
         }
 
-        function checkUserRegistration() {
-            console.log('🔍 Vérification de l\'inscription utilisateur...');
+        async function checkUserAccess() {
+            console.log('🔍 Vérification de l\'accès utilisateur...');
+            
+            // D'abord vérifier s'il y a déjà un utilisateur connecté
             userData = getUserData();
             if (userData) {
-                console.log('✅ Utilisateur trouvé:', userData.fullName);
-                hideRegistrationForm();
+                console.log('✅ Utilisateur déjà connecté:', userData.fullName);
+                hideLoadingOverlay();
                 showMainApp();
-            } else {
-                console.log('👤 Aucun utilisateur valide trouvé, affichage du formulaire');
-                showRegistrationForm();
+                return;
+            }
+            
+            // Sinon, essayer de détecter automatiquement l'utilisateur
+            try {
+                userData = await detectUserFromRegistrationPages();
+                
+                if (userData) {
+                    console.log('✅ Utilisateur détecté automatiquement:', userData.fullName);
+                    
+                    // Sauvegarder les données utilisateur
+                    try {
+                        const userDataString = JSON.stringify(userData);
+                        sessionStorage.setItem('expressExchangeUser', userDataString);
+                        localStorage.setItem('expressExchangeUser', userDataString);
+                        console.log('💾 Données utilisateur sauvegardées');
+                    } catch (storageError) {
+                        console.error('❌ Erreur sauvegarde locale:', storageError);
+                    }
+                    
+                    // Sauvegarder dans Firestore si en ligne
+                    if (isOnline) {
+                        try {
+                            await setDoc(doc(db, 'express_users', userData.id), {
+                                ...userData,
+                                createdAt: serverTimestamp(),
+                                lastActive: serverTimestamp(),
+                                autoLoginTimestamp: serverTimestamp()
+                            });
+                            console.log('☁️ Utilisateur auto-connecté sauvegardé dans Firestore');
+                        } catch (firebaseError) {
+                            console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
+                        }
+                    }
+                    
+                    hideLoadingOverlay();
+                    showMainApp();
+                } else {
+                    console.log('❌ Aucun utilisateur trouvé, accès refusé');
+                    showAccessDenied();
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors de la détection utilisateur:', error);
+                showAccessDenied();
             }
         }
 
@@ -1104,8 +1299,8 @@
             }
             console.log('🎯 Affichage de l\'application principale...');
             if (!validateUserData(userData)) {
-                console.error('❌ userData invalide lors de showMainApp, retour au formulaire');
-                showRegistrationForm();
+                console.error('❌ userData invalide lors de showMainApp');
+                showAccessDenied();
                 return;
             }
             const mainApp = document.getElementById('mainApp');
@@ -1144,82 +1339,11 @@
             console.log('🚀 Initialisation de l\'application...');
             createParticles();
             updateConnectionStatus();
+            
+            // Démarrer la vérification d'accès après un petit délai
             setTimeout(() => {
-                checkUserRegistration();
-            }, 100);
-        });
-
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            console.log('📋 Soumission du formulaire d\'inscription...');
-            const submitBtn = e.target.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            const nom = document.getElementById('nom').value.trim();
-            const prenom = document.getElementById('prenom').value.trim();
-            const contact = document.getElementById('contact').value.trim();
-            if (!nom || !prenom || !contact) {
-                alert('Veuillez remplir tous les champs');
-                return;
-            }
-            if (nom.length < 2 || prenom.length < 2) {
-                alert('Le nom et prénom doivent contenir au moins 2 caractères');
-                return;
-            }
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading-spinner"></div>Inscription...';
-            try {
-                const timestamp = Date.now();
-                const randomSuffix = Math.random().toString(36).substr(2, 9);
-                const userId = `user_${timestamp}_${randomSuffix}`;
-                userData = {
-                    id: userId,
-                    nom: nom,
-                    prenom: prenom,
-                    contact: contact,
-                    fullName: `${prenom} ${nom}`,
-                    avatar: `${prenom[0].toUpperCase()}${nom[0].toUpperCase()}`,
-                    registeredAt: new Date().toISOString(),
-                    username: `${prenom.toLowerCase()}.${nom.toLowerCase()}`,
-                    email: `${contact}@placeholder.com`
-                };
-                console.log('👤 Création utilisateur:', userData);
-                if (!validateUserData(userData)) {
-                    throw new Error('Données utilisateur invalides après création');
-                }
-                try {
-                    const userDataString = JSON.stringify(userData);
-                    sessionStorage.setItem('expressExchangeUser', userDataString);
-                    localStorage.setItem('expressExchangeUser', userDataString);
-                    console.log('💾 Données sauvegardées localement');
-                } catch (storageError) {
-                    console.error('❌ Erreur sauvegarde locale:', storageError);
-                    throw new Error('Impossible de sauvegarder les données localement');
-                }
-                if (isOnline) {
-                    try {
-                        await setDoc(doc(db, 'users', userData.id), {
-                            ...userData,
-                            createdAt: serverTimestamp(),
-                            lastActive: serverTimestamp()
-                        });
-                        console.log('☁️ Utilisateur sauvegardé dans Firestore');
-                    } catch (firebaseError) {
-                        console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
-                    }
-                } else {
-                    console.log('📡 Mode hors-ligne, sauvegarde locale uniquement');
-                }
-                hideRegistrationForm();
-                showMainApp();
-            } catch (error) {
-                console.error('❌ Erreur lors de l\'inscription:', error);
-                alert(`Erreur lors de l'inscription: ${error.message}`);
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-                userData = null;
-                sessionStorage.removeItem('expressExchangeUser');
-                localStorage.removeItem('expressExchangeUser');
-            }
+                checkUserAccess();
+            }, 1000);
         });
 
         function loadPosts() {
@@ -1247,7 +1371,7 @@
             if (!validateUserData(userData)) {
                 console.error('❌ Tentative de publication avec userData invalide');
                 alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
-                showRegistrationForm();
+                showAccessDenied();
                 return;
             }
             const text = document.getElementById('postText').value.trim();
@@ -1431,7 +1555,6 @@
             }
         }
 
-        // CORRECTION 1: Fonction d'affichage des commentaires corrigée
         window.toggleComments = function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
             if (!commentsSection) {
@@ -1454,7 +1577,6 @@
             }
         };
 
-        // CORRECTION 2: Fonction loadComments corrigée sans index complexe
         async function loadComments(postId) {
             console.log('📝 Chargement commentaires pour postId:', postId);
             const commentsContainer = document.getElementById(`comments-list-${postId}`);
@@ -1466,7 +1588,6 @@
             try {
                 commentsContainer.innerHTML = '<div style="text-align: center; color: #8e8e8e; padding: 10px;">Chargement des commentaires...</div>';
                 
-                // Requête simple sans orderBy pour éviter l'index composé
                 const commentsQuery = query(
                     collection(db, 'comments'), 
                     where('postId', '==', postId),
@@ -1484,7 +1605,6 @@
                     });
                 });
                 
-                // Tri côté client par timestamp
                 comments.sort((a, b) => {
                     const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
                     const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
@@ -1500,7 +1620,6 @@
             }
         }
 
-        // CORRECTION 3: Fonction renderComments améliorée
         function renderComments(postId, comments) {
             const commentsContainer = document.getElementById(`comments-list-${postId}`);
             if (!commentsContainer) {
@@ -1567,7 +1686,6 @@
                 console.log('💬 Commentaire ajouté pour postId:', postId);
                 await updateCommentsCount(postId);
                 input.value = '';
-                // Recharger les commentaires après ajout
                 setTimeout(() => loadComments(postId), 500);
             } catch (error) {
                 console.error('❌ Erreur ajout commentaire:', error);
@@ -1736,27 +1854,24 @@
             if (e.target === this) this.style.display = 'none';
         };
 
-        // CORRECTION 4: Fonction showMyPostsModal corrigée sans index complexe
         async function showMyPostsModal() {
             console.log('🔰 showMyPostsModal appelée');
             if (!validateUserData(userData)) {
                 console.error('❌ Tentative d\'affichage des posts avec userData invalide');
                 alert('Erreur: Veuillez vous reconnecter.');
-                showRegistrationForm();
+                showAccessDenied();
                 return;
             }
             
             const modal = document.getElementById('myPostsModal');
             const listEl = document.getElementById('myPostsList');
             
-            // Afficher la modal d'abord
             modal.style.display = 'flex';
             listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #8e8e8e;"><div class="loading-spinner"></div> Chargement...</div>';
             
             try {
                 console.log('🔍 Recherche des publications pour userId:', userData.id);
                 
-                // Requête simple sans orderBy pour éviter l'index composé
                 const myPostsQuery = query(
                     collection(db, 'posts'), 
                     where('authorId', '==', userData.id),
@@ -1774,7 +1889,6 @@
                     });
                 });
                 
-                // Tri côté client par timestamp (du plus récent au plus ancien)
                 myPosts.sort((a, b) => {
                     const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
                     const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
@@ -1866,10 +1980,8 @@
             }
             
             try {
-                // Méthode simplifiée : suppression directe du document
                 const postRef = doc(db, 'posts', postId);
                 
-                // Supprimer les likes associés (requête simple)
                 const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
                 const likesSnapshot = await getDocs(likesQuery);
                 const deleteLikesPromises = [];
@@ -1877,7 +1989,6 @@
                     deleteLikesPromises.push(deleteDoc(doc.ref));
                 });
                 
-                // Supprimer les commentaires associés (requête simple)
                 const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
                 const commentsSnapshot = await getDocs(commentsQuery);
                 const deleteCommentsPromises = [];
@@ -1885,15 +1996,12 @@
                     deleteCommentsPromises.push(deleteDoc(doc.ref));
                 });
                 
-                // Attendre la suppression des likes et commentaires
                 await Promise.all([...deleteLikesPromises, ...deleteCommentsPromises]);
                 
-                // Supprimer la publication
                 await deleteDoc(postRef);
                 
                 console.log('✅ Publication supprimée avec succès:', postId);
                 
-                // Recharger la liste des publications
                 setTimeout(() => showMyPostsModal(), 500);
                 
             } catch (error) {
@@ -1930,7 +2038,7 @@
             });
         };
 
-        console.log('✅ Script principal Express Exchange chargé et corrigé');
+        console.log('✅ Script principal Express Exchange chargé avec auto-connexion');
     </script>
 </body>
 </html>
