@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Exchange - Messages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-left: 1px solid #262626;
+            border-right: 1px solid #262626;
+        }
+
+        /* Sidebar avec liste des utilisateurs */
+        .sidebar {
+            width: 350px;
+            background: #000000;
+            border-right: 1px solid #262626;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #262626;
+            background: #000000;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            background: #262626;
+            border: 1px solid #404040;
+            border-radius: 20px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0095f6;
+            background: #1a1a1a;
+            box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e8e;
+            font-size: 16px;
+        }
+
+        .users-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #1a1a1a;
+            position: relative;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-item.active {
+            background: rgba(0, 149, 246, 0.1);
+            border-left: 3px solid #0095f6;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 12px;
+            position: relative;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #42b883;
+            border: 2px solid #000000;
+            border-radius: 50%;
+        }
+
+        .offline-indicator {
+            background: #8e8e8e;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #8e8e8e;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background: #0095f6;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        /* Zone de chat principale */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000000;
+        }
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8e8e8e;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-screen h2 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .welcome-screen p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #262626;
+            display: none;
+            align-items: center;
+            background: #000000;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .chat-header.active {
+            display: flex;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+
+        .chat-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            color: #8e8e8e;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .messages-container.active {
+            display: block;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            animation: fadeInMessage 0.3s ease-out;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-bubble {
+            background: #0095f6;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received .message-bubble {
+            background: #262626;
+            color: #ffffff;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message.received .message-time {
+            text-align: left;
+            color: #8e8e8e;
+        }
+
+        .message-input-container {
+            padding: 16px 20px;
+            border-top: 1px solid #262626;
+            background: #000000;
+            display: none;
+        }
+
+        .message-input-container.active {
+            display: block;
+        }
+
+        .message-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: #262626;
+            border-radius: 20px;
+            padding: 8px;
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            padding: 8px 12px;
+            resize: none;
+            max-height: 100px;
+            min-height: 20px;
+            outline: none;
+        }
+
+        .message-input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .send-button {
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .send-button:hover {
+            background: #1877f2;
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: #404040;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 20px;
+            color: #8e8e8e;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            margin-left: 5px;
+        }
+
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #8e8e8e;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingDot {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInMessage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-users {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+
+        .loading-spinner {
+            border: 2px solid #262626;
+            border-top: 2px solid #0095f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #8e8e8e;
+            text-align: center;
+        }
+
+        .empty-state h3 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid #262626;
+            }
+
+            .chat-area {
+                height: 50vh;
+            }
+
+            .sidebar-header {
+                padding: 15px;
+            }
+
+            .sidebar-title {
+                font-size: 20px;
+            }
+
+            .user-item {
+                padding: 10px 15px;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #404040;
+        }
+
+        /* Status indicators */
+        .status-online {
+            color: #42b883 !important;
+        }
+
+        .status-offline {
+            color: #8e8e8e !important;
+        }
+
+        /* Message status */
+        .message-status {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2px;
+        }
+
+        .message.received .message-status {
+            color: #8e8e8e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar avec liste des utilisateurs -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Messages</h2>
+                <div class="search-container">
+                    <div class="search-icon">🔍</div>
+                    <input type="text" class="search-input" placeholder="Rechercher des amis..." id="searchInput">
+                </div>
+            </div>
+            <div class="users-list" id="usersList">
+                <div class="loading-users">
+                    <div class="loading-spinner"></div>
+                    Chargement des utilisateurs...
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone de chat principale -->
+        <div class="chat-area">
+            <!-- Écran d'accueil -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <h2>💬 Express Exchange Messages</h2>
+                <p>Sélectionnez un utilisateur dans la liste pour commencer une conversation.</p>
+            </div>
+
+            <!-- Header du chat -->
+            <div class="chat-header" id="chatHeader">
+                <div class="chat-avatar" id="chatAvatar">U</div>
+                <div class="chat-info">
+                    <h3 id="chatUserName">Nom d'utilisateur</h3>
+                    <div class="chat-status" id="chatUserStatus">En ligne</div>
+                </div>
+            </div>
+
+            <!-- Indicateur de frappe -->
+            <div class="typing-indicator" id="typingIndicator">
+                <span id="typingUserName">Utilisateur</span> est en train d'écrire
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <!-- Conteneur des messages -->
+            <div class="messages-container" id="messagesContainer">
+                <!-- Les messages seront ajoutés ici dynamiquement -->
+            </div>
+
+            <!-- Zone de saisie -->
+            <div class="message-input-container" id="messageInputContainer">
+                <div class="message-input-wrapper">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="Écrivez votre message..."
+                        rows="1"
+                    ></textarea>
+                    <button class="send-button" id="sendButton" disabled>
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        console.log('💬 Initialisation Express Exchange Messages');
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            getDocs, 
+            query, 
+            orderBy, 
+            limit, 
+            onSnapshot, 
+            deleteDoc,
+            serverTimestamp,
+            where,
+            writeBatch
+        } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        import { 
+            getDatabase, 
+            ref, 
+            push, 
+            set, 
+            onValue, 
+            off, 
+            serverTimestamp as rtdbServerTimestamp,
+            query as rtdbQuery,
+            orderByChild,
+            limitToLast,
+            equalTo
+        } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        // Configuration Firebase (même que Express Exchange)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
+            authDomain: "data-com-a94a8.firebaseapp.com",
+            databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
+            projectId: "data-com-a94a8",
+            storageBucket: "data-com-a94a8.appspot.com",
+            messagingSenderId: "276904640935",
+            appId: "1:276904640935:web:9cd805aeba6c34c767f682",
+            measurementId: "G-FYQCWY5G4S"
+        };
+
+        // Initialisation Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app); // Realtime Database pour les messages
+
+        // Variables globales
+        let currentUser = null;
+        let allUsers = [];
+        let filteredUsers = [];
+        let currentChatUser = null;
+        let messagesUnsubscribe = null;
+        let typingTimeout = null;
+        let lastActivity = Date.now();
+
+        // Éléments DOM
+        const searchInput = document.getElementById('searchInput');
+        const usersList = document.getElementById('usersList');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const chatHeader = document.getElementById('chatHeader');
+        const chatAvatar = document.getElementById('chatAvatar');
+        const chatUserName = document.getElementById('chatUserName');
+        const chatUserStatus = document.getElementById('chatUserStatus');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInputContainer = document.getElementById('messageInputContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const typingUserName = document.getElementById('typingUserName');
+
+        // Fonction pour récupérer les données utilisateur
+        function getCurrentUser() {
+            try {
+                const sessionData = sessionStorage.getItem('expressExchangeUser');
+                const localData = localStorage.getItem('expressExchangeUser');
+                const dataToUse = sessionData || localData;
+                
+                if (!dataToUse) {
+                    console.warn('⚠️ Aucune donnée utilisateur trouvée');
+                    redirectToMainApp();
+                    return null;
+                }
+                
+                const parsedData = JSON.parse(dataToUse);
+                if (!parsedData.id || !parsedData.fullName) {
+                    console.error('❌ Données utilisateur invalides');
+                    redirectToMainApp();
+                    return null;
+                }
+                
+                return parsedData;
+            } catch (error) {
+                console.error('❌ Erreur parsing données utilisateur:', error);
+                redirectToMainApp();
+                return null;
+            }
+        }
+
+        function redirectToMainApp() {
+            alert('Vous devez être connecté pour accéder aux messages.');
+            window.location.href = './paste.txt'; // Redirection vers la page principale
+        }
+
+        // Chargement des utilisateurs inscrits
+        async function loadUsers() {
+            try {
+                console.log('👥 Chargement des utilisateurs...');
+                
+                const usersQuery = query(collection(db, 'users'), limit(100));
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                allUsers = [];
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.id !== currentUser.id) { // Exclure l'utilisateur actuel
+                        allUsers.push({
+                            id: doc.id,
+                            ...userData
+                        });
+                    }
+                });
+                
+                console.log(`✅ ${allUsers.length} utilisateurs chargés`);
+                filteredUsers = [...allUsers];
+                renderUsers();
+                
+            } catch (error) {
+                console.error('❌ Erreur chargement utilisateurs:', error);
+                usersList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger la liste des utilisateurs.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Rendu de la liste des utilisateurs
+        function renderUsers() {
+            if (filteredUsers.length === 0) {
+                usersList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucun utilisateur trouvé</h3>
+                        <p>Aucun utilisateur ne correspond à votre recherche.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const fragment = document.createDocumentFragment();
+            
+            filteredUsers.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user-item';
+                userElement.dataset.userId = user.id;
+                
+                // Simuler le statut en ligne (dans une vraie app, cela viendrait de la base de données)
+                const isOnline = Math.random() > 0.3; // 70% de chance d'être en ligne
+                
+                userElement.innerHTML = `
+                    <div class="user-avatar">
+                        ${user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U'}
+                        <div class="online-indicator ${isOnline ? '' : 'offline-indicator'}"></div>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">${escapeHtml(user.fullName || 'Utilisateur')}</div>
+                        <div class="user-status ${isOnline ? 'status-online' : 'status-offline'}">
+                            ${isOnline ? 'En ligne' : 'Hors ligne'}
+                        </div>
+                    </div>
+                `;
+                
+                userElement.addEventListener('click', () => openChat(user));
+                fragment.appendChild(userElement);
+            });
+            
+            usersList.innerHTML = '';
+            usersList.appendChild(fragment);
+        }
+
+        // Recherche d'utilisateurs
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                filteredUsers = [...allUsers];
+            } else {
+                filteredUsers = allUsers.filter(user => 
+                    user.fullName?.toLowerCase().includes(searchTerm) ||
+                    user.nom?.toLowerCase().includes(searchTerm) ||
+                    user.prenom?.toLowerCase().includes(searchTerm) ||
+                    user.contact?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            renderUsers();
+        }
+
+        // Ouverture d'un chat
+        async function openChat(user) {
+            console.log('💬 Ouverture chat avec:', user.fullName);
+            
+            currentChatUser = user;
+            
+            // Mise à jour de l'interface
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-user-id="${user.id}"]`)?.classList.add('active');
+            
+            // Affichage du header de chat
+            welcomeScreen.style.display = 'none';
+            chatHeader.classList.add('active');
+            messagesContainer.classList.add('active');
+            messageInputContainer.classList.add('active');
+            
+            // Mise à jour des informations du chat
+            chatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
+            chatUserName.textContent = user.fullName || 'Utilisateur';
+            chatUserStatus.textContent = Math.random() > 0.3 ? 'En ligne' : 'Hors ligne';
+            
+            // Chargement des messages
+            loadMessages(user.id);
+            
+            // Focus sur l'input
+            setTimeout(() => messageInput.focus(), 100);
+        }
+
+        // Chargement des messages avec Realtime Database
+        function loadMessages(userId) {
+            // Désabonner de l'ancien listener s'il existe
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+            }
+            
+            // Créer un ID de conversation unique (trié alphabétiquement)
+            const conversationId = [currentUser.id, userId].sort().join('_');
+            
+            console.log('📨 Chargement messages pour conversation:', conversationId);
+            
+            // Référence vers les messages de cette conversation dans Realtime Database
+            const messagesRef = ref(rtdb, `messages/${conversationId}`);
+            const messagesQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(50));
+            
+            // Écouter les messages en temps réel
+            messagesUnsubscribe = () => off(messagesRef);
+            
+            onValue(messagesQuery, (snapshot) => {
+                const messages = [];
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const messageData = childSnapshot.val();
+                        messages.push({
+                            id: childSnapshot.key,
+                            ...messageData
+                        });
+                    });
+                }
+                
+                // Les messages sont déjà triés par timestamp grâce à orderByChild
+                renderMessages(messages);
+                scrollToBottom();
+                
+                // Marquer les messages comme lus
+                markMessagesAsRead(userId);
+                
+            }, (error) => {
+                console.error('❌ Erreur chargement messages:', error);
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger les messages.</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Rendu des messages avec gestion du timestamp Realtime Database
+        function renderMessages(messages) {
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucun message</h3>
+                        <p>Commencez la conversation en envoyant un message !</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const fragment = document.createDocumentFragment();
+            
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
+                
+                // Gestion du timestamp pour Realtime Database
+                let timestamp;
+                if (message.createdAt) {
+                    timestamp = new Date(message.createdAt);
+                } else if (message.timestamp && typeof message.timestamp === 'object') {
+                    // Timestamp du serveur Firebase
+                    timestamp = new Date();
+                } else if (message.timestamp) {
+                    timestamp = new Date(message.timestamp);
+                } else {
+                    timestamp = new Date();
+                }
+                
+                const timeString = timestamp.toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                messageElement.innerHTML = `
+                    <div class="message-bubble">
+                        ${escapeHtml(message.text || '')}
+                        <div class="message-time">${timeString}</div>
+                    </div>
+                `;
+                
+                fragment.appendChild(messageElement);
+            });
+            
+            messagesContainer.innerHTML = '';
+            messagesContainer.appendChild(fragment);
+        }
+
+        // Envoi d'un message avec Realtime Database
+        async function sendMessage() {
+            if (!currentChatUser || !currentUser) return;
+            
+            const messageText = messageInput.value.trim();
+            if (!messageText) return;
+            
+            // Désactiver le bouton d'envoi
+            sendButton.disabled = true;
+            messageInput.disabled = true;
+            
+            try {
+                const conversationId = [currentUser.id, currentChatUser.id].sort().join('_');
+                
+                // Référence vers les messages de cette conversation
+                const messagesRef = ref(rtdb, `messages/${conversationId}`);
+                const newMessageRef = push(messagesRef);
+                
+                const messageData = {
+                    senderId: currentUser.id,
+                    senderName: currentUser.fullName,
+                    senderAvatar: currentUser.avatar,
+                    receiverId: currentChatUser.id,
+                    receiverName: currentChatUser.fullName,
+                    text: messageText,
+                    timestamp: rtdbServerTimestamp(),
+                    read: false,
+                    createdAt: Date.now() // Timestamp numérique pour le tri
+                };
+                
+                await set(newMessageRef, messageData);
+                
+                // Mettre à jour les informations de la conversation
+                const conversationRef = ref(rtdb, `conversations/${conversationId}`);
+                await set(conversationRef, {
+                    participants: [currentUser.id, currentChatUser.id],
+                    participantNames: [currentUser.fullName, currentChatUser.fullName],
+                    lastMessage: messageText,
+                    lastMessageTime: rtdbServerTimestamp(),
+                    lastMessageSender: currentUser.id,
+                    updatedAt: Date.now()
+                });
+                
+                // Vider l'input
+                messageInput.value = '';
+                adjustTextareaHeight();
+                
+                console.log('✅ Message envoyé via Realtime Database');
+                
+            } catch (error) {
+                console.error('❌ Erreur envoi message:', error);
+                alert('Erreur lors de l\'envoi du message');
+            } finally {
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Ajustement automatique de la hauteur du textarea
+        function adjustTextareaHeight() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 100) + 'px';
+        }
+
+        // Scroll vers le bas
+        function scrollToBottom() {
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
+        }
+
+        // Échapper le HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Gestion des indicateurs de frappe
+        function handleTyping() {
+            if (!currentChatUser) return;
+            
+            // Simuler l'indicateur de frappe (dans une vraie app, cela utiliserait des websockets)
+            clearTimeout(typingTimeout);
+            
+            typingTimeout = setTimeout(() => {
+                // Logique de frappe terminée
+            }, 2000);
+        }
+
+        // Mise à jour du statut d'activité
+        function updateLastActivity() {
+            lastActivity = Date.now();
+            
+            // Mettre à jour le statut dans Firebase (optionnel)
+            if (currentUser) {
+                try {
+                    setDoc(doc(db, 'users', currentUser.id), {
+                        lastActive: serverTimestamp()
+                    }, { merge: true });
+                } catch (error) {
+                    console.error('Erreur mise à jour activité:', error);
+                }
+            }
+        }
+
+        // Gestion des événements
+        function setupEventListeners() {
+            // Recherche d'utilisateurs
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Envoi de message avec Enter
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                } else if (e.key === 'Enter' && e.shiftKey) {
+                    // Permettre les retours à la ligne avec Shift+Enter
+                    return;
+                }
+            });
+            
+            // Ajustement automatique de la hauteur du textarea
+            messageInput.addEventListener('input', () => {
+                adjustTextareaHeight();
+                handleTyping();
+                updateLastActivity();
+            });
+            
+            // Bouton d'envoi
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Activation du bouton d'envoi selon le contenu
+            messageInput.addEventListener('input', () => {
+                sendButton.disabled = !messageInput.value.trim();
+            });
+            
+            // Mise à jour de l'activité lors des clics
+            document.addEventListener('click', updateLastActivity);
+            document.addEventListener('keypress', updateLastActivity);
+            
+            // Gestion de la fermeture de la page
+            window.addEventListener('beforeunload', () => {
+                if (messagesUnsubscribe) {
+                    messagesUnsubscribe();
+                }
+            });
+        }
+
+        // Simulation de notifications de nouveaux messages
+        function simulateNotifications() {
+            // Dans une vraie application, cela serait géré par les push notifications
+            // ou les websockets pour les notifications en temps réel
+            
+            setInterval(() => {
+                // Simuler l'arrivée de nouveaux messages aléatoirement
+                if (Math.random() > 0.95 && allUsers.length > 0) {
+                    const randomUser = allUsers[Math.floor(Math.random() * allUsers.length)];
+                    console.log('🔔 Simulation notification de:', randomUser.fullName);
+                    
+                    // Ici vous pourriez ajouter une logique pour afficher des badges
+                    // de messages non lus sur les utilisateurs
+                }
+            }, 10000); // Vérifier toutes les 10 secondes
+        }
+
+        // Marquer les messages comme lus avec Realtime Database
+        async function markMessagesAsRead(userId) {
+            if (!currentUser || !userId) return;
+            
+            try {
+                const conversationId = [currentUser.id, userId].sort().join('_');
+                const messagesRef = ref(rtdb, `messages/${conversationId}`);
+                
+                // Obtenir les messages non lus
+                onValue(messagesRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const updates = {};
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const message = childSnapshot.val();
+                            
+                            // Marquer comme lu si c'est un message reçu et non lu
+                            if (message.receiverId === currentUser.id && !message.read) {
+                                updates[`messages/${conversationId}/${childSnapshot.key}/read`] = true;
+                            }
+                        });
+                        
+                        // Appliquer les mises à jour
+                        if (Object.keys(updates).length > 0) {
+                            set(ref(rtdb), updates);
+                            console.log('✅ Messages marqués comme lus');
+                        }
+                    }
+                }, { onlyOnce: true });
+                
+            } catch (error) {
+                console.error('❌ Erreur marquage messages lus:', error);
+            }
+        }
+
+        // Fonction pour obtenir le nombre de messages non lus avec Realtime Database
+        async function getUnreadCount(userId) {
+            if (!currentUser || !userId) return 0;
+            
+            return new Promise((resolve) => {
+                try {
+                    const conversationId = [currentUser.id, userId].sort().join('_');
+                    const messagesRef = ref(rtdb, `messages/${conversationId}`);
+                    
+                    onValue(messagesRef, (snapshot) => {
+                        let unreadCount = 0;
+                        
+                        if (snapshot.exists()) {
+                            snapshot.forEach((childSnapshot) => {
+                                const message = childSnapshot.val();
+                                
+                                // Compter les messages non lus reçus
+                                if (message.receiverId === currentUser.id && !message.read) {
+                                    unreadCount++;
+                                }
+                            });
+                        }
+                        
+                        resolve(unreadCount);
+                    }, { onlyOnce: true });
+                    
+                } catch (error) {
+                    console.error('❌ Erreur comptage messages non lus:', error);
+                    resolve(0);
+                }
+            });
+        }
+
+        // Mise à jour des badges de messages non lus
+        async function updateUnreadBadges() {
+            const userItems = document.querySelectorAll('.user-item');
+            
+            for (const userItem of userItems) {
+                const userId = userItem.dataset.userId;
+                if (!userId) continue;
+                
+                const unreadCount = await getUnreadCount(userId);
+                
+                // Supprimer l'ancien badge s'il existe
+                const existingBadge = userItem.querySelector('.unread-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                // Ajouter un nouveau badge si nécessaire
+                if (unreadCount > 0) {
+                    const badge = document.createElement('div');
+                    badge.className = 'unread-badge';
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    userItem.appendChild(badge);
+                }
+            }
+        }
+
+        // Fonction de débogage
+        window.debugMessages = function() {
+            console.log('🔧 État de l\'application Messages:', {
+                currentUser: currentUser,
+                currentChatUser: currentChatUser,
+                allUsersCount: allUsers.length,
+                filteredUsersCount: filteredUsers.length,
+                hasMessagesListener: !!messagesUnsubscribe
+            });
+        };
+
+        // Gestion des erreurs globales
+        window.addEventListener('error', (e) => {
+            console.error('❌ Erreur globale dans Messages:', e.error);
+        });
+
+        // Gestion des promesses rejetées
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('❌ Promesse rejetée dans Messages:', e.reason);
+        });
+
+        // Fonction de nettoyage lors de la fermeture
+        function cleanup() {
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
+            }
+            
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
+                typingTimeout = null;
+            }
+        }
+
+        // Initialisation de l'application Messages
+        async function initializeMessagesApp() {
+            console.log('🚀 Initialisation Express Exchange Messages...');
+            
+            // Vérifier l'utilisateur connecté
+            currentUser = getCurrentUser();
+            if (!currentUser) {
+                return; // L'utilisateur sera redirigé
+            }
+            
+            console.log('👤 Utilisateur connecté:', currentUser.fullName);
+            
+            // Configurer les événements
+            setupEventListeners();
+            
+            // Charger les utilisateurs
+            await loadUsers();
+            
+            // Mettre à jour les badges de messages non lus
+            await updateUnreadBadges();
+            
+            // Démarrer les simulations (pour la démo)
+            simulateNotifications();
+            
+            // Mettre à jour l'activité de l'utilisateur
+            updateLastActivity();
+            
+            console.log('✅ Express Exchange Messages initialisé avec succès');
+        }
+
+        // Démarrage de l'application
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📱 DOM chargé, initialisation...');
+            
+            // Petit délai pour s'assurer que tout est prêt
+            setTimeout(() => {
+                initializeMessagesApp().catch(error => {
+                    console.error('❌ Erreur initialisation:', error);
+                    alert('Erreur lors de l\'initialisation de l\'application');
+                });
+            }, 100);
+        });
+
+        // Nettoyage lors de la fermeture de la page
+        window.addEventListener('beforeunload', cleanup);
+        window.addEventListener('unload', cleanup);
+
+        // Fonction publique pour revenir à la page principale
+        window.goToMain = function() {
+            cleanup();
+            window.location.href = './paste.txt';
+        };
+
+        console.log('💬 Script Express Exchange Messages chargé');
+    </script>
+
+    <!-- Bouton de retour à la page principale -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button onclick="goToMain()" style="
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 149, 246, 0.3);
+        " onmouseover="this.style.background='#1877f2'" onmouseout="this.style.background='#0095f6'">
+            ← Retour
+        </button>
+    </div>
+</body>
+</html>
