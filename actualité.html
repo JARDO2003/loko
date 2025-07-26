@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -431,8 +430,10 @@
         .comments-section {
             margin-top: 8px;
             padding: 0 16px;
+            background: rgba(255, 255, 255, 0.02);
             border-top: 1px solid #262626;
             padding-top: 12px;
+            padding-bottom: 12px;
         }
 
         .comment {
@@ -773,7 +774,6 @@
             box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
         }
     </style>
-</style>
 </head>
 <body>
     <div id="particles"></div>
@@ -1385,11 +1385,21 @@
             }
         }
 
+        // CORRECTION 1: Fonction d'affichage des commentaires corrigée
         window.toggleComments = function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
-            const isVisible = commentsSection.style.display !== 'none';
-            commentsSection.style.display = isVisible ? 'none' : 'block';
-            if (!isVisible) {
+            if (!commentsSection) {
+                console.error('❌ Section commentaires introuvable pour postId:', postId);
+                return;
+            }
+            const isVisible = commentsSection.style.display === 'block';
+            
+            if (isVisible) {
+                commentsSection.style.display = 'none';
+                console.log('🔒 Commentaires masqués pour:', postId);
+            } else {
+                commentsSection.style.display = 'block';
+                console.log('👁️ Commentaires affichés pour:', postId);
                 loadComments(postId);
                 setTimeout(() => {
                     const input = document.getElementById(`comment-input-${postId}`);
@@ -1398,39 +1408,81 @@
             }
         };
 
+        // CORRECTION 2: Fonction loadComments corrigée sans index complexe
         async function loadComments(postId) {
+            console.log('📝 Chargement commentaires pour postId:', postId);
+            const commentsContainer = document.getElementById(`comments-list-${postId}`);
+            if (!commentsContainer) {
+                console.error('❌ Container commentaires introuvable pour postId:', postId);
+                return;
+            }
+            
             try {
+                commentsContainer.innerHTML = '<div style="text-align: center; color: #8e8e8e; padding: 10px;">Chargement des commentaires...</div>';
+                
+                // Requête simple sans orderBy pour éviter l'index composé
                 const commentsQuery = query(
                     collection(db, 'comments'), 
                     where('postId', '==', postId),
-                    orderBy('timestamp', 'asc'),
-                    limit(10)
+                    limit(50)
                 );
+                
                 const commentsSnapshot = await getDocs(commentsQuery);
                 const comments = [];
+                
                 commentsSnapshot.forEach((doc) => {
-                    comments.push({ id: doc.id, ...doc.data() });
+                    const commentData = doc.data();
+                    comments.push({ 
+                        id: doc.id, 
+                        ...commentData 
+                    });
                 });
+                
+                // Tri côté client par timestamp
+                comments.sort((a, b) => {
+                    const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
+                    const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
+                    return timeA - timeB;
+                });
+                
+                console.log(`💬 ${comments.length} commentaires trouvés pour postId:`, postId);
                 renderComments(postId, comments);
+                
             } catch (error) {
                 console.error('❌ Erreur chargement commentaires:', error);
+                commentsContainer.innerHTML = '<div style="color: #ed4956; text-align: center; padding: 10px;">Erreur lors du chargement des commentaires</div>';
             }
         }
 
+        // CORRECTION 3: Fonction renderComments améliorée
         function renderComments(postId, comments) {
             const commentsContainer = document.getElementById(`comments-list-${postId}`);
-            if (!commentsContainer) return;
-            const commentsHTML = comments.map(comment => `
-                <div class="comment">
-                    <div class="comment-header">
-                        <div class="comment-avatar">${comment.avatar || 'U'}</div>
-                        <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
-                        <div class="comment-time">${getTimeAgo(comment.timestamp?.toDate?.() || comment.timestamp)}</div>
+            if (!commentsContainer) {
+                console.error('❌ Container commentaires introuvable pour renderComments:', postId);
+                return;
+            }
+            
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = '<div style="color: #8e8e8e; text-align: center; padding: 10px; font-size: 13px;">Aucun commentaire pour le moment</div>';
+                return;
+            }
+            
+            const commentsHTML = comments.map(comment => {
+                const timeAgo = getTimeAgo(comment.timestamp?.toDate?.() || comment.timestamp || new Date());
+                return `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <div class="comment-avatar">${escapeHtml(comment.avatar || 'U')}</div>
+                            <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
+                            <div class="comment-time">${timeAgo}</div>
+                        </div>
+                        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
                     </div>
-                    <div class="comment-text">${escapeHtml(comment.text || '')}</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+            
             commentsContainer.innerHTML = commentsHTML;
+            console.log(`✅ ${comments.length} commentaires affichés pour postId:`, postId);
         }
 
         window.submitComment = async function(postId) {
@@ -1440,6 +1492,10 @@
                 return;
             }
             const input = document.getElementById(`comment-input-${postId}`);
+            if (!input) {
+                console.error('❌ Input commentaire introuvable pour postId:', postId);
+                return;
+            }
             const commentText = input.value.trim();
             if (!commentText) return;
             if (commentText.length > 500) {
@@ -1462,10 +1518,11 @@
                     throw new Error('Données de commentaire invalides');
                 }
                 await addDoc(collection(db, 'comments'), commentData);
-                console.log('💬 Commentaire ajouté');
+                console.log('💬 Commentaire ajouté pour postId:', postId);
                 await updateCommentsCount(postId);
                 input.value = '';
-                loadComments(postId);
+                // Recharger les commentaires après ajout
+                setTimeout(() => loadComments(postId), 500);
             } catch (error) {
                 console.error('❌ Erreur ajout commentaire:', error);
                 alert(`Erreur lors de l'envoi du commentaire: ${error.message}`);
@@ -1633,6 +1690,7 @@
             if (e.target === this) this.style.display = 'none';
         };
 
+        // CORRECTION 4: Fonction showMyPostsModal corrigée sans index complexe
         async function showMyPostsModal() {
             console.log('🔰 showMyPostsModal appelée');
             if (!validateUserData(userData)) {
@@ -1641,38 +1699,67 @@
                 showRegistrationForm();
                 return;
             }
+            
+            const modal = document.getElementById('myPostsModal');
             const listEl = document.getElementById('myPostsList');
+            
+            // Afficher la modal d'abord
+            modal.style.display = 'flex';
             listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #8e8e8e;"><div class="loading-spinner"></div> Chargement...</div>';
+            
             try {
+                console.log('🔍 Recherche des publications pour userId:', userData.id);
+                
+                // Requête simple sans orderBy pour éviter l'index composé
                 const myPostsQuery = query(
                     collection(db, 'posts'), 
                     where('authorId', '==', userData.id),
-                    orderBy('timestamp', 'desc')
+                    limit(100)
                 );
+                
                 const myPostsSnapshot = await getDocs(myPostsQuery);
                 const myPosts = [];
+                
                 myPostsSnapshot.forEach((doc) => {
-                    myPosts.push({ id: doc.id, ...doc.data() });
+                    const postData = doc.data();
+                    myPosts.push({ 
+                        id: doc.id, 
+                        ...postData 
+                    });
                 });
+                
+                // Tri côté client par timestamp (du plus récent au plus ancien)
+                myPosts.sort((a, b) => {
+                    const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
+                    const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
+                    return timeB - timeA;
+                });
+                
+                console.log(`📊 ${myPosts.length} publications trouvées pour l'utilisateur:`, userData.fullName);
+                
                 if (myPosts.length === 0) {
                     listEl.innerHTML = `
-                        <div style="color:#8e8e8e; padding:20px; text-align:center;">
-                            <p>Aucune publication trouvée.</p>
-                            <p style="font-size: 12px; margin-top: 8px;">Commencez par publier quelque chose !</p>
+                        <div class="empty-state">
+                            <h3>Aucune publication trouvée</h3>
+                            <p>Vous n'avez pas encore publié de contenu.</p>
+                            <p style="font-size: 12px; margin-top: 8px; color: #8e8e8e;">Commencez par publier quelque chose !</p>
                         </div>
                     `;
                 } else {
                     const fragment = document.createDocumentFragment();
+                    
                     myPosts.forEach(post => {
-                        const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
+                        const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp || new Date());
                         let thumbnailHTML = '';
+                        
                         if (post.imageUrl) {
                             let thumbUrl = post.imageUrl;
                             if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
                                 thumbUrl = uploader.getOptimizedUrl(post.imagePublicId, {
                                     width: 60,
                                     height: 60,
-                                    crop: 'fill'
+                                    crop: 'fill',
+                                    quality: 'auto'
                                 });
                             }
                             thumbnailHTML = `
@@ -1681,62 +1768,123 @@
                                 </div>
                             `;
                         }
+                        
                         const postElement = document.createElement('div');
                         postElement.className = 'my-post-item';
                         postElement.innerHTML = `
                             ${thumbnailHTML}
                             <div class="my-post-content">
-                                <div class="my-post-text">${escapeHtml(post.text || '')}</div>
-                                <div class="my-post-time">${timeAgo}</div>
+                                <div class="my-post-text">${escapeHtml(post.text || 'Publication sans texte')}</div>
+                                <div class="my-post-time">${timeAgo} • ${post.likesCount || 0} likes • ${post.commentsCount || 0} commentaires</div>
                             </div>
                             <button class="my-post-delete" onclick="deleteMyPost('${post.id}', this)">Supprimer</button>
                         `;
                         fragment.appendChild(postElement);
                     });
+                    
                     listEl.innerHTML = '';
                     listEl.appendChild(fragment);
+                    console.log('✅ Publications affichées dans la modal');
                 }
+                
             } catch (error) {
-                console.error('❌ Erreur chargement de mes publications:', error);
-                listEl.innerHTML = '<div style="color:#ed4956; padding:20px; text-align:center;">Erreur lors du chargement de vos publications.</div>';
+                console.error('❌ Erreur détaillée lors du chargement de mes publications:', error);
+                listEl.innerHTML = `
+                    <div style="color:#ed4956; padding:20px; text-align:center;">
+                        <h4>Erreur lors du chargement</h4>
+                        <p>Impossible de charger vos publications.</p>
+                        <p style="font-size: 12px; margin-top: 8px; color: #8e8e8e;">Détail: ${error.message}</p>
+                        <button onclick="showMyPostsModal()" style="margin-top: 10px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
+                    </div>
+                `;
             }
-            document.getElementById('myPostsModal').style.display = 'flex';
         }
 
         window.deleteMyPost = async function(postId, btn) {
-            console.log('🔰 Suppression de la publication:', postId);
-            if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) return;
+            console.log('🗑️ Demande de suppression de la publication:', postId);
+            if (!validateUserData(userData)) {
+                console.error('❌ Tentative de suppression avec userData invalide');
+                alert('Erreur: Veuillez vous reconnecter.');
+                return;
+            }
+            
+            if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) {
+                console.log('❌ Suppression annulée par l\'utilisateur');
+                return;
+            }
+            
             if (btn) {
                 btn.disabled = true;
                 btn.textContent = 'Suppression...';
+                btn.style.opacity = '0.6';
             }
+            
             try {
-                await deleteDoc(doc(db, 'posts', postId));
-                console.log('🗑️ Publication supprimée:', postId);
-                showMyPostsModal();
+                // Méthode simplifiée : suppression directe du document
+                const postRef = doc(db, 'posts', postId);
+                
+                // Supprimer les likes associés (requête simple)
+                const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
+                const likesSnapshot = await getDocs(likesQuery);
+                const deleteLikesPromises = [];
+                likesSnapshot.forEach((doc) => {
+                    deleteLikesPromises.push(deleteDoc(doc.ref));
+                });
+                
+                // Supprimer les commentaires associés (requête simple)
+                const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
+                const commentsSnapshot = await getDocs(commentsQuery);
+                const deleteCommentsPromises = [];
+                commentsSnapshot.forEach((doc) => {
+                    deleteCommentsPromises.push(deleteDoc(doc.ref));
+                });
+                
+                // Attendre la suppression des likes et commentaires
+                await Promise.all([...deleteLikesPromises, ...deleteCommentsPromises]);
+                
+                // Supprimer la publication
+                await deleteDoc(postRef);
+                
+                console.log('✅ Publication supprimée avec succès:', postId);
+                
+                // Recharger la liste des publications
+                setTimeout(() => showMyPostsModal(), 500);
+                
             } catch (error) {
                 console.error('❌ Erreur suppression publication:', error);
-                alert('Erreur lors de la suppression. Réessayez.');
+                alert(`Erreur lors de la suppression: ${error.message}`);
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = 'Supprimer';
+                    btn.style.opacity = '1';
                 }
             }
         };
 
+        // Gestion des événements en ligne/hors ligne
         window.addEventListener('online', () => {
-            console.log('🔰 Passage en ligne');
+            console.log('🌍 Passage en ligne');
             isOnline = true;
             updateConnectionStatus();
         });
 
         window.addEventListener('offline', () => {
-            console.log('🔰 Passage hors-ligne');
+            console.log('📡 Passage hors-ligne');
             isOnline = false;
             updateConnectionStatus();
         });
 
-        console.log('✅ Script principal Express Exchange chargé');
+        // Fonction utilitaire pour déboguer
+        window.debugApp = function() {
+            console.log('🔧 État de l\'application:', {
+                userData: userData,
+                isAppInitialized: isAppInitialized,
+                isOnline: isOnline,
+                postsCount: posts.length
+            });
+        };
+
+        console.log('✅ Script principal Express Exchange chargé et corrigé');
     </script>
 </body>
 </html>
