@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -274,6 +275,13 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .controls-left {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .publish-btn {
@@ -312,6 +320,28 @@
         .my-posts-btn:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: #ffffff;
+        }
+
+        .chat-btn {
+            background: transparent;
+            color: #0095f6;
+            padding: 8px 16px;
+            border: 1px solid #0095f6;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-btn:hover {
+            background: rgba(0, 149, 246, 0.1);
+            border-color: #1877f2;
+            color: #1877f2;
         }
 
         .feed {
@@ -731,6 +761,19 @@
                 width: 50px;
                 height: 50px;
             }
+
+            .publish-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-left {
+                justify-content: center;
+            }
+
+            .publish-btn {
+                width: 100%;
+            }
         }
 
         /* Scrollbar dark */
@@ -814,7 +857,10 @@
             </div>
             <div id="mediaPreview" class="media-preview"></div>
             <div class="publish-controls">
-                <button id="showMyPostsBtn" class="my-posts-btn">Mes publications</button>
+                <div class="controls-left">
+                    <button id="showMyPostsBtn" class="my-posts-btn">Mes publications</button>
+                    <a href="message.html" class="chat-btn">💬 Chater</a>
+                </div>
                 <button id="publishBtn" class="publish-btn">Publier</button>
             </div>
         </div>
