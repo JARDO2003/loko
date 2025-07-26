@@ -1,2044 +1,1626 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Express Exchange</title>
+    <title>GROUPE EXPRESS - Repas Universitaires</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #000000;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            color: #ffffff;
+            background-image: url('image/noir.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            padding-top: 80px;
+            transition: background-image 0.4s;
         }
-
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
+        h1 {
+            background: rgba(0, 0, 0, 0.8);
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 8s infinite linear;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.3;
-            }
-            90% {
-                opacity: 0.3;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+        .nav-buttons {
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-
-        .loading-content {
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .loading-spinner-big {
-            border: 4px solid #262626;
-            border-top: 4px solid #0095f6;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .loading-subtitle {
+        .nav-btn {
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
             font-size: 14px;
-            color: #8e8e8e;
         }
-
-        #accessDeniedOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+        .nav-btn:hover {
+            background: linear-gradient(to right, #e64600, #ff8033);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Styles pour le profil corrigé */
+        #profile-overlay {
             display: none;
-            justify-content: center;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(20,20,20,0.75);
+            z-index: 10000;
             align-items: center;
-            z-index: 1000;
-            flex-direction: column;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s;
         }
 
-        .access-denied-content {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 40px;
+        .profile-form-box {
+            background: linear-gradient(120deg, #fff7f0 60%, #ffe5d0 100%);
+            border-radius: 28px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+            padding: 26px 20px 18px 20px;
+            min-width: 320px;
+            max-width: 96vw;
+            width: 400px;
+            position: relative;
+            animation: profileFadeIn 0.4s;
+            color: #333;
+        }
+
+        @keyframes profileFadeIn {
+            from { opacity: 0; transform: translateY(-50px);}
+            to   { opacity: 1; transform: translateY(0);}
+        }
+
+        .close-profile-btn {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: #ff4e00;
+            color: #fff;
+            font-size: 20px;
+            border: none;
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px #0002;
+            z-index: 1;
+            transition: background 0.2s;
+        }
+        .close-profile-btn:hover { background: #e64600; }
+
+        .profile-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff9a56;
+        }
+
+        .profile-tab {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .profile-tab.active {
+            color: #ff4e00;
+            border-bottom-color: #ff4e00;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ff4e00;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ff9a56;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff4e00;
+            box-shadow: 0 0 5px rgba(255, 78, 0, 0.3);
+        }
+
+        .photo-preview, .bg-preview {
+            max-width: 100px;
+            max-height: 100px;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .btn-submit {
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #e64600, #ff8033);
+        }
+
+        .contact-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .contact-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(to right, #25D366, #128C7E);
+            color: white;
+        }
+
+        .call-btn {
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-share {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .share-whatsapp-btn {
+            background: linear-gradient(to right, #25D366, #128C7E);
+        }
+
+        .facebook-btn {
+            background: linear-gradient(to right, #1877F2, #4267B2);
+        }
+
+        .instagram-btn {
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #profile-btn {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 1001;
+            background: linear-gradient(90deg,#ff4e00,#ff9a56);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 11px 22px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #profile-btn:hover {
+            background: linear-gradient(90deg,#e64600,#ff8033);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin: 0 auto 20px auto;
+        }
+        
+        .container { max-width: 1000px; margin: auto; }
+        
+        .box {
+            border: 3px solid #333;
+            padding: 15px;
+            margin: 20px 0;
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .category-e { 
+            background-image: url('https://source.unsplash.com/800x600/?garba'); 
+            background-color: rgba(0, 0, 0, 0.5); 
+            background-blend-mode: overlay; 
+        }
+        
+        .slider-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            margin: 10px 0;
+        }
+        
+        .slider-container::-webkit-scrollbar { 
+            height: 6px; 
+            background: rgba(0, 0, 0, 0.1); 
+            border-radius: 3px; 
+        }
+        
+        .slider-container::-webkit-scrollbar-thumb { 
+            background: rgba(0, 0, 0, 0.3); 
+            border-radius: 3px; 
+        }
+        
+        .slider { 
+            display: flex; 
+            gap: 20px; 
+            transition: transform 0.5s ease-in-out; 
+            padding: 5px 0; 
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            width: 220px;
+            padding: 12px;
+            text-align: center;
+            flex: 0 0 auto;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            color: #222;
+            position: relative;
+        }
+        
+        .card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); 
+        }
+        
+        .card img { 
+            width: 100%; 
+            height: 140px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            margin-bottom: 8px; 
+        }
+        
+        .card h3 { margin: 8px 0; color: #333; }
+        .card p { color: #666; font-size: 14px; margin-bottom: 10px; }
+        .card .price { font-weight: bold; color: #ff4e00; font-size: 18px; margin: 5px 0; }
+        
+        .card button {
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            padding: 8px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        
+        .card button:hover { 
+            background: linear-gradient(to right, #e64600, #ff8033); 
+        }
+
+        .gbere-btn {
+            position: relative;
+            background: linear-gradient(90deg, #ff4e00, #ff9a56);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(255, 78, 0, 0.18);
+            font-size: 14px;
+            animation: gbereFlash 1s infinite alternate;
+            outline: 2px solid #fff;
+            outline-offset: -4px;
+            z-index: 1;
+        }
+        
+        @keyframes gbereFlash {
+            0% { box-shadow: 0 0 8px 2px #ffeb3b, 0 0 0 0 #ff4e00; }
+            100% { box-shadow: 0 0 20px 8px #ffeb3b, 0 0 0 4px #ff4e00; }
+        }
+
+        #show-customer-orders-btn {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.18);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        #show-customer-orders-btn:hover {
+            background: linear-gradient(90deg,#388e3c,#4CAF50);
+            transform: translateY(-2px);
+        }
+
+        /* Styles pour la section des commandes - CORRIGÉ */
+        .customer-orders-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            border: 3px solid #4CAF50;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            color: #333;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
             max-width: 500px;
             width: 90%;
-            text-align: center;
-            animation: slideIn 0.5s ease-out;
+            max-height: 70vh;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .customer-orders-box.show {
+            display: block !important;
+            animation: slideIn 0.3s ease-out;
         }
 
         @keyframes slideIn {
             from {
-                transform: translateY(-50px);
                 opacity: 0;
+                transform: translate(-50%, -60%);
             }
             to {
-                transform: translateY(0);
                 opacity: 1;
+                transform: translate(-50%, -50%);
             }
         }
 
-        .access-denied-content h2 {
-            color: #ed4956;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .access-denied-content p {
-            color: #ffffff;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .registration-links {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .registration-links a {
-            background: #0095f6;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .registration-links a:hover {
-            background: #1877f2;
-        }
-
-        #mainApp {
-            display: none;
-            position: relative;
-            z-index: 10;
-            padding: 0;
-            max-width: 614px;
-            margin: 0 auto;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: #000000;
-            border-bottom: 1px solid #262626;
-            padding: 16px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .welcome-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffffff;
-            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .status-indicator {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid;
-        }
-
-        .status-connected {
-            background: rgba(0, 149, 246, 0.1);
-            color: #0095f6;
-            border-color: #0095f6;
-        }
-
-        .status-disconnected {
-            background: rgba(237, 73, 86, 0.1);
-            color: #ed4956;
-            border-color: #ed4956;
-        }
-
-        .publisher {
-            background: #000000;
-            border-bottom: 1px solid #262626;
-            padding: 16px 20px;
-        }
-
-        .publisher textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 16px;
-            border: 1px solid #262626;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-            resize: vertical;
-            transition: border-color 0.3s ease;
-            background: #000000;
-            color: #ffffff;
-        }
-
-        .publisher textarea:focus {
-            outline: none;
-            border-color: #0095f6;
-        }
-
-        .publisher textarea::placeholder {
-            color: #8e8e8e;
-        }
-
-        .file-input-container {
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .file-input-label {
-            background: transparent;
-            color: #0095f6;
-            padding: 8px 16px;
-            border: 1px solid #262626;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 14px;
-            display: inline-block;
-            transition: all 0.2s ease;
-        }
-
-        .file-input-label:hover {
-            background: rgba(0, 149, 246, 0.1);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .media-preview {
-            margin: 15px 0;
-        }
-
-        .publish-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .controls-left {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .publish-btn {
-            background: #0095f6;
-            color: white;
-            padding: 8px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .publish-btn:hover:not(:disabled) {
-            background: #1877f2;
-        }
-
-        .publish-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .my-posts-btn {
-            background: transparent;
-            color: #ffffff;
-            padding: 8px 16px;
-            border: 1px solid #262626;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .my-posts-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #ffffff;
-        }
-
-        .chat-btn {
-            background: transparent;
-            color: #0095f6;
-            padding: 8px 16px;
-            border: 1px solid #0095f6;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .chat-btn:hover {
-            background: rgba(0, 149, 246, 0.1);
-            border-color: #1877f2;
-            color: #1877f2;
-        }
-
-        .logout-btn {
-            background: transparent;
-            color: #ed4956;
-            padding: 6px 12px;
-            border: 1px solid #262626;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .logout-btn:hover {
-            background: rgba(237, 73, 86, 0.1);
-            border-color: #ed4956;
-        }
-
-        .feed {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .publication {
-            background: #000000;
-            border-bottom: 1px solid #262626;
-            padding: 16px 0;
-            transition: background-color 0.2s ease;
-        }
-
-        .publication:hover {
-            background: rgba(255, 255, 255, 0.01);
-        }
-
-        .pub-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 0 16px;
-        }
-
-        .pub-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            margin-right: 12px;
-        }
-
-        .pub-info {
-            flex: 1;
-        }
-
-        .pub-username {
-            font-weight: 600;
-            color: #ffffff;
-            font-size: 14px;
-        }
-
-        .pub-time {
-            color: #8e8e8e;
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        .pub-text {
-            margin-bottom: 12px;
-            color: #ffffff;
-            line-height: 1.5;
-            font-size: 14px;
-            padding: 0 16px;
-        }
-
-        .image-link {
-            display: block;
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        .image-link img {
-            width: 100%;
-            max-height: 600px;
-            object-fit: cover;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .image-link img:hover {
-            opacity: 0.9;
-        }
-
-        .pub-actions {
-            display: flex;
-            gap: 16px;
-            padding: 8px 16px;
-            align-items: center;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #ffffff;
-            padding: 8px;
-        }
-
-        .action-btn:hover:not(:disabled) {
-            color: #8e8e8e;
-        }
-
-        .action-btn.liked {
-            color: #ed4956;
-        }
-
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .comments-section {
-            margin-top: 8px;
-            padding: 0 16px;
-            background: rgba(255, 255, 255, 0.02);
-            border-top: 1px solid #262626;
-            padding-top: 12px;
-            padding-bottom: 12px;
-        }
-
-        .comment {
-            background: transparent;
-            padding: 8px 0;
-            margin-bottom: 8px;
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .comment-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 10px;
-            margin-right: 8px;
-        }
-
-        .comment-username {
-            font-weight: 600;
-            color: #ffffff;
-            font-size: 13px;
-        }
-
-        .comment-time {
-            color: #8e8e8e;
-            font-size: 11px;
-            margin-left: auto;
-        }
-
-        .comment-text {
-            color: #ffffff;
-            line-height: 1.4;
-            font-size: 13px;
-            margin-left: 32px;
-        }
-
-        .comment-form {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            padding-top: 8px;
-            border-top: 1px solid #262626;
-        }
-
-        .comment-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #262626;
-            border-radius: 20px;
-            font-size: 13px;
-            background: #000000;
-            color: #ffffff;
-            transition: border-color 0.3s ease;
-        }
-
-        .comment-input:focus {
-            outline: none;
-            border-color: #0095f6;
-        }
-
-        .comment-input::placeholder {
-            color: #8e8e8e;
-        }
-
-        .comment-btn {
-            background: transparent;
-            color: #0095f6;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .comment-btn:hover {
-            background: rgba(0, 149, 246, 0.1);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-
-        .modal-content {
-            background: #1a1a1a;
-            border: 1px solid #262626;
-            padding: 24px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            color: #ffffff;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #8e8e8e;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
-
-        .close-modal:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .loading-spinner {
-            border: 2px solid #262626;
-            border-top: 2px solid #0095f6;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        .cloudinary-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 149, 246, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            z-index: 5;
-        }
-
-        .my-post-item {
-            border-bottom: 1px solid #262626;
-            padding: 12px 0;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .my-post-item:last-child {
-            border-bottom: none;
-        }
-
-        .my-post-thumbnail {
-            flex: 0 0 60px;
-        }
-
-        .my-post-thumbnail img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .my-post-content {
-            flex: 1;
-        }
-
-        .my-post-text {
-            font-weight: 500;
-            color: #ffffff;
-            font-size: 14px;
-            margin-bottom: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .my-post-time {
-            font-size: 12px;
-            color: #8e8e8e;
-        }
-
-        .my-post-delete {
-            background: #ed4956;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .my-post-delete:hover {
-            background: #c13584;
-        }
-
-        .my-post-delete:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .empty-state {
+        .customer-orders-box h2, .customer-orders-box h3 {
+            color: #4CAF50;
             text-align: center;
-            padding: 40px 20px;
-            color: #8e8e8e;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
         }
 
-        .empty-state h3 {
-            color: #ffffff;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .customer-orders-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
         }
 
-        @media (max-width: 768px) {
-            #mainApp {
-                padding: 0;
+        .customer-order-item {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .customer-orders-clear {
+            background: linear-gradient(to right, #ff4e00, #ff9a56);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .customer-orders-clear:hover {
+            background: linear-gradient(to right, #e64600, #ff8033);
+            transform: translateY(-2px);
+        }
+
+        .close-orders-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4e00;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .close-orders-btn:hover {
+            background: #e64600;
+        }
+
+        /* Styles pour la section de commande */
+        .order-box {
+            background: linear-gradient(135deg, #fff7f0 0%, #ffe5d0 100%);
+            border: 3px solid #ff4e00;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            color: #333;
+        }
+
+        .order-box h2 {
+            color: #ff4e00;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 2px solid #ff4e00;
+            padding-bottom: 10px;
+        }
+
+        .order-items {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+            margin-bottom: 5px;
+            border-radius: 8px;
+        }
+
+        .order-total {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: #ff4e00;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ff4e00;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            body { 
+                padding: 15px; 
+                padding-top: 70px;
+            }
+            .header { 
+                font-size: 24px; 
+                padding: 12px; 
+                width: 95%; 
+            }
+            .container { 
+                max-width: 100%; 
+                padding: 0; 
+            }
+            .box { 
+                padding: 12px; 
+                margin: 15px 0; 
+                border-width: 2px; 
+            }
+            h1, h2 { 
+                font-size: 20px; 
+                padding: 8px 12px; 
+            }
+            .slider-container { 
+                padding: 8px; 
+            }
+            .card { 
+                width: 150px; 
+                padding: 8px; 
+            }
+            .card img { 
+                height: 100px; 
+            }
+            .nav-buttons { 
+                gap: 8px; 
+                margin-top: 10px;
+            }
+            .nav-btn { 
+                padding: 8px 16px; 
+                font-size: 12px; 
+            }
+            
+            #profile-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .profile-form-box {
+                width: 95%;
+                padding: 20px 15px;
             }
 
-            .header {
-                padding: 12px 16px;
-                flex-direction: column;
-                gap: 10px;
+            .customer-orders-box {
+                width: 95%;
+                max-height: 80vh;
             }
-
-            .header-top {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
+        }
+        
+        @media screen and (max-width: 400px) {
+            body { 
+                padding: 10px; 
+                padding-top: 65px;
             }
-
-            .header-bottom {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
+            .card { 
+                width: 130px; 
             }
-
-            .welcome-text {
-                font-size: 20px;
+            .card img { 
+                height: 80px; 
             }
-
-            .publisher {
-                padding: 16px;
+            .header { 
+                font-size: 20px; 
+                padding: 10px; 
             }
-
-            .publication {
-                margin-bottom: 0;
+            .slider-container { 
+                padding: 6px; 
             }
-
-            .pub-avatar {
-                width: 28px;
-                height: 28px;
+            
+            #profile-btn {
+                top: 8px;
+                left: 8px;
+                padding: 6px 12px;
                 font-size: 12px;
             }
-
-            .comment-avatar {
-                width: 20px;
-                height: 20px;
-                font-size: 9px;
+            
+            .nav-buttons {
+                margin-top: 15px;
             }
-
-            .modal-content {
-                padding: 20px;
-                margin: 20px;
-            }
-
-            .my-post-thumbnail {
-                flex: 0 0 50px;
-            }
-
-            .my-post-thumbnail img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .publish-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .controls-left {
-                justify-content: center;
-            }
-
-            .publish-btn {
-                width: 100%;
-            }
-
-            .registration-links {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .registration-links a {
-                width: 200px;
-                text-align: center;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #262626;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #404040;
-        }
-
-        .publication {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .form-group input:focus,
-        .publisher textarea:focus,
-        .comment-input:focus {
-            box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
         }
     </style>
 </head>
 <body>
-    <div id="particles"></div>
-
-    <div id="loadingOverlay">
-        <div class="loading-content">
-            <div class="loading-spinner-big"></div>
-            <div class="loading-text">Express Exchange</div>
-            <div class="loading-subtitle">Vérification de votre accès...</div>
-        </div>
-    </div>
-
-    <div id="accessDeniedOverlay">
-        <div class="access-denied-content">
-            <h2>🚫 Accès Refusé</h2>
-            <p>Vous devez d'abord vous inscrire sur l'une de nos plateformes pour accéder à Express Exchange.</p>
-            <p>Veuillez vous inscrire sur l'une des pages suivantes :</p>
-            <div class="registration-links">
-                <a href="t.html">S'inscrire - Page T</a>
-                <a href="higes.html">S'inscrire - HIGES</a>
-                <a href="isfm.html">S'inscrire - ISFM</a>
-            </div>
-        </div>
-    </div>
-
-    <div id="mainApp">
-        <div class="header">
-            <div class="header-top">
-                <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
-                <button class="logout-btn" onclick="logout()">Déconnexion</button>
-            </div>
-            <div class="header-bottom">
-                <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
-            </div>
-        </div>
-
-        <div class="publisher">
-            <textarea id="postText" placeholder="Partagez quelque chose..."></textarea>
-            <div class="file-input-container">
-                <label for="fileInput" class="file-input-label">📷 Ajouter une image</label>
-                <input type="file" id="fileInput" class="file-input" accept="image/*">
-                <span id="fileName"></span>
-            </div>
-            <div id="mediaPreview" class="media-preview"></div>
-            <div class="publish-controls">
-                <div class="controls-left">
-                    <button id="showMyPostsBtn" class="my-posts-btn">Mes publications</button>
-                    <a href="message.html" class="chat-btn">💬 Chater</a>
+    <!-- Overlay profil utilisateur avec onglets -->
+    <div id="profile-overlay">
+        <div class="profile-form-box">
+            <button class="close-profile-btn" onclick="closeProfile()">×</button>
+            
+            <div class="profile-content">
+                <div class="profile-tabs">
+                    <button class="profile-tab active" onclick="showTab('profile-tab')">Profil</button>
+                    <button class="profile-tab" onclick="showTab('contact-tab')">Contact</button>
+                    <button class="profile-tab" onclick="showTab('share-tab')">Partager</button>
                 </div>
-                <button id="publishBtn" class="publish-btn">Publier</button>
+                
+                <!-- Onglet Profil -->
+                <div id="profile-tab" class="tab-content active">
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label>Nom</label>
+                            <input type="text" id="profile-lastname" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Prénom</label>
+                            <input type="text" id="profile-firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email ou WhatsApp</label>
+                            <input type="text" id="profile-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Photo de profil</label>
+                            <input type="file" id="profile-photo" accept="image/*" onchange="previewPhoto()">
+                            <img id="profile-photo-preview" class="photo-preview">
+                        </div>
+                        <div class="form-group">
+                            <label>Fond d'écran personnalisé</label>
+                            <input type="file" id="profile-bg" accept="image/*" onchange="previewBg()">
+                            <img id="profile-bg-preview" class="bg-preview">
+                        </div>
+                        <button type="submit" class="btn-submit">✅ Sauvegarder mon profil</button>
+                    </form>
+                </div>
+                
+                <!-- Onglet Contact -->
+                <div id="contact-tab" class="tab-content">
+                    <h3 style="color: #ff4e00; margin-bottom: 20px; text-align: center;">📞 Contactez-nous</h3>
+                    <div class="contact-options">
+                        <a class="contact-btn whatsapp-btn" href="https://wa.me/2250719983044?text=Bonjour%20ISFM%20Express%20!" target="_blank">
+                            💬 WhatsApp
+                        </a>
+                        <a class="contact-btn call-btn" href="tel:0719983044">
+                            📞 Appeler
+                        </a>
+                    </div>
+                    <div style="text-align:center; color:#666; font-size:14px; margin-top:10px;">
+                        Numéro WhatsApp et appel : <b>0719983044</b>
+                    </div>
+                </div>
+                
+                <!-- Onglet Partager -->
+                <div id="share-tab" class="tab-content">
+                    <h3 style="color: #ff4e00; margin-bottom: 16px; text-align: center;">🎉 Inviter un ami</h3>
+                    <div class="social-share">
+                        <a class="social-btn share-whatsapp-btn" href="https://wa.me/?text=Rejoins%20ISFM%20Express%20ici%20:%20https://loko-blush.vercel.app/" target="_blank">
+                            💚 WhatsApp
+                        </a>
+                        <a class="social-btn facebook-btn" href="https://www.facebook.com/sharer/sharer.php?u=https://loko-blush.vercel.app/" target="_blank">
+                            👍 Facebook
+                        </a>
+                        <a class="social-btn instagram-btn" href="https://www.instagram.com/?url=https://loko-blush.vercel.app/" target="_blank">
+                            📸 Instagram
+                        </a>
+                    </div>
+                    <div style="text-align:center; margin-top:15px; color:#888; font-size:13px;">
+                        <b>https://loko-blush.vercel.app/</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton profil -->
+    <button id="profile-btn" onclick="openProfile()">👤 Mon profil</button>
+
+    <!-- Header -->
+    <div class="header">
+        <img src="image/logo exp.jpg" alt="Logo LOKO EXPRESS" class="header-logo" style="vertical-align:middle; height:120px; width:120px; object-fit:contain; border-radius:12px; margin-right:15px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.13); border:2px solid #ff4e00;">
+        LOKO EXPRESS 
+    </div>
+
+    <!-- Boutons de navigation -->
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="location.href='apropos.html'">À propos</button>
+        <button class="nav-btn" onclick="location.href='actualité.html'">Actualité</button>
+        <button class="nav-btn" onclick="location.href='fournisseur.html'">Accès fournisseur</button>
+        <button class="nav-btn gbere-btn" onclick="location.href='actualité.html'">ExpressUnion</button>
+        <button id="show-customer-orders-btn" onclick="toggleCustomerOrders()">🧾 Mes commandes</button>
+    </div>
+
+    <div class="container">
+        <!-- Catégorie A - Spaghetti et Petit pois -->
+        <div class="box category-a">
+            <h2>Catégorie A - Pâtes & Petit pois</h2>
+            <div class="slider-container" id="category-a-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/spaghetti rognon.jpg" alt="Spaghetti rognon">
+                        <h3>Spaghetti rognon</h3>
+                        <p>Spaghetti préparé avec du rognon</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Spaghetti rognon', 500, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/spaghet foi.jpg" alt="Spaghetti foi">
+                        <h3>Spaghetti foi</h3>
+                        <p>Spaghetti préparé avec du foie</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Spaghetti foi', 500, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/spagheti oeuf grilll.jpg" alt="Spaghetti rognon + œuf">
+                        <h3>Spaghetti rognon + œuf</h3>
+                        <p>Spaghetti avec rognon et œuf grillé</p>
+                        <div class="price">750 FCFA</div>
+                        <button onclick="addToCart('Spaghetti rognon + œuf grillé', 750, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/spaghet foi.jpg" alt="Spaghetti foi + œuf">
+                        <h3>Spaghetti foi + œuf</h3>
+                        <p>Spaghetti avec foi et œuf grillé</p>
+                        <div class="price">750 FCFA</div>
+                        <button onclick="addToCart('Spaghetti foi + œuf grillé', 750, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/spaghetti viande.jpg" alt="Spaghetti viande">
+                        <h3>Spaghetti viande</h3>
+                        <p>Spaghetti préparé avec de la viande</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Spaghetti viande', 500, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/petit poid rogno,.jpg" alt="Petit pois rognon">
+                        <h3>Petit pois rognon</h3>
+                        <p>Petit pois préparé avec du rognon</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Petit pois rognon', 1000, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/petit poid oeuf.jpg" alt="Petit pois œuf">
+                        <h3>Petit pois œuf</h3>
+                        <p>Petit pois préparé avec des œufs</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Petit pois œuf', 1000, 'A')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/petit poid viande.jpg" alt="Petit pois viande">
+                        <h3>Petit pois viande</h3>
+                        <p>Petit pois préparé avec de la viande</p>
+                        <div class="price">1500 FCFA</div>
+                        <button onclick="addToCart('Petit pois viande', 1500, 'A')">Commander</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="feed" class="feed"></div>
-    </div>
+        <!-- Catégorie B - Tchèpe au poisson -->
+        <div class="box category-b">
+            <h2>Catégorie B - Tchèpe</h2>
+            <div class="slider-container" id="category-b-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/tchep poisson.jpg" alt="Tchèpe au poisson">
+                        <h3>Tchèpe au poisson</h3>
+                        <p>Riz sauce tomate avec poisson frais</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Tchèpe au poisson', 500, 'B')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Catégorie C - Attieke, Alloco, Igname et Panini -->
+        <div class="box category-c">
+            <h2>Catégorie C - Attieke / Alloco / Igname / Panini</h2>
+            <div class="slider-container" id="category-c-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/atieke poulet.jpg" alt="Attieke patte de poulet">
+                        <h3>Attieke patte de poulet</h3>
+                        <p>Attieke servi avec patte de poulet</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Attieke patte de poulet', 1000, 'C')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/atieke poulet.jpg" alt="Attieke dindon">
+                        <h3>Attieke dindon</h3>
+                        <p>Attieke servi avec du dindon</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Attieke dindon', 1000, 'C')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/atieke poulet.jpg" alt="Attieke poulet">
+                        <h3>Attieke poulet</h3>
+                        <p>Attieke servi avec du poulet</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Attieke poulet', 1000, 'C')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/atieke alloko.jpg" alt="Attieke poisson">
+                        <h3>Attieke poisson</h3>
+                        <p>Attieke servi avec du poisson</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Attieke poisson', 1000, 'C')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/panini pain rond.jpg" alt="Panini pain rond">
+                        <h3>Panini pain rond</h3>
+                        <p>Sandwich panini avec pain rond</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Panini pain rond', 500, 'C')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/panini pain sucre.jpg" alt="Panini pain sucré">
+                        <h3>Panini pain sucré</h3>
+                        <p>Sandwich panini avec pain sucré</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Panini pain sucré', 500, 'C')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/charwama.jpg" alt="Charwama">
+                        <h3>Charwama</h3>
+                        <p>Sandwich kebab à la viande avec légumes</p>
+                        <div class="price">1500 FCFA</div>
+                        <button onclick="addToCart('Charwama', 1500, 'C')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div id="modalImageView" class="modal">
-        <img id="modalImageBig" alt="Image agrandie">
-    </div>
+        <!-- Catégorie D - Tchèpe et Riz sauce -->
+        <div class="box category-d">
+            <h2>Catégorie D - Tchèpe et Riz sauce</h2>
+            <div class="slider-container" id="category-d-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/tchep poisson.jpg" alt="Tchèpe avec poisson">
+                        <h3>Tchèpe avec poisson</h3>
+                        <p>Tchèpe traditionnel préparé avec du poisson</p>
+                        <div class="price">800 FCFA</div>
+                        <button onclick="addToCart('Tchèpe traditionnel préparé avec poisson', 800, 'D')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/tchep poulet.jpg" alt="Tchèpe avec poulet">
+                        <h3>Tchèpe avec poulet</h3>
+                        <p>Tchèpe traditionnel préparé avec du poulet</p>
+                        <div class="price">800 FCFA</div>
+                        <button onclick="addToCart('Tchèpe avec poulet', 800, 'D')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/riz  arachide.jpg" alt="Riz sauce arachide">
+                        <h3>Riz sauce arachide</h3>
+                        <p>Riz blanc servi avec sauce arachide</p>
+                        <div class="price">800 FCFA</div>
+                        <button onclick="addToCart('Riz sauce arachide', 800, 'D')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/riz souce feuille.jpg" alt="Riz sauce feuille">
+                        <h3>Riz sauce feuille</h3>
+                        <p>Riz blanc servi avec sauce feuille</p>
+                        <div class="price">800 FCFA</div>
+                        <button onclick="addToCart('Riz sauce feuille', 800, 'D')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/riz sauc e.jpg" alt="Riz sauce tomate">
+                        <h3>Riz sauce tomate</h3>
+                        <p>Riz blanc servi avec sauce tomate</p>
+                        <div class="price">800 FCFA</div>
+                        <button onclick="addToCart('Riz sauce tomate', 800, 'D')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Catégorie E - Coque -->
+        <div class="box category-f">
+            <h2>Catégorie E - Coque</h2>
+            <div class="slider-container" id="category-f-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/porc au .jpg" alt="Porc au four + Attiéké">
+                        <h3>Porc au four + Attiéké</h3>
+                        <p>Porc au four servi avec Attiéké</p>
+                        <div class="price">10000 FCFA</div>
+                        <button onclick="addToCart('Porc au four + Attiéké', 10000, 'F')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div id="myPostsModal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal" id="closeMyPostsModal">&times;</button>
-            <h3 style="margin-bottom: 20px;">Mes Publications</h3>
-            <div id="myPostsList"></div>
+        <!-- Catégorie F - Porc au four -->
+        <div class="box category-f">
+            <h2>Catégorie F - Porc au four</h2>
+            <div class="slider-container" id="category-f-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/porc au .jpg" alt="Porc au four + Attiéké">
+                        <h3>Porc au four + Attiéké</h3>
+                        <p>Porc au four servi avec Attiéké</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Porc au four + Attiéké', 1000, 'F')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catégorie G - Plats traditionnels -->
+        <div class="box category-g">
+            <h2>Catégorie G - Plats traditionnels</h2>
+            <div class="slider-container" id="category-g-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/foutou poisson.jpg" alt="Foufou sauce claire poisson frais">
+                        <h3>Foufou sauce claire</h3>
+                        <p>Foufou avec sauce claire et poisson frais</p>
+                        <div class="price">1000 FCFA</div>
+                        <button onclick="addToCart('Foufou sauce claire poisson frais', 1000, 'G')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/placali kope.jpg" alt="Placali sauce kôpè">
+                        <h3>Placali sauce kôpè</h3>
+                        <p>Placali traditionnel avec sauce kôpè</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Placali sauce kôpè', 500, 'G')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/riz auberg.jpg" alt="Riz sauce aubergine">
+                        <h3>Riz sauce aubergine</h3>
+                        <p>Riz blanc servi avec sauce aubergine</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Riz sauce aubergine', 500, 'G')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <!-- Catégorie H - Desserts -->
+        <div class="box category-h">
+            <h2>Catégorie H - Desserts</h2>
+            <div class="slider-container" id="category-h-food">
+                <div class="slider">
+                    <div class="card">
+                        <img src="image/pankate.jpg" alt="Pancakes">
+                        <h3>Pancakes</h3>
+                        <p>Délicieuses crêpes épaisses américaines</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Pancakes', 500, 'H')">Commander</button>
+                    </div>
+                    <div class="card">
+                        <img src="image/crepes.jpg" alt="Crêpes">
+                        <h3>Crêpes</h3>
+                        <p>Fines crêpes traditionnelles</p>
+                        <div class="price">500 FCFA</div>
+                        <button onclick="addToCart('Crêpes', 500, 'H')">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+
+        <!-- Case de commandes du client -->
+        <div class="customer-orders-box" id="customer-orders-box" style="display:none;">
+            <h2>Mes Commandes récentes</h2>
+            <div class="customer-orders-list" id="customer-orders-list"></div>
+            <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
+        </div>
+        <div class="order-box">
+            <h2>Votre Commande</h2>
+            <div class="order-items" id="order-items">
+                <div class="order-item" id="empty-cart">
+                    Votre panier est vide
+                </div>
+            </div>
+            <div class="order-total" id="order-total">
+                Total: 0 FCFA
+            </div>
+            <!-- Formulaire de commande : champ email supprimé -->
+            <form id="order-form">
+                <div class="form-group">
+                    
+                    <input type="text" id="name"  readonly>
+                </div>
+                <button type="submit" class="btn-submit">Confirmer la commande</button>
+            </form>
         </div>
     </div>
+    <button id="show-customer-orders-btn">🧾 Mes commandes</button>
+    <div class="customer-orders-box" id="customer-orders-box" style="display:none;">
+        <h3>Mes Commandes récentes</h3>
+        <div class="customer-orders-list" id="customer-orders-list"></div>
+        <button class="customer-orders-clear" onclick="clearCustomerOrders()">Vider la liste</button>
+    </div>
+       <script type="module">
+// =====================
+// INITIALISATION FIREBASE
+// =====================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
 
-    <script type="module">
-        console.log('🔰 Début du script principal Express Exchange');
+const firebaseConfig = {
+    apiKey: "AIzaSyAKnGEiUTHX6rQzIN-2zi_Ui4YJFv4U_PQ",
+    authDomain: "kolo-livraison.firebaseapp.com",
+    databaseURL: "https://kolo-livraison-default-rtdb.firebaseio.com",
+    projectId: "kolo-livraison",
+    storageBucket: "kolo-livraison.firebasestorage.app",
+    messagingSenderId: "78667636312",
+    appId: "1:78667636312:web:e8d3e05ad03858b6a2342d",
+    measurementId: "G-R79LC3XQL4"
+};
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(app);
 
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { 
-            getFirestore, 
-            collection, 
-            doc, 
-            setDoc, 
-            addDoc, 
-            getDocs, 
-            query, 
-            orderBy, 
-            limit, 
-            onSnapshot, 
-            deleteDoc,
-            serverTimestamp,
-            where
-        } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+// ============ VARIABLES GLOBALES ============
+let userProfile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+let cart = [];
+let total = 0;
+let customerOrders = JSON.parse(localStorage.getItem('customerOrders') || '[]');
+let orderCountByCategory = JSON.parse(localStorage.getItem('orderCountByCategory') || '{}');
+let currentCart = [];
 
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
-            authDomain: "data-com-a94a8.firebaseapp.com",
-            databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
-            projectId: "data-com-a94a8",
-            storageBucket: "data-com-a94a8.appspot.com",
-            messagingSenderId: "276904640935",
-            appId: "1:276904640935:web:9cd805aeba6c34c767f682",
-            measurementId: "G-FYQCWY5G4S"
-        };
+// ============ PROFIL UTILISATEUR ============
 
-        // Configuration Cloudinary
-        const cloudinaryConfig = {
-            cloudName: 'djxcqczh1',
-            uploadPreset: 'database'
-        };
-
-        // Initialisation Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        let userData = null;
-        let posts = [];
-        let unsubscribePosts = null;
-        let isOnline = navigator.onLine;
-        let isAppInitialized = false;
-
-        // Classe upload Cloudinary
-        class CloudinaryUploader {
-            constructor(config) {
-                this.cloudName = config.cloudName;
-                this.uploadPreset = config.uploadPreset;
-                this.apiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
-            }
-
-            async uploadImage(file, options = {}) {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', this.uploadPreset);
-                formData.append('quality', 'auto');
-                formData.append('fetch_format', 'auto');
-                if (options.maxWidth) {
-                    formData.append('width', options.maxWidth);
-                    formData.append('crop', 'scale');
-                }
-                try {
-                    const response = await fetch(this.apiUrl, { method: 'POST', body: formData });
-                    if (!response.ok) throw new Error(`Erreur upload: ${response.statusText}`);
-                    const result = await response.json();
-                    return {
-                        url: result.secure_url,
-                        publicId: result.public_id,
-                        width: result.width,
-                        height: result.height,
-                        format: result.format,
-                        bytes: result.bytes
-                    };
-                } catch (error) {
-                    console.error('Erreur upload Cloudinary:', error);
-                    throw error;
-                }
-            }
-
-            getOptimizedUrl(publicId, options = {}) {
-                const baseUrl = `https://res.cloudinary.com/${this.cloudName}/image/upload/`;
-                let transformations = [];
-                if (options.width) transformations.push(`w_${options.width}`);
-                if (options.height) transformations.push(`h_${options.height}`);
-                if (options.crop) transformations.push(`c_${options.crop}`);
-                if (options.quality) transformations.push(`q_${options.quality}`);
-                transformations.push('f_auto', 'q_auto');
-                const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
-                return `${baseUrl}${transformString}${publicId}`;
-            }
+// Affiche le formulaire de profil
+function showProfileForm() {
+    document.getElementById('profile-overlay').style.display = 'flex';
+    if (userProfile) {
+        document.getElementById('profile-lastname').value = userProfile.lastname || '';
+        document.getElementById('profile-firstname').value = userProfile.firstname || '';
+        document.getElementById('profile-email').value = userProfile.email || '';
+        let photoPreview = document.getElementById('profile-photo-preview');
+        if (userProfile.photo && photoPreview) {
+            photoPreview.src = userProfile.photo;
+            photoPreview.style.display = "inline";
         }
-
-        const uploader = new CloudinaryUploader(cloudinaryConfig);
-
-        function validateUserData(userData) {
-            console.log('🔍 Validation userData:', userData);
-            if (!userData) {
-                console.error('❌ userData est null ou undefined');
-                return false;
-            }
-            const requiredFields = ['id', 'fullName', 'avatar', 'contact'];
-            for (const field of requiredFields) {
-                if (!userData[field] || userData[field].toString().trim() === '') {
-                    console.error(`❌ Champ manquant ou vide: ${field}`, userData[field]);
-                    return false;
-                }
-            }
-            console.log('✅ userData valide');
-            return true;
+        let bgPreview = document.getElementById('profile-bg-preview');
+        if (userProfile.bg && bgPreview) {
+            bgPreview.src = userProfile.bg;
+            bgPreview.style.display = "inline";
         }
+    }
+}
 
-        function getUserData() {
-            try {
-                const sessionData = sessionStorage.getItem('expressExchangeUser');
-                const localData = localStorage.getItem('expressExchangeUser');
-                const dataToUse = sessionData || localData;
-                if (!dataToUse) {
-                    console.warn('⚠️ Aucune donnée utilisateur trouvée');
-                    return null;
-                }
-                const parsedData = JSON.parse(dataToUse);
-                if (!validateUserData(parsedData)) {
-                    console.error('❌ Données utilisateur invalides, suppression...');
-                    sessionStorage.removeItem('expressExchangeUser');
-                    localStorage.removeItem('expressExchangeUser');
-                    return null;
-                }
-                return parsedData;
-            } catch (error) {
-                console.error('❌ Erreur parsing données utilisateur:', error);
-                sessionStorage.removeItem('expressExchangeUser');
-                localStorage.removeItem('expressExchangeUser');
-                return null;
-            }
+// Ferme l'overlay de profil
+function hideProfileForm() {
+    document.getElementById('profile-overlay').style.display = 'none';
+}
+
+// Ouvre l'onglet/tabs
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event && event.target && event.target.classList.add('active');
+}
+
+// Applique l'image et le bg du profil à l'UI
+function applyUserProfile() {
+    if (userProfile) {
+        if (userProfile.bg) {
+            document.body.style.backgroundImage = `url('${userProfile.bg}')`;
         }
-
-        // Fonction pour détecter automatiquement l'utilisateur depuis les pages d'inscription
-        async function detectUserFromRegistrationPages() {
-            console.log('🔍 Détection automatique de l\'utilisateur...');
-            
-            // Vérifier d'abord les données dans localStorage/sessionStorage des pages d'inscription
-            const registrationSources = [
-                'registrationData_t',
-                'registrationData_higes', 
-                'registrationData_isfm',
-                'userData_t',
-                'userData_higes',
-                'userData_isfm',
-                'currentUser',
-                'userRegistration'
-            ];
-            
-            // Chercher dans le stockage local d'abord
-            for (const source of registrationSources) {
-                try {
-                    const localData = localStorage.getItem(source) || sessionStorage.getItem(source);
-                    if (localData) {
-                        const parsedData = JSON.parse(localData);
-                        if (parsedData && parsedData.nom && parsedData.prenom && parsedData.contact) {
-                            console.log(`✅ Utilisateur trouvé dans ${source}:`, parsedData);
-                            return createUserFromRegistrationData(parsedData, source);
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`⚠️ Erreur parsing ${source}:`, error);
-                }
-            }
-            
-            // Si pas trouvé dans le stockage local, chercher dans Firebase
-            return await findUserInFirebase();
-        }
-
-        function createUserFromRegistrationData(regData, source) {
-            const timestamp = Date.now();
-            const userData = {
-                id: `user_${regData.contact}_${timestamp}`,
-                nom: regData.nom,
-                prenom: regData.prenom,
-                contact: regData.contact,
-                fullName: `${regData.prenom} ${regData.nom}`,
-                avatar: `${regData.prenom[0].toUpperCase()}${regData.nom[0].toUpperCase()}`,
-                registeredAt: new Date().toISOString(),
-                username: `${regData.prenom.toLowerCase()}.${regData.nom.toLowerCase()}`,
-                email: `${regData.contact}@placeholder.com`,
-                source: source,
-                autoDetected: true
-            };
-            
-            console.log('👤 Utilisateur créé depuis les données d\'inscription:', userData);
-            return userData;
-        }
-
-        async function findUserInFirebase() {
-            console.log('🔍 Recherche dans Firebase...');
-            
-            // Vérifier le referrer pour savoir d'où vient l'utilisateur
-            const referrer = document.referrer;
-            console.log('🔗 Referrer:', referrer);
-            
-            // Chercher dans différentes collections Firebase
-            const collections = ['inscriptions', 'users', 'registrations', 't_registrations', 'higes_registrations', 'isfm_registrations'];
-            
-            for (const collectionName of collections) {
-                try {
-                    const usersQuery = query(
-                        collection(db, collectionName), 
-                        orderBy('timestamp', 'desc'),
-                        limit(50)
-                    );
-                    const usersSnapshot = await getDocs(usersQuery);
-                    
-                    // Prendre le plus récent (dernière inscription)
-                    if (!usersSnapshot.empty) {
-                        const latestDoc = usersSnapshot.docs[0];
-                        const userData = latestDoc.data();
-                        
-                        if (userData.nom && userData.prenom && userData.contact) {
-                            console.log(`✅ Utilisateur le plus récent trouvé dans ${collectionName}:`, userData);
-                            return createUserFromRegistrationData(userData, collectionName);
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`⚠️ Erreur recherche dans ${collectionName}:`, error);
-                }
-            }
-            
-            return null;
-        }
-
-        function updateConnectionStatus() {
-            const statusIndicator = document.getElementById('statusIndicator');
-            if (statusIndicator) {
-                statusIndicator.textContent = isOnline ? '🟢 Connecté' : '🔴 Hors ligne';
-                statusIndicator.className = isOnline ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
-            }
-        }
-
-        function createParticles() {
-            const particles = document.getElementById('particles');
-            if (!particles) return;
-            const isMobile = window.innerWidth < 768;
-            const particleCount = isMobile ? 5 : 15;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDelay = (Math.random() * 4 + 4) + 's';
-                particles.appendChild(particle);
-            }
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        const handleResize = debounce(function() {
-            const particles = document.getElementById('particles');
-            if (particles) {
-                particles.innerHTML = '';
-                createParticles();
-            }
-        }, 300);
-
-        window.addEventListener('resize', handleResize);
-
-        function hideLoadingOverlay() {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.style.display = 'none';
-                console.log('🚫 Overlay de chargement masqué');
-            }
-        }
-
-        function showAccessDenied() {
-            console.log('🚫 Affichage de l\'accès refusé');
-            hideLoadingOverlay();
-            const overlay = document.getElementById('accessDeniedOverlay');
-            const mainApp = document.getElementById('mainApp');
-            if (overlay) overlay.style.display = 'flex';
-            if (mainApp) mainApp.style.display = 'none';
-        }
-
-        async function checkUserAccess() {
-            console.log('🔍 Vérification de l\'accès utilisateur...');
-            
-            // D'abord vérifier s'il y a déjà un utilisateur connecté
-            userData = getUserData();
-            if (userData) {
-                console.log('✅ Utilisateur déjà connecté:', userData.fullName);
-                hideLoadingOverlay();
-                showMainApp();
-                return;
-            }
-            
-            // Sinon, essayer de détecter automatiquement l'utilisateur
-            try {
-                userData = await detectUserFromRegistrationPages();
-                
-                if (userData) {
-                    console.log('✅ Utilisateur détecté automatiquement:', userData.fullName);
-                    
-                    // Sauvegarder les données utilisateur
-                    try {
-                        const userDataString = JSON.stringify(userData);
-                        sessionStorage.setItem('expressExchangeUser', userDataString);
-                        localStorage.setItem('expressExchangeUser', userDataString);
-                        console.log('💾 Données utilisateur sauvegardées');
-                    } catch (storageError) {
-                        console.error('❌ Erreur sauvegarde locale:', storageError);
-                    }
-                    
-                    // Sauvegarder dans Firestore si en ligne
-                    if (isOnline) {
-                        try {
-                            await setDoc(doc(db, 'express_users', userData.id), {
-                                ...userData,
-                                createdAt: serverTimestamp(),
-                                lastActive: serverTimestamp(),
-                                autoLoginTimestamp: serverTimestamp()
-                            });
-                            console.log('☁️ Utilisateur auto-connecté sauvegardé dans Firestore');
-                        } catch (firebaseError) {
-                            console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
-                        }
-                    }
-                    
-                    hideLoadingOverlay();
-                    showMainApp();
-                } else {
-                    console.log('❌ Aucun utilisateur trouvé, accès refusé');
-                    showAccessDenied();
-                }
-            } catch (error) {
-                console.error('❌ Erreur lors de la détection utilisateur:', error);
-                showAccessDenied();
-            }
-        }
-
-        function showMainApp() {
-            if (isAppInitialized) {
-                console.log('⚠️ App déjà initialisée, ignoré');
-                return;
-            }
-            console.log('🎯 Affichage de l\'application principale...');
-            if (!validateUserData(userData)) {
-                console.error('❌ userData invalide lors de showMainApp');
-                showAccessDenied();
-                return;
-            }
-            const mainApp = document.getElementById('mainApp');
-            if (mainApp) {
-                mainApp.style.display = 'block';
-                console.log('✅ App principale affichée');
+        let profileBtn = document.getElementById('profile-btn');
+        if (profileBtn) {
+            if (userProfile.photo) {
+                profileBtn.innerHTML = `<img src="${userProfile.photo}" style="width:24px; height:24px; border-radius:50%; vertical-align:middle; margin-right:7px;"> Mon profil`;
             } else {
-                console.error('❌ Élément mainApp introuvable');
-                return;
+                profileBtn.innerHTML = '👤 Mon profil';
             }
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            if (welcomeMessage) {
-                welcomeMessage.textContent = `Bienvenue ${userData.fullName} 👋`;
-                console.log('👋 Message de bienvenue mis à jour');
-            }
-            updateConnectionStatus();
-            loadPosts();
-            isAppInitialized = true;
-            console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
+    }
+}
 
-        // Déconnexion
-        window.logout = function() {
-            console.log('🚪 Déconnexion...');
-            sessionStorage.removeItem('expressExchangeUser');
-            localStorage.removeItem('expressExchangeUser');
-            userData = null;
-            isAppInitialized = false;
-            if (unsubscribePosts) {
-                unsubscribePosts();
+// Prévisualisation de la photo de profil
+function previewPhoto() {
+    let fileInput = document.getElementById('profile-photo');
+    if (fileInput && fileInput.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let preview = document.getElementById('profile-photo-preview');
+            if (preview) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
             }
-            location.reload();
         };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+}
 
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initialisation de l\'application...');
-            createParticles();
-            updateConnectionStatus();
-            
-            // Démarrer la vérification d'accès après un petit délai
-            setTimeout(() => {
-                checkUserAccess();
-            }, 1000);
+// Prévisualisation du fond
+function previewBg() {
+    let fileInput = document.getElementById('profile-bg');
+    if (fileInput && fileInput.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let preview = document.getElementById('profile-bg-preview');
+            if (preview) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            document.body.style.backgroundImage = `url(${e.target.result})`;
+            userProfile = userProfile || {};
+            userProfile.bg = e.target.result;
+            localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+}
+
+// Remplit le champ nom sur la commande avec le profil
+function fillOrderFormWithProfile() {
+    if (userProfile) {
+        let nameField = document.getElementById('name');
+        if (nameField) {
+            nameField.value = (userProfile.firstname || "") + ' ' + (userProfile.lastname || "");
+        }
+    }
+}
+
+// Sauvegarde le profil utilisateur
+function saveProfile(e) {
+    e.preventDefault();
+    let lastname = document.getElementById('profile-lastname').value.trim();
+    let firstname = document.getElementById('profile-firstname').value.trim();
+    let email = document.getElementById('profile-email').value.trim();
+    let photo = document.getElementById('profile-photo-preview').src || null;
+    let bg = userProfile && userProfile.bg ? userProfile.bg : null;
+
+    userProfile = {
+        lastname, firstname, email,
+        photo: (photo && photo.startsWith('data')) ? photo : null,
+        bg: (bg && bg.startsWith('data')) ? bg : null
+    };
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    hideProfileForm();
+    applyUserProfile();
+    fillOrderFormWithProfile();
+    alert('✅ Profil sauvegardé avec succès !');
+}
+
+// ============ PANIER ET COMMANDES ============
+
+// Génère un code de commande par catégorie
+function generateOrderCode(category) {
+    if (!orderCountByCategory[category]) orderCountByCategory[category] = 0;
+    orderCountByCategory[category]++;
+    localStorage.setItem('orderCountByCategory', JSON.stringify(orderCountByCategory));
+    let countStr = String(orderCountByCategory[category]).padStart(3, '0');
+    return `#${countStr}${category}`;
+}
+
+// Demande quantité à l'utilisateur avant ajout panier
+function promptAddToCart(name, price, category) {
+    let qte = prompt("Choisir la quantité (ex: 1, 2, 3...)", "1");
+    qte = parseInt(qte, 10);
+    if (!isNaN(qte) && qte > 0) {
+        addToCart(name, price, category, qte);
+    }
+}
+
+// Ajoute un produit au panier
+function addToCart(name, price, category, qty = 1) {
+    // Ajout au panier principal (ancienne logique)
+    cart.push({name, price, category, qty});
+    // Ajout au panier affiché
+    let existingItem = currentCart.find(item => item.name === name);
+    if (existingItem) {
+        existingItem.quantity += qty;
+    } else {
+        currentCart.push({name, price, category, quantity: qty});
+    }
+    updateCart();
+    updateOrderDisplay();
+    showOrderBox();
+    alert(`${qty} ${name} ajouté(s) au panier!`);
+}
+
+// Met à jour l'affichage du panier
+function updateCart() {
+    let orderItems = document.getElementById('order-items');
+    let orderTotal = document.getElementById('order-total');
+    if (!orderItems || !orderTotal) return;
+    orderItems.innerHTML = '';
+    total = 0;
+    if (cart.length === 0) {
+        orderItems.innerHTML = '<div class="order-item" id="empty-cart">Votre panier est vide</div>';
+    } else {
+        cart.forEach((item, index) => {
+            let orderItem = document.createElement('div');
+            orderItem.className = 'order-item';
+            orderItem.innerHTML = `
+                <span>${item.qty} x ${item.name}</span>
+                <span>${item.price * item.qty} FCFA</span>
+                <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
+            `;
+            orderItems.appendChild(orderItem);
+            total += item.price * item.qty;
         });
+    }
+    orderTotal.textContent = `Total: ${total} FCFA`;
+}
 
-        function loadPosts() {
-            if (unsubscribePosts) {
-                unsubscribePosts();
-            }
-            const postsQuery = query(
-                collection(db, 'posts'), 
-                orderBy('timestamp', 'desc'), 
-                limit(50)
-            );
-            unsubscribePosts = onSnapshot(postsQuery, (snapshot) => {
-                posts = [];
-                snapshot.forEach((doc) => {
-                    const post = { id: doc.id, ...doc.data() };
-                    posts.push(post);
-                });
-                renderPosts();
-            }, (error) => {
-                console.error('Erreur chargement posts:', error);
-            });
+// Met à jour l'affichage du panier (nouvelle logique)
+function updateOrderDisplay() {
+    let orderItems = document.getElementById('order-items');
+    let orderTotal = document.getElementById('order-total');
+    if (!orderItems || !orderTotal) return;
+    if (currentCart.length === 0) {
+        orderItems.innerHTML = '<p style="text-align:center; color:#888; font-style:italic;">Aucun article dans le panier</p>';
+        orderTotal.textContent = 'Total: 0 FCFA';
+        return;
+    }
+    let total = 0;
+    orderItems.innerHTML = '';
+    currentCart.forEach((item, index) => {
+        let itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        let itemDiv = document.createElement('div');
+        itemDiv.className = 'order-item';
+        itemDiv.innerHTML = `
+            <div>
+                <strong>${item.name}</strong><br>
+                <small>Catégorie ${item.category} - ${item.price} FCFA/unité</small>
+            </div>
+            <div style="text-align:right;">
+                <button onclick="changeQuantity(${index}, -1)" style="background:#ff4e00; color:white; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer; margin:0 5px;">-</button>
+                <span style="font-weight:bold; margin:0 10px;">${item.quantity}</span>
+                <button onclick="changeQuantity(${index}, 1)" style="background:#4CAF50; color:white; border:none; width:25px; height:25px; border-radius:50%; cursor:pointer; margin:0 5px;">+</button>
+                <div style="font-weight:bold; color:#ff4e00; margin-top:5px;">${itemTotal} FCFA</div>
+            </div>
+        `;
+        orderItems.appendChild(itemDiv);
+    });
+    orderTotal.textContent = `Total: ${total} FCFA`;
+}
+
+// Retire un article du panier
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+// Change la quantité d'un produit dans le panier
+function changeQuantity(index, change) {
+    if (currentCart[index]) {
+        currentCart[index].quantity += change;
+        if (currentCart[index].quantity <= 0) {
+            currentCart.splice(index, 1);
         }
+        updateOrderDisplay();
+        if (currentCart.length === 0) {
+            hideOrderBox();
+        }
+    }
+}
 
-        document.getElementById('publishBtn').addEventListener('click', async function() {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de publication avec userData invalide');
-                alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
-                showAccessDenied();
-                return;
-            }
-            const text = document.getElementById('postText').value.trim();
-            const fileInput = document.getElementById('fileInput');
-            const publishBtn = document.getElementById('publishBtn');
-            if (!text && !fileInput.files[0]) {
-                alert('Veuillez ajouter du texte ou une image');
-                return;
-            }
-            if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-                alert("Seules les images sont autorisées.");
-                return;
-            }
-            publishBtn.disabled = true;
-            publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-            try {
-                const postData = {
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: text || '',
-                    timestamp: serverTimestamp(),
-                    likesCount: 0,
-                    commentsCount: 0,
-                    imageUrl: null,
-                    imagePublicId: null,
-                    createdBy: userData.id,
-                    userValidated: true
-                };
-                console.log('📝 Données de publication:', {
-                    authorId: postData.authorId,
-                    author: postData.author,
-                    textLength: text.length,
-                    hasImage: !!fileInput.files[0]
-                });
-                if (!postData.authorId || postData.authorId.trim() === '') {
-                    throw new Error('authorId manquant ou vide');
-                }
-                if (fileInput.files[0]) {
-                    const file = fileInput.files[0];
-                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
-                    const uploadResult = await uploader.uploadImage(file, {
-                        maxWidth: 1200
-                    });
-                    postData.imageUrl = uploadResult.url;
-                    postData.imagePublicId = uploadResult.publicId;
-                    postData.imageWidth = uploadResult.width;
-                    postData.imageHeight = uploadResult.height;
-                    postData.imageSize = uploadResult.bytes;
-                }
-                publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-                try {
-                    const docRef = await addDoc(collection(db, 'posts'), postData);
-                    console.log('✅ Publication créée avec ID:', docRef.id);
-                } catch (firestoreError) {
-                    console.error('❌ Erreur Firestore détaillée:', firestoreError);
-                    throw new Error(`Erreur Firestore: ${firestoreError.message}`);
-                }
-                clearPostForm();
-            } catch (error) {
-                console.error('❌ Erreur lors de la publication:', error);
-                alert(`Erreur lors de la publication: ${error.message}`);
-            } finally {
-                resetPublishButton();
-            }
+function showOrderBox() {
+    let orderBox = document.getElementById('order-box');
+    if (orderBox) orderBox.style.display = 'block';
+}
+function hideOrderBox() {
+    let orderBox = document.getElementById('order-box');
+    if (orderBox) orderBox.style.display = 'none';
+}
+function clearOrder() {
+    currentCart = [];
+    cart = [];
+    updateOrderDisplay();
+    updateCart();
+    hideOrderBox();
+}
+
+// ============ COMMANDE - ENVOI ET AFFICHAGE ============
+
+// ENVOI RAPIDE DU MESSAGE DE COMMANDE
+function finalizeOrder() {
+    const cartToUse = currentCart.length > 0 ? currentCart : cart;
+    if (cartToUse.length === 0) {
+        alert('⚠️ Votre panier est vide !');
+        return;
+    }
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+    if (!profile.lastname || !profile.firstname || !profile.email) {
+        alert('⚠️ Veuillez d\'abord remplir votre profil !');
+        showProfileForm();
+        return;
+    }
+    const orderTotal = cartToUse.reduce((sum, item) => {
+        const qty = item.quantity || item.qty || 1;
+        return sum + (item.price * qty);
+    }, 0);
+    const order = {
+        id: Date.now(),
+        date: new Date().toLocaleString('fr-FR'),
+        items: cartToUse.map(item => ({
+            name: item.name,
+            price: item.price,
+            category: item.category,
+            quantity: item.quantity || item.qty || 1
+        })),
+        total: orderTotal,
+        customer: profile,
+        status: 'En attente'
+    };
+
+    // Ajout rapide à la liste locale
+    customerOrders.unshift(order);
+    localStorage.setItem('customerOrders', JSON.stringify(customerOrders));
+    updateCustomerOrdersDisplay();
+
+    // Message WhatsApp (affichage immédiat)
+    let message = `🍽️ *NOUVELLE COMMANDE LOKO EXPRESS*\n`;
+    message += `👤 *Client:* ${profile.firstname} ${profile.lastname}\n`;
+    message += `📧 *Contact:* ${profile.email}\n`;
+    message += `📅 *Date:* ${order.date}\n\n`;
+    message += `🛒 *Commande:*\n`;
+    order.items.forEach(item => {
+        message += `• ${item.name} x${item.quantity} = ${item.price * item.quantity} FCFA\n`;
+    });
+    message += `\n💰 *TOTAL: ${order.total} FCFA*\n\nMerci ! 😊`;
+
+    
+   
+
+    // Ajout Firebase (asynchrone, pas de blocage UI)
+    if (typeof window.submitOrder === 'function') {
+        window.submitOrder(order);
+    } else {
+        submitOrder(order);
+    }
+
+    clearOrder();
+}
+
+// Envoi de la commande vers Firebase
+function submitOrder(order) {
+    const orderRef = ref(db, 'orders');
+    const newOrderRef = push(orderRef);
+    order.timestamp = new Date().toISOString();
+    order.status = "nouveau";
+    set(newOrderRef, order)
+        .catch((error) => {
+            alert('Erreur: ' + error.message);
         });
+}
 
-        function resetPublishButton() {
-            const publishBtn = document.getElementById('publishBtn');
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'Publier';
+// ============ COMMANDES CLIENT ============
+
+function updateCustomerOrdersDisplay() {
+    let list = document.getElementById('customer-orders-list');
+    if (!list) return;
+    if (customerOrders.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:#888; font-style:italic;">Aucune commande pour le moment</p>';
+        return;
+    }
+    list.innerHTML = '';
+    customerOrders.forEach(order => {
+        let orderDiv = document.createElement('div');
+        orderDiv.className = 'customer-order-item';
+        let orderId = order.id ? order.id.toString().slice(-6) : 'N/A';
+        orderDiv.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <strong>Commande #${orderId}</strong>
+                <span style="color:#4CAF50; font-weight:bold;">${order.status || 'En attente'}</span>
+            </div>
+            <div style="font-size:12px; color:#666; margin-bottom:8px;">📅 ${order.date}</div>
+            <div style="margin-bottom:8px;">
+                ${order.items ? order.items.map(item => `• ${item.name} x${item.quantity || item.qty || 1}`).join('<br>') : ''}
+            </div>
+            <div style="font-weight:bold; color:#ff4e00; text-align:right;">Total: ${order.total} FCFA</div>
+        `;
+        list.appendChild(orderDiv);
+    });
+}
+
+// Vider la liste commandes client
+function clearCustomerOrders() {
+    if (confirm("Vider la liste de vos commandes récentes ?")) {
+        customerOrders = [];
+        localStorage.setItem('customerOrders', JSON.stringify(customerOrders));
+        updateCustomerOrdersDisplay();
+    }
+}
+
+// Afficher/masquer la box commandes client
+function toggleCustomerOrders() {
+    let box = document.getElementById('customer-orders-box');
+    if (box) {
+        if (box.classList.contains('show') || box.style.display === 'block') {
+            box.classList.remove('show');
+            box.style.display = 'none';
+        } else {
+            box.classList.add('show');
+            box.style.display = 'block';
+            updateCustomerOrdersDisplay();
         }
+    }
+}
 
-        document.getElementById('fileInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            const fileName = document.getElementById('fileName');
-            const preview = document.getElementById('mediaPreview');
-            if (file) {
-                fileName.textContent = file.name;
-                fileName.style.color = '#8e8e8e';
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                fileName.textContent = '';
-                preview.innerHTML = '';
-            }
+// ============ ÉVÉNEMENTS INIT ============
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Démarrage : profil
+    if (!userProfile) {
+        showProfileForm();
+    } else {
+        applyUserProfile();
+        fillOrderFormWithProfile();
+    }
+    // Bouton profil
+    let profileBtn = document.getElementById('profile-btn');
+    if (profileBtn) profileBtn.onclick = showProfileForm;
+    // Overlay click dehors
+    let profileOverlay = document.getElementById('profile-overlay');
+    if (profileOverlay) {
+        profileOverlay.addEventListener('click', function(e) {
+            if (e.target === this) hideProfileForm();
         });
+    }
+    // Formulaire profil
+    let profileForm = document.getElementById('profile-form');
+    if (profileForm) {
+        profileForm.addEventListener('submit', saveProfile);
+    }
+    // Changement photo/background
+    let photoInput = document.getElementById('profile-photo');
+    if (photoInput) photoInput.addEventListener('change', previewPhoto);
+    let bgInput = document.getElementById('profile-bg');
+    if (bgInput) bgInput.addEventListener('change', previewBg);
 
-        function clearPostForm() {
-            document.getElementById('postText').value = '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('fileName').textContent = '';
-            document.getElementById('mediaPreview').innerHTML = '';
-        }
-
-        window.openImageModal = function(imgUrl) {
-            const modal = document.getElementById('modalImageView');
-            const modalImg = document.getElementById('modalImageBig');
-            modal.style.display = 'flex';
-            modalImg.src = imgUrl;
-        };
-
-        window.closeImageModal = function() {
-            document.getElementById('modalImageView').style.display = 'none';
-        };
-
-        document.getElementById('modalImageView').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeImageModal();
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
-                document.getElementById('myPostsModal').style.display = 'none';
-            }
-        });
-
-        window.toggleLike = async function(postId) {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de like avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-            const btn = document.getElementById('like-btn-' + postId);
-            if (btn && btn.disabled) return;
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-            }
-            try {
-                const likeRef = doc(db, 'likes', `${postId}_${userData.id}`);
-                const likeQuery = query(
-                    collection(db, 'likes'), 
-                    where('postId', '==', postId), 
-                    where('userId', '==', userData.id)
-                );
-                const likeSnapshot = await getDocs(likeQuery);
-                if (!likeSnapshot.empty) {
-                    await deleteDoc(likeRef);
-                    console.log('👎 Like supprimé');
-                } else {
-                    const likeData = {
-                        postId: postId,
-                        userId: userData.id,
-                        username: userData.fullName,
-                        timestamp: serverTimestamp()
-                    };
-                    if (!likeData.userId || !likeData.postId) {
-                        throw new Error('Données de like invalides');
-                    }
-                    await setDoc(likeRef, likeData);
-                    console.log('👍 Like ajouté');
-                }
-                await updateLikesCount(postId);
-            } catch (error) {
-                console.error('❌ Erreur toggle like:', error);
-                alert('Erreur lors du like. Veuillez réessayer.');
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            }
-        };
-
-        async function updateLikesCount(postId) {
-            try {
-                const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
-                const likesSnapshot = await getDocs(likesQuery);
-                const postRef = doc(db, 'posts', postId);
-                await setDoc(postRef, { 
-                    likesCount: likesSnapshot.size 
-                }, { merge: true });
-            } catch (error) {
-                console.error('❌ Erreur mise à jour compteur likes:', error);
-            }
-        }
-
-        window.toggleComments = function(postId) {
-            const commentsSection = document.getElementById(`comments-${postId}`);
-            if (!commentsSection) {
-                console.error('❌ Section commentaires introuvable pour postId:', postId);
-                return;
-            }
-            const isVisible = commentsSection.style.display === 'block';
-            
-            if (isVisible) {
-                commentsSection.style.display = 'none';
-                console.log('🔒 Commentaires masqués pour:', postId);
-            } else {
-                commentsSection.style.display = 'block';
-                console.log('👁️ Commentaires affichés pour:', postId);
-                loadComments(postId);
-                setTimeout(() => {
-                    const input = document.getElementById(`comment-input-${postId}`);
-                    if (input) input.focus();
-                }, 100);
-            }
-        };
-
-        async function loadComments(postId) {
-            console.log('📝 Chargement commentaires pour postId:', postId);
-            const commentsContainer = document.getElementById(`comments-list-${postId}`);
-            if (!commentsContainer) {
-                console.error('❌ Container commentaires introuvable pour postId:', postId);
-                return;
-            }
-            
-            try {
-                commentsContainer.innerHTML = '<div style="text-align: center; color: #8e8e8e; padding: 10px;">Chargement des commentaires...</div>';
-                
-                const commentsQuery = query(
-                    collection(db, 'comments'), 
-                    where('postId', '==', postId),
-                    limit(50)
-                );
-                
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const comments = [];
-                
-                commentsSnapshot.forEach((doc) => {
-                    const commentData = doc.data();
-                    comments.push({ 
-                        id: doc.id, 
-                        ...commentData 
-                    });
-                });
-                
-                comments.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
-                    const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
-                    return timeA - timeB;
-                });
-                
-                console.log(`💬 ${comments.length} commentaires trouvés pour postId:`, postId);
-                renderComments(postId, comments);
-                
-            } catch (error) {
-                console.error('❌ Erreur chargement commentaires:', error);
-                commentsContainer.innerHTML = '<div style="color: #ed4956; text-align: center; padding: 10px;">Erreur lors du chargement des commentaires</div>';
-            }
-        }
-
-        function renderComments(postId, comments) {
-            const commentsContainer = document.getElementById(`comments-list-${postId}`);
-            if (!commentsContainer) {
-                console.error('❌ Container commentaires introuvable pour renderComments:', postId);
-                return;
-            }
-            
-            if (comments.length === 0) {
-                commentsContainer.innerHTML = '<div style="color: #8e8e8e; text-align: center; padding: 10px; font-size: 13px;">Aucun commentaire pour le moment</div>';
-                return;
-            }
-            
-            const commentsHTML = comments.map(comment => {
-                const timeAgo = getTimeAgo(comment.timestamp?.toDate?.() || comment.timestamp || new Date());
-                return `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <div class="comment-avatar">${escapeHtml(comment.avatar || 'U')}</div>
-                            <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
-                            <div class="comment-time">${timeAgo}</div>
-                        </div>
-                        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
-                    </div>
-                `;
-            }).join('');
-            
-            commentsContainer.innerHTML = commentsHTML;
-            console.log(`✅ ${comments.length} commentaires affichés pour postId:`, postId);
-        }
-
-        window.submitComment = async function(postId) {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de commentaire avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-            const input = document.getElementById(`comment-input-${postId}`);
-            if (!input) {
-                console.error('❌ Input commentaire introuvable pour postId:', postId);
-                return;
-            }
-            const commentText = input.value.trim();
-            if (!commentText) return;
-            if (commentText.length > 500) {
-                alert('Commentaire trop long (max 500 caractères)');
-                return;
-            }
-            input.disabled = true;
-            const originalPlaceholder = input.placeholder;
-            input.placeholder = 'Envoi en cours...';
-            try {
-                const commentData = {
-                    postId: postId,
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: commentText,
-                    timestamp: serverTimestamp()
-                };
-                if (!commentData.authorId || !commentData.postId) {
-                    throw new Error('Données de commentaire invalides');
-                }
-                await addDoc(collection(db, 'comments'), commentData);
-                console.log('💬 Commentaire ajouté pour postId:', postId);
-                await updateCommentsCount(postId);
-                input.value = '';
-                setTimeout(() => loadComments(postId), 500);
-            } catch (error) {
-                console.error('❌ Erreur ajout commentaire:', error);
-                alert(`Erreur lors de l'envoi du commentaire: ${error.message}`);
-            } finally {
-                input.disabled = false;
-                input.placeholder = originalPlaceholder;
-            }
-        };
-
-        async function updateCommentsCount(postId) {
-            try {
-                const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const postRef = doc(db, 'posts', postId);
-                await setDoc(postRef, { 
-                    commentsCount: commentsSnapshot.size 
-                }, { merge: true });
-            } catch (error) {
-                console.error('❌ Erreur mise à jour compteur commentaires:', error);
-            }
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.target.classList.contains('comment-input') && e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const postId = e.target.id.replace('comment-input-', '');
-                window.submitComment(postId);
+    // Bouton commandes client
+    let customerOrdersBtn = document.getElementById("show-customer-orders-btn");
+    if (customerOrdersBtn) {
+        customerOrdersBtn.onclick = toggleCustomerOrders;
+        document.addEventListener("click", function(e) {
+            let customerOrdersBox = document.getElementById('customer-orders-box');
+            if (
+                customerOrdersBox &&
+                customerOrdersBox.style.display === "block" &&
+                !customerOrdersBox.contains(e.target) &&
+                e.target !== customerOrdersBtn
+            ) {
+                customerOrdersBox.style.display = "none";
             }
         });
+    }
 
-        async function checkUserLikes(postIds) {
-            if (!validateUserData(userData)) {
-                return {};
-            }
-            try {
-                const userLikes = {};
-                for (const postId of postIds) {
-                    const likesQuery = query(
-                        collection(db, 'likes'), 
-                        where('postId', '==', postId),
-                        where('userId', '==', userData.id)
-                    );
-                    const likesSnapshot = await getDocs(likesQuery);
-                    userLikes[postId] = !likesSnapshot.empty;
-                }
-                return userLikes;
-            } catch (error) {
-                console.error('❌ Erreur vérification likes:', error);
-                return {};
-            }
+    // Boutons ajouter panier (interception pour demander qte)
+    document.querySelectorAll('.card button').forEach(btn => {
+        let oldClick = btn.getAttribute('onclick');
+        if (oldClick && oldClick.startsWith("addToCart")) {
+            let args = oldClick.substring(10, oldClick.length - 1);
+            btn.setAttribute('onclick', `promptAddToCart(${args})`);
         }
-
-        async function renderPosts() {
-            const feed = document.getElementById('feed');
-            if (posts.length === 0) {
-                feed.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aucune publication pour le moment</h3>
-                        <p>Soyez le premier à partager quelque chose !</p>
-                    </div>
-                `;
-                return;
-            }
-            const postIds = posts.map(p => p.id);
-            const userLikes = await checkUserLikes(postIds);
-            const fragment = document.createDocumentFragment();
-            posts.forEach(post => {
-                const likesCount = post.likesCount || 0;
-                const commentsCount = post.commentsCount || 0;
-                const isLiked = userLikes[post.id] || false;
-                const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
-                let imageHTML = '';
-                if (post.imageUrl) {
-                    let optimizedUrl = post.imageUrl;
-                    if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
-                        optimizedUrl = uploader.getOptimizedUrl(post.imagePublicId, {
-                            width: 800,
-                            crop: 'limit',
-                            quality: 'auto'
-                        });
-                    }
-                    imageHTML = `
-                        <div style="position: relative;">
-                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                                <img src="${optimizedUrl}" alt="Image publication" loading="lazy">
-                                ${post.imagePublicId ? '<div class="cloudinary-badge">⚡ Optimisé</div>' : ''}
-                            </a>
-                        </div>
-                    `;
-                }
-                const postElement = document.createElement('div');
-                postElement.className = 'publication';
-                postElement.setAttribute('data-post-id', post.id);
-                postElement.innerHTML = `
-                    <div class="pub-header">
-                        <div class="pub-avatar">${post.avatar || 'U'}</div>
-                        <div class="pub-info">
-                            <div class="pub-username">${escapeHtml(post.author || 'Utilisateur anonyme')}</div>
-                            <div class="pub-time">${timeAgo}</div>
-                        </div>
-                    </div>
-                    <div class="pub-text">${escapeHtml(post.text || '')}</div>
-                    ${imageHTML}
-                    <div class="pub-actions">
-                        <button class="action-btn ${isLiked ? 'liked' : ''}" 
-                                onclick="toggleLike('${post.id}')" 
-                                id="like-btn-${post.id}">
-                            ${isLiked ? '❤️' : '🤍'} ${likesCount}
-                        </button>
-                        <button class="action-btn" 
-                                onclick="toggleComments('${post.id}')">
-                            💬 ${commentsCount}
-                        </button>
-                    </div>
-                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                        <div id="comments-list-${post.id}"></div>
-                        <div class="comment-form">
-                            <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-                            <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-                        </div>
-                    </div>
-                `;
-                fragment.appendChild(postElement);
-            });
-            feed.innerHTML = '';
-            feed.appendChild(fragment);
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function getTimeAgo(timestamp) {
-            if (!timestamp) return 'Date inconnue';
-            const now = new Date();
-            const time = timestamp instanceof Date ? timestamp : new Date(timestamp);
-            const diffInSeconds = Math.floor((now - time) / 1000);
-            if (diffInSeconds < 60) return 'À l\'instant';
-            if (diffInSeconds < 3600) {
-                const minutes = Math.floor(diffInSeconds / 60);
-                return `${minutes}min`;
-            } else if (diffInSeconds < 86400) {
-                const hours = Math.floor(diffInSeconds / 3600);
-                return `${hours}h`;
-            } else if (diffInSeconds < 604800) {
-                const days = Math.floor(diffInSeconds / 86400);
-                return `${days}j`;
-            } else {
-                return time.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-            }
-        }
-
-        document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-            showMyPostsModal();
+    });
+    // Formulaire commande
+    let orderForm = document.getElementById('order-form');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            finalizeOrder();
         });
+    }
 
-        document.getElementById('closeMyPostsModal').onclick = function() {
-            document.getElementById('myPostsModal').style.display = 'none';
-        };
+    // Init affichages
+    updateCart();
+    updateOrderDisplay();
+    updateCustomerOrdersDisplay();
 
-        document.getElementById('myPostsModal').onclick = function(e) {
-            if (e.target === this) this.style.display = 'none';
-        };
+    // Rechargement commandes
+    customerOrders = JSON.parse(localStorage.getItem('customerOrders') || '[]');
+    orderCountByCategory = JSON.parse(localStorage.getItem('orderCountByCategory') || '{}');
+});
 
-        async function showMyPostsModal() {
-            console.log('🔰 showMyPostsModal appelée');
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative d\'affichage des posts avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                showAccessDenied();
-                return;
-            }
-            
-            const modal = document.getElementById('myPostsModal');
-            const listEl = document.getElementById('myPostsList');
-            
-            modal.style.display = 'flex';
-            listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #8e8e8e;"><div class="loading-spinner"></div> Chargement...</div>';
-            
-            try {
-                console.log('🔍 Recherche des publications pour userId:', userData.id);
-                
-                const myPostsQuery = query(
-                    collection(db, 'posts'), 
-                    where('authorId', '==', userData.id),
-                    limit(100)
-                );
-                
-                const myPostsSnapshot = await getDocs(myPostsQuery);
-                const myPosts = [];
-                
-                myPostsSnapshot.forEach((doc) => {
-                    const postData = doc.data();
-                    myPosts.push({ 
-                        id: doc.id, 
-                        ...postData 
-                    });
-                });
-                
-                myPosts.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
-                    const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
-                    return timeB - timeA;
-                });
-                
-                console.log(`📊 ${myPosts.length} publications trouvées pour l'utilisateur:`, userData.fullName);
-                
-                if (myPosts.length === 0) {
-                    listEl.innerHTML = `
-                        <div class="empty-state">
-                            <h3>Aucune publication trouvée</h3>
-                            <p>Vous n'avez pas encore publié de contenu.</p>
-                            <p style="font-size: 12px; margin-top: 8px; color: #8e8e8e;">Commencez par publier quelque chose !</p>
-                        </div>
-                    `;
-                } else {
-                    const fragment = document.createDocumentFragment();
-                    
-                    myPosts.forEach(post => {
-                        const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp || new Date());
-                        let thumbnailHTML = '';
-                        
-                        if (post.imageUrl) {
-                            let thumbUrl = post.imageUrl;
-                            if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
-                                thumbUrl = uploader.getOptimizedUrl(post.imagePublicId, {
-                                    width: 60,
-                                    height: 60,
-                                    crop: 'fill',
-                                    quality: 'auto'
-                                });
-                            }
-                            thumbnailHTML = `
-                                <div class="my-post-thumbnail">
-                                    <img src="${thumbUrl}" alt="Aperçu">
-                                </div>
-                            `;
-                        }
-                        
-                        const postElement = document.createElement('div');
-                        postElement.className = 'my-post-item';
-                        postElement.innerHTML = `
-                            ${thumbnailHTML}
-                            <div class="my-post-content">
-                                <div class="my-post-text">${escapeHtml(post.text || 'Publication sans texte')}</div>
-                                <div class="my-post-time">${timeAgo} • ${post.likesCount || 0} likes • ${post.commentsCount || 0} commentaires</div>
-                            </div>
-                            <button class="my-post-delete" onclick="deleteMyPost('${post.id}', this)">Supprimer</button>
-                        `;
-                        fragment.appendChild(postElement);
-                    });
-                    
-                    listEl.innerHTML = '';
-                    listEl.appendChild(fragment);
-                    console.log('✅ Publications affichées dans la modal');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erreur détaillée lors du chargement de mes publications:', error);
-                listEl.innerHTML = `
-                    <div style="color:#ed4956; padding:20px; text-align:center;">
-                        <h4>Erreur lors du chargement</h4>
-                        <p>Impossible de charger vos publications.</p>
-                        <p style="font-size: 12px; margin-top: 8px; color: #8e8e8e;">Détail: ${error.message}</p>
-                        <button onclick="showMyPostsModal()" style="margin-top: 10px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
-                    </div>
-                `;
-            }
-        }
 
-        window.deleteMyPost = async function(postId, btn) {
-            console.log('🗑️ Demande de suppression de la publication:', postId);
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de suppression avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-            
-            if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) {
-                console.log('❌ Suppression annulée par l\'utilisateur');
-                return;
-            }
-            
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Suppression...';
-                btn.style.opacity = '0.6';
-            }
-            
-            try {
-                const postRef = doc(db, 'posts', postId);
-                
-                const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
-                const likesSnapshot = await getDocs(likesQuery);
-                const deleteLikesPromises = [];
-                likesSnapshot.forEach((doc) => {
-                    deleteLikesPromises.push(deleteDoc(doc.ref));
-                });
-                
-                const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const deleteCommentsPromises = [];
-                commentsSnapshot.forEach((doc) => {
-                    deleteCommentsPromises.push(deleteDoc(doc.ref));
-                });
-                
-                await Promise.all([...deleteLikesPromises, ...deleteCommentsPromises]);
-                
-                await deleteDoc(postRef);
-                
-                console.log('✅ Publication supprimée avec succès:', postId);
-                
-                setTimeout(() => showMyPostsModal(), 500);
-                
-            } catch (error) {
-                console.error('❌ Erreur suppression publication:', error);
-                alert(`Erreur lors de la suppression: ${error.message}`);
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'Supprimer';
-                    btn.style.opacity = '1';
-                }
-            }
-        };
+function closeProfile() {
+    hideProfileForm();
+}
+window.closeProfile = closeProfile;
 
-        // Gestion des événements en ligne/hors ligne
-        window.addEventListener('online', () => {
-            console.log('🌍 Passage en ligne');
-            isOnline = true;
-            updateConnectionStatus();
-        });
-
-        window.addEventListener('offline', () => {
-            console.log('📡 Passage hors-ligne');
-            isOnline = false;
-            updateConnectionStatus();
-        });
-
-        // Fonction utilitaire pour déboguer
-        window.debugApp = function() {
-            console.log('🔧 État de l\'application:', {
-                userData: userData,
-                isAppInitialized: isAppInitialized,
-                isOnline: isOnline,
-                postsCount: posts.length
-            });
-        };
-
-        console.log('✅ Script principal Express Exchange chargé avec auto-connexion');
-    </script>
-</body>
-</html>
+window.closeProfile = hideProfileForm;
+// ============ FONCTIONS GLOBALES POUR HTML ============
+window.showProfileForm = showProfileForm;
+window.hideProfileForm = hideProfileForm;
+window.showTab = showTab;
+window.previewPhoto = previewPhoto;
+window.previewBg = previewBg;
+window.applyUserProfile = applyUserProfile;
+window.fillOrderFormWithProfile = fillOrderFormWithProfile;
+window.promptAddToCart = promptAddToCart;
+window.addToCart = addToCart;
+window.updateCart = updateCart;
+window.updateOrderDisplay = updateOrderDisplay;
+window.removeFromCart = removeFromCart;
+window.changeQuantity = changeQuantity;
+window.showOrderBox = showOrderBox;
+window.hideOrderBox = hideOrderBox;
+window.clearOrder = clearOrder;
+window.finalizeOrder = finalizeOrder;
+window.updateCustomerOrdersDisplay = updateCustomerOrdersDisplay;
+window.clearCustomerOrders = clearCustomerOrders;
+window.toggleCustomerOrders = toggleCustomerOrders;
+window.submitOrder = submitOrder;
+window.userProfile = userProfile;
+window.cart = cart;
+window.total = total;
+window.customerOrders = customerOrders;
+window.orderCountByCategory = orderCountByCategory;
+window.currentCart = currentCart;
+</script>
+<style>
+    .profile-form-box {
+    max-height: 88vh;
+    overflow-y: auto;
+}
+.form-group {
+    margin-bottom: 10px;
+}
+.form-group label {
+    margin-bottom: 3px;
+    font-size: 15px;
+}
+.form-group input, .form-group select {
+    padding: 8px;
+    font-size: 14px;
+    min-height: 36px;
+}
+@media screen and (max-width: 500px) {
+    .profile-form-box {
+        padding: 10px 4px;
+        min-width: unset;
+        width: 98vw;
+        max-width: 99vw;
+        max-height: 98vh;
+    }
+    .form-group label { font-size: 13px; }
+    .form-group input, .form-group select { font-size: 13px; padding: 7px; }
+    .btn-submit { font-size: 14px; padding: 10px 0; }
+}
+</style>
