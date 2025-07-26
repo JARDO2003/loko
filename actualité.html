@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,55 +15,55 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: #000000;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
             color: #ffffff;
-            line-height: 1.5;
         }
 
-        /* Loading Overlay */
-        .loading-overlay {
+        #particles {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            backdrop-filter: blur(5px);
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .loading-spinner-large {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #333333;
-            border-top: 3px solid #ffffff;
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            animation: float 8s infinite linear;
         }
 
-        .loading-text {
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 400;
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Registration Modal */
         #registrationOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -71,104 +72,121 @@
 
         .registration-modal {
             background: #1a1a1a;
+            border: 1px solid #333333;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            max-width: 350px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 400px;
             width: 90%;
             text-align: center;
-            border: 1px solid #333333;
+            animation: slideIn 0.5s ease-out;
         }
 
-        .logo {
-            font-size: 36px;
-            font-weight: 400;
-            margin-bottom: 30px;
-            font-family: 'Brush Script MT', cursive;
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .registration-modal h2 {
             color: #ffffff;
+            margin-bottom: 30px;
+            font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ffffff;
+            font-size: 14px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 16px;
             border: 1px solid #333333;
-            border-radius: 3px;
-            font-size: 14px;
-            background: #2a2a2a;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #262626;
             color: #ffffff;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.3s ease;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #ffffff;
-            background: #333333;
+            border-color: #0095f6;
+            background: #1a1a1a;
         }
 
         .form-group input::placeholder {
-            color: #888888;
+            color: #8e8e8e;
         }
 
         .submit-btn {
             background: #0095f6;
             color: white;
-            padding: 8px 16px;
+            padding: 14px 32px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s ease;
             width: 100%;
-            height: 44px;
-            transition: background-color 0.2s ease;
         }
 
-        .submit-btn:hover:not(:disabled) {
+        .submit-btn:hover {
             background: #1877f2;
         }
 
         .submit-btn:disabled {
-            background: #b2dffc;
-            opacity: 0.3;
+            background: #1a73e8;
+            opacity: 0.7;
             cursor: not-allowed;
         }
 
-        /* Header */
-        .header {
-            background: #1a1a1a;
-            border-bottom: 1px solid #333333;
+        #mainApp {
+            display: none;
+            position: relative;
+            z-index: 10;
             padding: 0;
+            max-width: 614px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #000000;
+            border-bottom: 1px solid #262626;
+            padding: 16px 20px;
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-
-        .header-content {
-            max-width: 975px;
-            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
+            flex-wrap: wrap;
         }
 
-        .header-logo {
-            font-size: 28px;
-            font-weight: 400;
-            font-family: 'Brush Script MT', cursive;
+        .welcome-text {
+            font-size: 24px;
+            font-weight: 700;
             color: #ffffff;
-            text-decoration: none;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .status-indicator {
@@ -176,128 +194,99 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
+            border: 1px solid;
         }
 
         .status-connected {
-            background: #1a4d3a;
-            color: #4ade80;
+            background: rgba(0, 149, 246, 0.1);
+            color: #0095f6;
+            border-color: #0095f6;
         }
 
         .status-disconnected {
-            background: #4d1a1a;
-            color: #f87171;
+            background: rgba(237, 73, 86, 0.1);
+            color: #ed4956;
+            border-color: #ed4956;
         }
 
-        .user-avatar, .my-posts-btn {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* Main Container */
-        #mainApp {
-            display: none;
-            max-width: 614px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Publisher */
         .publisher {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            border-radius: 8px;
-            margin: 20px 0;
-            padding: 16px;
-        }
-
-        .publisher-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .publisher-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            margin-right: 12px;
+            background: #000000;
+            border-bottom: 1px solid #262626;
+            padding: 16px 20px;
         }
 
         .publisher textarea {
             width: 100%;
-            min-height: 60px;
-            padding: 0;
-            border: none;
-            font-size: 14px;
+            min-height: 120px;
+            padding: 16px;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            font-size: 16px;
             font-family: inherit;
-            resize: none;
-            background: transparent;
-            outline: none;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            background: #000000;
             color: #ffffff;
+        }
+
+        .publisher textarea:focus {
+            outline: none;
+            border-color: #0095f6;
         }
 
         .publisher textarea::placeholder {
-            color: #888888;
+            color: #8e8e8e;
         }
 
-        .publisher-actions {
+        .file-input-container {
+            margin: 15px 0;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #333333;
+            gap: 15px;
         }
 
-        .media-buttons {
-            display: flex;
-            gap: 16px;
-        }
-
-        .media-btn {
-            background: none;
-            border: none;
+        .file-input-label {
+            background: transparent;
+            color: #0095f6;
+            padding: 8px 16px;
+            border: 1px solid #262626;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 20px;
-            color: #888888;
-            transition: color 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-block;
+            transition: all 0.2s ease;
         }
 
-        .media-btn:hover {
-            color: #ffffff;
+        .file-input-label:hover {
+            background: rgba(0, 149, 246, 0.1);
         }
 
         .file-input {
             display: none;
         }
 
+        .media-preview {
+            margin: 15px 0;
+        }
+
+        .publish-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
         .publish-btn {
             background: #0095f6;
             color: white;
-            padding: 8px 16px;
+            padding: 8px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .publish-btn:hover:not(:disabled) {
@@ -305,247 +294,236 @@
         }
 
         .publish-btn:disabled {
-            background: #b2dffc;
-            opacity: 0.3;
+            opacity: 0.6;
             cursor: not-allowed;
         }
 
-        .media-preview {
-            margin: 16px 0;
+        .my-posts-btn {
+            background: transparent;
+            color: #ffffff;
+            padding: 8px 16px;
+            border: 1px solid #262626;
             border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .media-preview img,
-        .media-preview video {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .remove-media-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .my-posts-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .feed {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .publication {
+            background: #000000;
+            border-bottom: 1px solid #262626;
+            padding: 16px 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .publication:hover {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .pub-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 16px;
+            margin-bottom: 12px;
+            padding: 0 16px;
         }
 
-        /* Posts */
-        .post {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .post-avatar {
+        .pub-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 14px;
             margin-right: 12px;
         }
 
-        .post-user-info {
+        .pub-info {
             flex: 1;
         }
 
-        .post-username {
+        .pub-username {
             font-weight: 600;
-            font-size: 14px;
             color: #ffffff;
+            font-size: 14px;
         }
 
-        .post-time {
+        .pub-time {
+            color: #8e8e8e;
             font-size: 12px;
-            color: #888888;
             margin-top: 2px;
         }
 
-        .post-menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
+        .pub-text {
+            margin-bottom: 12px;
             color: #ffffff;
+            line-height: 1.5;
+            font-size: 14px;
+            padding: 0 16px;
         }
 
-        .post-media {
+        .image-link {
+            display: block;
+            margin-bottom: 12px;
             position: relative;
+        }
+
+        .image-link img {
             width: 100%;
             max-height: 600px;
-            overflow: hidden;
-        }
-
-        .post-media img,
-        .post-media video {
-            width: 100%;
-            height: auto;
-            display: block;
+            object-fit: cover;
             cursor: pointer;
+            transition: opacity 0.2s ease;
         }
 
-        .post-content {
-            padding: 16px;
+        .image-link img:hover {
+            opacity: 0.9;
         }
 
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .post-actions-left {
+        .pub-actions {
             display: flex;
             gap: 16px;
+            padding: 8px 16px;
+            align-items: center;
         }
 
         .action-btn {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             color: #ffffff;
-            transition: transform 0.1s ease;
             padding: 8px;
         }
 
-        .action-btn:hover {
-            transform: scale(1.1);
+        .action-btn:hover:not(:disabled) {
+            color: #8e8e8e;
         }
 
         .action-btn.liked {
             color: #ed4956;
         }
 
-        .post-likes {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #ffffff;
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .post-caption {
-            font-size: 14px;
-            line-height: 1.4;
-            color: #ffffff;
-        }
-
-        .post-caption-username {
-            font-weight: 600;
-            margin-right: 8px;
-        }
-
-        .view-comments {
-            color: #888888;
-            font-size: 14px;
-            cursor: pointer;
-            margin: 8px 0;
-            border: none;
-            background: none;
-            padding: 0;
-        }
-
-        .view-comments:hover {
-            text-decoration: underline;
-        }
-
-        /* Comments */
         .comments-section {
-            border-top: 1px solid #333333;
-            padding-top: 16px;
+            margin-top: 8px;
+            padding: 0 16px;
+            border-top: 1px solid #262626;
+            padding-top: 12px;
         }
 
         .comment {
-            margin-bottom: 12px;
+            background: transparent;
+            padding: 8px 0;
+            margin-bottom: 8px;
         }
 
-        .comment-text {
-            font-size: 14px;
-            line-height: 1.4;
-            color: #ffffff;
+        .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .comment-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            margin-right: 8px;
         }
 
         .comment-username {
             font-weight: 600;
-            margin-right: 8px;
+            color: #ffffff;
+            font-size: 13px;
         }
 
         .comment-time {
-            font-size: 12px;
-            color: #888888;
-            margin-top: 4px;
+            color: #8e8e8e;
+            font-size: 11px;
+            margin-left: auto;
+        }
+
+        .comment-text {
+            color: #ffffff;
+            line-height: 1.4;
+            font-size: 13px;
+            margin-left: 32px;
         }
 
         .comment-form {
             display: flex;
-            align-items: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #333333;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #262626;
         }
 
         .comment-input {
             flex: 1;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            padding: 0;
-            background: transparent;
+            padding: 8px 12px;
+            border: 1px solid #262626;
+            border-radius: 20px;
+            font-size: 13px;
+            background: #000000;
             color: #ffffff;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #0095f6;
         }
 
         .comment-input::placeholder {
-            color: #888888;
+            color: #8e8e8e;
         }
 
-        .comment-submit {
-            background: none;
-            border: none;
+        .comment-btn {
+            background: transparent;
             color: #0095f6;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: 600;
-            font-size: 14px;
             cursor: pointer;
-            padding: 0;
-            margin-left: 8px;
+            transition: all 0.2s ease;
         }
 
-        .comment-submit:hover {
-            color: #1877f2;
+        .comment-btn:hover {
+            background: rgba(0, 149, 246, 0.1);
         }
 
-        .comment-submit:disabled {
-            color: #b2dffc;
-            cursor: not-allowed;
-        }
-
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -559,390 +537,306 @@
             align-items: center;
         }
 
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
         .modal-content {
-            max-width: 90vw;
-            max-height: 90vh;
-            border-radius: 8px;
-            overflow: hidden;
+            background: #1a1a1a;
+            border: 1px solid #262626;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             position: relative;
+            color: #ffffff;
         }
 
-        .modal-content img,
-        .modal-content video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .modal-close {
+        .close-modal {
             position: absolute;
-            top: 16px;
+            top: 12px;
             right: 16px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
+            background: none;
             border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            font-size: 24px;
             cursor: pointer;
+            color: #8e8e8e;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
         }
 
-        /* My Posts Modal */
-        .my-posts-modal {
-            background: #1a1a1a;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #333333;
-        }
-
-        .my-posts-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid #333333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .my-posts-title {
-            font-weight: 600;
-            font-size: 16px;
+        .close-modal:hover {
             color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .my-posts-content {
-            padding: 20px;
-            overflow-y: auto;
-            background: #1a1a1a;
-        }
-
-        .my-post-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #333333;
-        }
-
-        .my-post-media {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-right: 12px;
-            flex-shrink: 0;
-            background: #2a2a2a;
-        }
-
-        .my-post-media img,
-        .my-post-media video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .my-post-info {
-            flex: 1;
-        }
-
-        .my-post-text {
-            font-size: 14px;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
-
-        .my-post-stats {
-            font-size: 12px;
-            color: #888888;
-        }
-
-        .delete-post-btn {
-            background: #ed4956;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .delete-post-btn:hover {
-            background: #c73e47;
-        }
-
-        .delete-post-btn:disabled {
-            background: #f5a3aa;
-            cursor: not-allowed;
-        }
-
-        /* Loading states */
         .loading-spinner {
+            border: 2px solid #262626;
+            border-top: 2px solid #0095f6;
+            border-radius: 50%;
             width: 16px;
             height: 16px;
-            border: 2px solid #333333;
-            border-top: 2px solid #ffffff;
-            border-radius: 50%;
             animation: spin 1s linear infinite;
             display: inline-block;
             margin-right: 8px;
         }
 
-        .skeleton {
-            background: linear-gradient(90deg, #2a2a2a 25%, #333333 50%, #2a2a2a 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .cloudinary-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 149, 246, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
         }
 
-        .skeleton-post {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .skeleton-header {
+        /* Styles pour mes publications */
+        .my-post-item {
+            border-bottom: 1px solid #262626;
+            padding: 12px 0;
             display: flex;
+            gap: 12px;
             align-items: center;
-            padding: 16px;
         }
 
-        .skeleton-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-right: 12px;
+        .my-post-item:last-child {
+            border-bottom: none;
         }
 
-        .skeleton-info {
+        .my-post-thumbnail {
+            flex: 0 0 60px;
+        }
+
+        .my-post-thumbnail img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .my-post-content {
             flex: 1;
         }
 
-        .skeleton-username {
-            height: 14px;
-            width: 120px;
-            border-radius: 4px;
+        .my-post-text {
+            font-weight: 500;
+            color: #ffffff;
+            font-size: 14px;
             margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .skeleton-time {
-            height: 12px;
-            width: 60px;
-            border-radius: 4px;
+        .my-post-time {
+            font-size: 12px;
+            color: #8e8e8e;
         }
 
-        .skeleton-media {
-            height: 400px;
-            width: 100%;
+        .my-post-delete {
+            background: #ed4956;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .skeleton-content {
-            padding: 16px;
+        .my-post-delete:hover {
+            background: #c13584;
         }
 
-        .skeleton-actions {
-            height: 24px;
-            width: 150px;
-            border-radius: 4px;
-            margin-bottom: 12px;
+        .my-post-delete:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .skeleton-likes {
-            height: 14px;
-            width: 80px;
-            border-radius: 4px;
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8e8e8e;
+        }
+
+        .empty-state h3 {
+            color: #ffffff;
             margin-bottom: 8px;
+            font-weight: 600;
         }
 
-        .skeleton-caption {
-            height: 14px;
-            width: 100%;
-            border-radius: 4px;
-            margin-bottom: 4px;
-        }
-
-        .skeleton-caption-short {
-            height: 14px;
-            width: 60%;
-            border-radius: 4px;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             #mainApp {
                 padding: 0;
             }
 
-            .header-content {
-                padding: 16px;
+            .header {
+                padding: 12px 16px;
             }
 
-            .publisher,
-            .post {
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
+            .welcome-text {
+                font-size: 20px;
             }
 
             .publisher {
-                margin: 0 0 1px 0;
+                padding: 16px;
             }
 
-            .post {
-                margin-bottom: 1px;
+            .publication {
+                margin-bottom: 0;
+            }
+
+            .pub-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .comment-avatar {
+                width: 20px;
+                height: 20px;
+                font-size: 9px;
             }
 
             .modal-content {
-                max-width: 100vw;
-                max-height: 100vh;
-                border-radius: 0;
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .my-post-thumbnail {
+                flex: 0 0 50px;
+            }
+
+            .my-post-thumbnail img {
+                width: 50px;
+                height: 50px;
             }
         }
 
-        /* Upload progress */
-        .upload-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: #0095f6;
-            transition: width 0.3s ease;
-            border-radius: 0 0 8px 8px;
+        /* Scrollbar dark */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        /* Video controls */
-        .video-controls {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s ease;
+        ::-webkit-scrollbar-track {
+            background: #000000;
         }
 
-        .post-media:hover .video-controls {
-            opacity: 1;
-        }
-
-        .video-duration {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 4px 8px;
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
             border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #404040;
+        }
+
+        /* Animations supplémentaires */
+        .publication {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* États de focus améliorés */
+        .form-group input:focus,
+        .publisher textarea:focus,
+        .comment-input:focus {
+            box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
         }
     </style>
+</style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner-large"></div>
-        <div class="loading-text">Chargement d'Express Exchange...</div>
-    </div>
+    <div id="particles"></div>
 
-    <!-- Registration Modal -->
-    <div id="registrationOverlay" style="display: none;">
+    <div id="registrationOverlay">
         <div class="registration-modal">
-            <div class="logo">Express Exchange</div>
+            <h2>Rejoignez Express Exchange</h2>
             <form id="registrationForm">
                 <div class="form-group">
-                    <input type="text" id="nom" placeholder="Nom" required>
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="prenom" placeholder="Prénom" required>
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="contact" placeholder="Contact" required>
+                    <label for="contact">Contact</label>
+                    <input type="text" id="contact" required>
                 </div>
                 <button type="submit" class="submit-btn">S'inscrire</button>
             </form>
         </div>
     </div>
 
-    <!-- Main App -->
     <div id="mainApp">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="header-logo">Express Exchange</div>
-                <div class="header-actions">
-                    <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
-                    <button class="my-posts-btn" id="showMyPostsBtn" title="Mes publications">👤</button>
-                    <div class="user-avatar" id="userAvatar">U</div>
-                </div>
-            </div>
-        </header>
+        <div class="header">
+            <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
+            <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
+        </div>
 
-        <!-- Publisher -->
         <div class="publisher">
-            <div class="publisher-header">
-                <div class="publisher-avatar" id="publisherAvatar">U</div>
-                <textarea id="postText" placeholder="Que voulez-vous partager ?"></textarea>
+            <textarea id="postText" placeholder="Partagez quelque chose..."></textarea>
+            <div class="file-input-container">
+                <label for="fileInput" class="file-input-label">📷 Ajouter une image</label>
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+                <span id="fileName"></span>
             </div>
             <div id="mediaPreview" class="media-preview"></div>
-            <div class="publisher-actions">
-                <div class="media-buttons">
-                    <label for="imageInput" class="media-btn" title="Ajouter une photo">📷</label>
-                    <label for="videoInput" class="media-btn" title="Ajouter une vidéo">🎥</label>
-                    <input type="file" id="imageInput" class="file-input" accept="image/*">
-                    <input type="file" id="videoInput" class="file-input" accept="video/*">
-                </div>
+            <div class="publish-controls">
+                <button id="showMyPostsBtn" class="my-posts-btn">Mes publications</button>
                 <button id="publishBtn" class="publish-btn">Publier</button>
             </div>
         </div>
 
-        <!-- Feed -->
-        <div id="feed"></div>
+        <div id="feed" class="feed"></div>
     </div>
 
-    <!-- Modal for media view -->
-    <div id="mediaModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeMediaModal()">&times;</button>
-            <div id="modalMediaContent"></div>
-        </div>
+    <div id="modalImageView" class="modal">
+        <img id="modalImageBig" alt="Image agrandie">
     </div>
 
-    <!-- My Posts Modal -->
     <div id="myPostsModal" class="modal">
-        <div class="my-posts-modal">
-            <div class="my-posts-header">
-                <div class="my-posts-title">Mes Publications</div>
-                <button class="modal-close" id="closeMyPostsModal">&times;</button>
-            </div>
-            <div class="my-posts-content" id="myPostsContent"></div>
+        <div class="modal-content">
+            <button class="close-modal" id="closeMyPostsModal">&times;</button>
+            <h3 style="margin-bottom: 20px;">Mes Publications</h3>
+            <div id="myPostsList"></div>
         </div>
     </div>
 
     <script type="module">
+        console.log('🔰 Début du script principal Express Exchange');
+
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
             getFirestore, 
@@ -957,8 +851,7 @@
             onSnapshot, 
             deleteDoc,
             serverTimestamp,
-            where,
-            startAfter
+            where
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
         // Configuration Firebase
@@ -973,11 +866,10 @@
             measurementId: "G-FYQCWY5G4S"
         };
 
-        // Configuration Cloudinary CORRIGÉE
+        // Configuration Cloudinary
         const cloudinaryConfig = {
             cloudName: 'djxcqczh1',
-            uploadPreset: 'ml_default', // Utilisation du preset par défaut
-            apiKey: '325471669629825' // Ajout de l'API key
+            uploadPreset: 'database'
         };
 
         // Initialisation Firebase
@@ -988,78 +880,74 @@
         let posts = [];
         let unsubscribePosts = null;
         let isOnline = navigator.onLine;
-        let lastVisible = null;
-        let isLoadingMore = false;
+        let isAppInitialized = false;
 
-        // Cloudinary Uploader CORRIGÉ
+        // Classe upload Cloudinary
         class CloudinaryUploader {
             constructor(config) {
                 this.cloudName = config.cloudName;
                 this.uploadPreset = config.uploadPreset;
-                this.apiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/auto/upload`;
+                this.apiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
             }
 
-            async uploadMedia(file, onProgress = null) {
+            async uploadImage(file, options = {}) {
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', this.uploadPreset);
-                
-                // Configuration simplifiée pour éviter les erreurs
-                if (file.type.startsWith('video/')) {
-                    formData.append('resource_type', 'video');
-                } else {
-                    formData.append('resource_type', 'image');
+                formData.append('quality', 'auto');
+                formData.append('fetch_format', 'auto');
+                if (options.maxWidth) {
+                    formData.append('width', options.maxWidth);
+                    formData.append('crop', 'scale');
                 }
+                try {
+                    const response = await fetch(this.apiUrl, { method: 'POST', body: formData });
+                    if (!response.ok) throw new Error(`Erreur upload: ${response.statusText}`);
+                    const result = await response.json();
+                    return {
+                        url: result.secure_url,
+                        publicId: result.public_id,
+                        width: result.width,
+                        height: result.height,
+                        format: result.format,
+                        bytes: result.bytes
+                    };
+                } catch (error) {
+                    console.error('Erreur upload Cloudinary:', error);
+                    throw error;
+                }
+            }
 
-                return new Promise((resolve, reject) => {
-                    const xhr = new XMLHttpRequest();
-                    
-                    xhr.upload.addEventListener('progress', (e) => {
-                        if (e.lengthComputable && onProgress) {
-                            const percentComplete = (e.loaded / e.total) * 100;
-                            onProgress(percentComplete);
-                        }
-                    });
-
-                    xhr.addEventListener('load', () => {
-                        if (xhr.status === 200) {
-                            try {
-                                const result = JSON.parse(xhr.responseText);
-                                resolve({
-                                    url: result.secure_url,
-                                    publicId: result.public_id,
-                                    width: result.width || 0,
-                                    height: result.height || 0,
-                                    format: result.format,
-                                    bytes: result.bytes || 0,
-                                    duration: result.duration || null,
-                                    resourceType: result.resource_type
-                                });
-                            } catch (error) {
-                                reject(new Error('Erreur parsing réponse'));
-                            }
-                        } else {
-                            reject(new Error(`Erreur upload: ${xhr.statusText}`));
-                        }
-                    });
-
-                    xhr.addEventListener('error', () => {
-                        reject(new Error('Erreur réseau lors de l\'upload'));
-                    });
-
-                    xhr.open('POST', this.apiUrl);
-                    xhr.send(formData);
-                });
+            getOptimizedUrl(publicId, options = {}) {
+                const baseUrl = `https://res.cloudinary.com/${this.cloudName}/image/upload/`;
+                let transformations = [];
+                if (options.width) transformations.push(`w_${options.width}`);
+                if (options.height) transformations.push(`h_${options.height}`);
+                if (options.crop) transformations.push(`c_${options.crop}`);
+                if (options.quality) transformations.push(`q_${options.quality}`);
+                transformations.push('f_auto', 'q_auto');
+                const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
+                return `${baseUrl}${transformString}${publicId}`;
             }
         }
 
         const uploader = new CloudinaryUploader(cloudinaryConfig);
 
-        // Utility functions
         function validateUserData(userData) {
-            if (!userData) return false;
+            console.log('🔍 Validation userData:', userData);
+            if (!userData) {
+                console.error('❌ userData est null ou undefined');
+                return false;
+            }
             const requiredFields = ['id', 'fullName', 'avatar'];
-            return requiredFields.every(field => userData[field] && userData[field].toString().trim() !== '');
+            for (const field of requiredFields) {
+                if (!userData[field] || userData[field].toString().trim() === '') {
+                    console.error(`❌ Champ manquant ou vide: ${field}`, userData[field]);
+                    return false;
+                }
+            }
+            console.log('✅ userData valide');
+            return true;
         }
 
         function getUserData() {
@@ -1067,184 +955,176 @@
                 const sessionData = sessionStorage.getItem('expressExchangeUser');
                 const localData = localStorage.getItem('expressExchangeUser');
                 const dataToUse = sessionData || localData;
-                
-                if (!dataToUse) return null;
-                
+                if (!dataToUse) {
+                    console.warn('⚠️ Aucune donnée utilisateur trouvée');
+                    return null;
+                }
                 const parsedData = JSON.parse(dataToUse);
-                return validateUserData(parsedData) ? parsedData : null;
+                if (!validateUserData(parsedData)) {
+                    console.error('❌ Données utilisateur invalides, suppression...');
+                    sessionStorage.removeItem('expressExchangeUser');
+                    localStorage.removeItem('expressExchangeUser');
+                    return null;
+                }
+                return parsedData;
             } catch (error) {
-                console.error('Erreur parsing données utilisateur:', error);
+                console.error('❌ Erreur parsing données utilisateur:', error);
                 sessionStorage.removeItem('expressExchangeUser');
                 localStorage.removeItem('expressExchangeUser');
                 return null;
             }
         }
 
-        function showLoading(text = 'Chargement...') {
-            const overlay = document.getElementById('loadingOverlay');
-            const textEl = overlay.querySelector('.loading-text');
-            textEl.textContent = text;
-            overlay.style.display = 'flex';
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function getTimeAgo(timestamp) {
-            if (!timestamp) return 'Date inconnue';
-            
-            const now = new Date();
-            const time = timestamp instanceof Date ? timestamp : new Date(timestamp);
-            const diffInSeconds = Math.floor((now - time) / 1000);
-            
-            if (diffInSeconds < 60) return 'À l\'instant';
-            if (diffInSeconds < 3600) {
-                const minutes = Math.floor(diffInSeconds / 60);
-                return `${minutes}min`;
-            } else if (diffInSeconds < 86400) {
-                const hours = Math.floor(diffInSeconds / 3600);
-                return `${hours}h`;
-            } else if (diffInSeconds < 604800) {
-                const days = Math.floor(diffInSeconds / 86400);
-                return `${days}j`;
-            } else {
-                return time.toLocaleDateString('fr-FR', { 
-                    day: 'numeric', 
-                    month: 'short' 
-                });
-            }
-        }
-
-        function formatDuration(seconds) {
-            if (!seconds) return '';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        // Connection status
         function updateConnectionStatus() {
             const statusIndicator = document.getElementById('statusIndicator');
             if (statusIndicator) {
-                statusIndicator.textContent = isOnline ? '🟢 En ligne' : '🔴 Hors ligne';
+                statusIndicator.textContent = isOnline ? '🟢 Connecté' : '🔴 Hors ligne';
                 statusIndicator.className = isOnline ? 'status-indicator status-connected' : 'status-indicator status-disconnected';
             }
         }
 
-        // Skeleton loading
-        function createSkeletonPosts(count = 3) {
-            const skeletons = [];
-            for (let i = 0; i < count; i++) {
-                skeletons.push(`
-                    <div class="skeleton-post">
-                        <div class="skeleton-header">
-                            <div class="skeleton skeleton-avatar"></div>
-                            <div class="skeleton-info">
-                                <div class="skeleton skeleton-username"></div>
-                                <div class="skeleton skeleton-time"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton skeleton-media"></div>
-                        <div class="skeleton-content">
-                            <div class="skeleton skeleton-actions"></div>
-                            <div class="skeleton skeleton-likes"></div>
-                            <div class="skeleton skeleton-caption"></div>
-                            <div class="skeleton skeleton-caption-short"></div>
-                        </div>
-                    </div>
-                `);
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            if (!particles) return;
+            const isMobile = window.innerWidth < 768;
+            const particleCount = isMobile ? 5 : 15;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particles.appendChild(particle);
             }
-            return skeletons.join('');
         }
 
-        // App initialization
-        let isAppInitialized = false;
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
-        function checkUserRegistration() {
-            showLoading('Vérification de l\'utilisateur...');
-            
-            setTimeout(() => {
-                userData = getUserData();
-                
-                if (userData) {
-                    hideRegistrationForm();
-                    showMainApp();
-                } else {
-                    showRegistrationForm();
-                }
-                hideLoading();
-            }, 1000);
+        const handleResize = debounce(function() {
+            const particles = document.getElementById('particles');
+            if (particles) {
+                particles.innerHTML = '';
+                createParticles();
+            }
+        }, 300);
+
+        window.addEventListener('resize', handleResize);
+
+        function hideRegistrationForm() {
+            const overlay = document.getElementById('registrationOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+                console.log('🚫 Formulaire d\'inscription masqué');
+            }
         }
 
         function showRegistrationForm() {
-            document.getElementById('registrationOverlay').style.display = 'flex';
-            document.getElementById('mainApp').style.display = 'none';
+            console.log('🔰 Affichage du formulaire d\'inscription');
+            const overlay = document.getElementById('registrationOverlay');
+            const mainApp = document.getElementById('mainApp');
+            if (overlay) overlay.style.display = 'flex';
+            if (mainApp) mainApp.style.display = 'none';
+            isAppInitialized = false;
+            userData = null;
         }
 
-        function hideRegistrationForm() {
-            document.getElementById('registrationOverlay').style.display = 'none';
+        function checkUserRegistration() {
+            console.log('🔍 Vérification de l\'inscription utilisateur...');
+            userData = getUserData();
+            if (userData) {
+                console.log('✅ Utilisateur trouvé:', userData.fullName);
+                hideRegistrationForm();
+                showMainApp();
+            } else {
+                console.log('👤 Aucun utilisateur valide trouvé, affichage du formulaire');
+                showRegistrationForm();
+            }
         }
 
         function showMainApp() {
-            if (isAppInitialized) return;
-            
+            if (isAppInitialized) {
+                console.log('⚠️ App déjà initialisée, ignoré');
+                return;
+            }
+            console.log('🎯 Affichage de l\'application principale...');
             if (!validateUserData(userData)) {
+                console.error('❌ userData invalide lors de showMainApp, retour au formulaire');
                 showRegistrationForm();
                 return;
             }
-            
-            document.getElementById('mainApp').style.display = 'block';
-            
-            // Update UI with user data
-            const userAvatar = document.getElementById('userAvatar');
-            const publisherAvatar = document.getElementById('publisherAvatar');
-            
-            if (userAvatar) userAvatar.textContent = userData.avatar;
-            if (publisherAvatar) publisherAvatar.textContent = userData.avatar;
-            
+            const mainApp = document.getElementById('mainApp');
+            if (mainApp) {
+                mainApp.style.display = 'block';
+                console.log('✅ App principale affichée');
+            } else {
+                console.error('❌ Élément mainApp introuvable');
+                return;
+            }
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            if (welcomeMessage) {
+                welcomeMessage.textContent = `Bienvenue ${userData.fullName} 👋`;
+                console.log('👋 Message de bienvenue mis à jour');
+            }
             updateConnectionStatus();
             loadPosts();
-            
             isAppInitialized = true;
+            console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
 
-        // Registration
+        // Déconnexion
+        window.logout = function() {
+            console.log('🚪 Déconnexion...');
+            sessionStorage.removeItem('expressExchangeUser');
+            localStorage.removeItem('expressExchangeUser');
+            userData = null;
+            isAppInitialized = false;
+            if (unsubscribePosts) {
+                unsubscribePosts();
+            }
+            location.reload();
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initialisation de l\'application...');
+            createParticles();
+            updateConnectionStatus();
+            setTimeout(() => {
+                checkUserRegistration();
+            }, 100);
+        });
+
         document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+            console.log('📋 Soumission du formulaire d\'inscription...');
             const submitBtn = e.target.querySelector('.submit-btn');
             const originalText = submitBtn.textContent;
-            
             const nom = document.getElementById('nom').value.trim();
             const prenom = document.getElementById('prenom').value.trim();
             const contact = document.getElementById('contact').value.trim();
-            
             if (!nom || !prenom || !contact) {
                 alert('Veuillez remplir tous les champs');
                 return;
             }
-            
             if (nom.length < 2 || prenom.length < 2) {
                 alert('Le nom et prénom doivent contenir au moins 2 caractères');
                 return;
             }
-            
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<div class="loading-spinner"></div>Inscription...';
-            
             try {
                 const timestamp = Date.now();
                 const randomSuffix = Math.random().toString(36).substr(2, 9);
                 const userId = `user_${timestamp}_${randomSuffix}`;
-                
                 userData = {
                     id: userId,
                     nom: nom,
@@ -1256,15 +1136,19 @@
                     username: `${prenom.toLowerCase()}.${nom.toLowerCase()}`,
                     email: `${contact}@placeholder.com`
                 };
-                
+                console.log('👤 Création utilisateur:', userData);
                 if (!validateUserData(userData)) {
                     throw new Error('Données utilisateur invalides après création');
                 }
-                
-                const userDataString = JSON.stringify(userData);
-                sessionStorage.setItem('expressExchangeUser', userDataString);
-                localStorage.setItem('expressExchangeUser', userDataString);
-                
+                try {
+                    const userDataString = JSON.stringify(userData);
+                    sessionStorage.setItem('expressExchangeUser', userDataString);
+                    localStorage.setItem('expressExchangeUser', userDataString);
+                    console.log('💾 Données sauvegardées localement');
+                } catch (storageError) {
+                    console.error('❌ Erreur sauvegarde locale:', storageError);
+                    throw new Error('Impossible de sauvegarder les données localement');
+                }
                 if (isOnline) {
                     try {
                         await setDoc(doc(db, 'users', userData.id), {
@@ -1272,136 +1156,67 @@
                             createdAt: serverTimestamp(),
                             lastActive: serverTimestamp()
                         });
+                        console.log('☁️ Utilisateur sauvegardé dans Firestore');
                     } catch (firebaseError) {
-                        console.warn('Erreur sauvegarde Firestore:', firebaseError);
+                        console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
                     }
+                } else {
+                    console.log('📡 Mode hors-ligne, sauvegarde locale uniquement');
                 }
-                
                 hideRegistrationForm();
                 showMainApp();
-                
             } catch (error) {
-                console.error('Erreur lors de l\'inscription:', error);
+                console.error('❌ Erreur lors de l\'inscription:', error);
                 alert(`Erreur lors de l'inscription: ${error.message}`);
-                
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
-                
                 userData = null;
                 sessionStorage.removeItem('expressExchangeUser');
                 localStorage.removeItem('expressExchangeUser');
             }
         });
 
-        // Posts loading - CORRIGÉ pour éviter l'erreur d'index
         function loadPosts() {
             if (unsubscribePosts) {
                 unsubscribePosts();
             }
-
-            const feed = document.getElementById('feed');
-            feed.innerHTML = createSkeletonPosts();
-
-            // Query simplifiée sans orderBy pour éviter l'erreur d'index
             const postsQuery = query(
                 collection(db, 'posts'), 
-                limit(20)
+                orderBy('timestamp', 'desc'), 
+                limit(50)
             );
-
             unsubscribePosts = onSnapshot(postsQuery, (snapshot) => {
                 posts = [];
                 snapshot.forEach((doc) => {
                     const post = { id: doc.id, ...doc.data() };
                     posts.push(post);
                 });
-                
-                // Tri côté client
-                posts.sort((a, b) => {
-                    const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp || 0);
-                    const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp || 0);
-                    return bTime - aTime;
-                });
-                
                 renderPosts();
             }, (error) => {
                 console.error('Erreur chargement posts:', error);
-                feed.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #888888;">
-                        <h3>Erreur de chargement</h3>
-                        <p>Impossible de charger les publications</p>
-                    </div>
-                `;
             });
         }
 
-        // Media preview handling
-        function handleMediaPreview(file) {
-            const preview = document.getElementById('mediaPreview');
-            const reader = new FileReader();
-            
-            reader.onload = function(event) {
-                const isVideo = file.type.startsWith('video/');
-                const mediaElement = isVideo ? 
-                    `<video src="${event.target.result}" controls style="width: 100%; max-height: 300px; object-fit: cover;"></video>` :
-                    `<img src="${event.target.result}" style="width: 100%; max-height: 300px; object-fit: cover;">`;
-                
-                preview.innerHTML = `
-                    ${mediaElement}
-                    <button class="remove-media-btn" onclick="clearMediaPreview()">&times;</button>
-                `;
-                preview.style.display = 'block';
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        window.clearMediaPreview = function() {
-            const preview = document.getElementById('mediaPreview');
-            preview.innerHTML = '';
-            preview.style.display = 'none';
-            document.getElementById('imageInput').value = '';
-            document.getElementById('videoInput').value = '';
-        };
-
-        // File input handlers
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('videoInput').value = '';
-                handleMediaPreview(file);
-            }
-        });
-
-        document.getElementById('videoInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('imageInput').value = '';
-                handleMediaPreview(file);
-            }
-        });
-
-        // Publishing
         document.getElementById('publishBtn').addEventListener('click', async function() {
             if (!validateUserData(userData)) {
+                console.error('❌ Tentative de publication avec userData invalide');
                 alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
                 showRegistrationForm();
                 return;
             }
-
             const text = document.getElementById('postText').value.trim();
-            const imageFile = document.getElementById('imageInput').files[0];
-            const videoFile = document.getElementById('videoInput').files[0];
-            const mediaFile = imageFile || videoFile;
-            
-            if (!text && !mediaFile) {
-                alert('Veuillez ajouter du texte ou un média');
+            const fileInput = document.getElementById('fileInput');
+            const publishBtn = document.getElementById('publishBtn');
+            if (!text && !fileInput.files[0]) {
+                alert('Veuillez ajouter du texte ou une image');
                 return;
             }
-            
-            const publishBtn = document.getElementById('publishBtn');
+            if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
+                alert("Seules les images sont autorisées.");
+                return;
+            }
             publishBtn.disabled = true;
             publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-
             try {
                 const postData = {
                     author: userData.fullName,
@@ -1411,198 +1226,116 @@
                     timestamp: serverTimestamp(),
                     likesCount: 0,
                     commentsCount: 0,
-                    mediaUrl: null,
-                    mediaPublicId: null,
-                    mediaType: null,
-                    mediaWidth: null,
-                    mediaHeight: null,
-                    mediaDuration: null,
+                    imageUrl: null,
+                    imagePublicId: null,
                     createdBy: userData.id,
                     userValidated: true
                 };
-
-                if (mediaFile) {
-                    const preview = document.getElementById('mediaPreview');
-                    const progressBar = document.createElement('div');
-                    progressBar.className = 'upload-progress';
-                    progressBar.style.width = '0%';
-                    preview.appendChild(progressBar);
-                    
-                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload média...';
-                    
-                    const uploadResult = await uploader.uploadMedia(mediaFile, (progress) => {
-                        progressBar.style.width = progress + '%';
-                    });
-
-                    postData.mediaUrl = uploadResult.url;
-                    postData.mediaPublicId = uploadResult.publicId;
-                    postData.mediaType = uploadResult.resourceType;
-                    postData.mediaWidth = uploadResult.width;
-                    postData.mediaHeight = uploadResult.height;
-                    postData.mediaDuration = uploadResult.duration;
-                    postData.mediaSize = uploadResult.bytes;
+                console.log('📝 Données de publication:', {
+                    authorId: postData.authorId,
+                    author: postData.author,
+                    textLength: text.length,
+                    hasImage: !!fileInput.files[0]
+                });
+                if (!postData.authorId || postData.authorId.trim() === '') {
+                    throw new Error('authorId manquant ou vide');
                 }
-
+                if (fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
+                    const uploadResult = await uploader.uploadImage(file, {
+                        maxWidth: 1200
+                    });
+                    postData.imageUrl = uploadResult.url;
+                    postData.imagePublicId = uploadResult.publicId;
+                    postData.imageWidth = uploadResult.width;
+                    postData.imageHeight = uploadResult.height;
+                    postData.imageSize = uploadResult.bytes;
+                }
                 publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-                
-                await addDoc(collection(db, 'posts'), postData);
-                
+                try {
+                    const docRef = await addDoc(collection(db, 'posts'), postData);
+                    console.log('✅ Publication créée avec ID:', docRef.id);
+                } catch (firestoreError) {
+                    console.error('❌ Erreur Firestore détaillée:', firestoreError);
+                    throw new Error(`Erreur Firestore: ${firestoreError.message}`);
+                }
                 clearPostForm();
-                alert('Publication créée avec succès !');
-
             } catch (error) {
-                console.error('Erreur lors de la publication:', error);
+                console.error('❌ Erreur lors de la publication:', error);
                 alert(`Erreur lors de la publication: ${error.message}`);
             } finally {
-                publishBtn.disabled = false;
-                publishBtn.textContent = 'Publier';
+                resetPublishButton();
+            }
+        });
+
+        function resetPublishButton() {
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publier';
+        }
+
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            const fileName = document.getElementById('fileName');
+            const preview = document.getElementById('mediaPreview');
+            if (file) {
+                fileName.textContent = file.name;
+                fileName.style.color = '#8e8e8e';
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileName.textContent = '';
+                preview.innerHTML = '';
             }
         });
 
         function clearPostForm() {
             document.getElementById('postText').value = '';
-            document.getElementById('imageInput').value = '';
-            document.getElementById('videoInput').value = '';
-            clearMediaPreview();
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('mediaPreview').innerHTML = '';
         }
 
-        // Render posts
-        async function renderPosts() {
-            const feed = document.getElementById('feed');
-            
-            if (posts.length === 0) {
-                feed.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #888888;">
-                        <h3>Aucune publication pour le moment</h3>
-                        <p>Soyez le premier à partager quelque chose !</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const postIds = posts.map(p => p.id);
-            const userLikes = await checkUserLikes(postIds);
-
-            const fragment = document.createDocumentFragment();
-            
-            posts.forEach(post => {
-                const likesCount = post.likesCount || 0;
-                const commentsCount = post.commentsCount || 0;
-                const isLiked = userLikes[post.id] || false;
-                const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
-
-                let mediaHTML = '';
-                if (post.mediaUrl) {
-                    const isVideo = post.mediaType === 'video';
-
-                    if (isVideo) {
-                        mediaHTML = `
-                            <div class="post-media" onclick="openMediaModal('${post.mediaUrl}', 'video')">
-                                <video src="${post.mediaUrl}" preload="metadata"></video>
-                                <div class="video-controls">▶️</div>
-                                ${post.mediaDuration ? `<div class="video-duration">${formatDuration(post.mediaDuration)}</div>` : ''}
-                            </div>
-                        `;
-                    } else {
-                        mediaHTML = `
-                            <div class="post-media" onclick="openMediaModal('${post.mediaUrl}', 'image')">
-                                <img src="${post.mediaUrl}" alt="Publication" loading="lazy">
-                            </div>
-                        `;
-                    }
-                }
-
-                const postElement = document.createElement('div');
-                postElement.className = 'post';
-                postElement.setAttribute('data-post-id', post.id);
-                postElement.innerHTML = `
-                    <div class="post-header">
-                        <div class="post-avatar">${post.avatar || 'U'}</div>
-                        <div class="post-user-info">
-                            <div class="post-username">${escapeHtml(post.author || 'Utilisateur')}</div>
-                            <div class="post-time">${timeAgo}</div>
-                        </div>
-                        <button class="post-menu-btn">⋯</button>
-                    </div>
-                    ${mediaHTML}
-                    <div class="post-content">
-                        <div class="post-actions">
-                            <div class="post-actions-left">
-                                <button class="action-btn ${isLiked ? 'liked' : ''}" 
-                                        onclick="toggleLike('${post.id}')" 
-                                        id="like-btn-${post.id}">
-                                    ${isLiked ? '❤️' : '🤍'}
-                                </button>
-                                <button class="action-btn" onclick="toggleComments('${post.id}')">💬</button>
-                                <button class="action-btn">📤</button>
-                            </div>
-                            <button class="action-btn">🔖</button>
-                        </div>
-                        ${likesCount > 0 ? `<div class="post-likes">${likesCount} j'aime${likesCount > 1 ? 's' : ''}</div>` : ''}
-                        ${post.text ? `
-                            <div class="post-caption">
-                                <span class="post-caption-username">${escapeHtml(post.author)}</span>
-                                ${escapeHtml(post.text)}
-                            </div>
-                        ` : ''}
-                        ${commentsCount > 0 ? `
-                            <button class="view-comments" onclick="toggleComments('${post.id}')">
-                                Voir les ${commentsCount} commentaire${commentsCount > 1 ? 's' : ''}
-                            </button>
-                        ` : ''}
-                        <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                            <div id="comments-list-${post.id}"></div>
-                            <div class="comment-form">
-                                <input type="text" class="comment-input" placeholder="Ajouter un commentaire..." id="comment-input-${post.id}">
-                                <button class="comment-submit" onclick="submitComment('${post.id}')">Publier</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                fragment.appendChild(postElement);
-            });
-
-            feed.innerHTML = '';
-            feed.appendChild(fragment);
-        }
-
-        // Media modal
-        window.openMediaModal = function(mediaUrl, mediaType) {
-            const modal = document.getElementById('mediaModal');
-            const content = document.getElementById('modalMediaContent');
-            
-            if (mediaType === 'video') {
-                content.innerHTML = `<video src="${mediaUrl}" controls autoplay style="max-width: 100%; max-height: 100%;">`;
-            } else {
-                content.innerHTML = `<img src="${mediaUrl}" alt="Image agrandie" style="max-width: 100%; max-height: 100%;">`;
-            }
-            
+        window.openImageModal = function(imgUrl) {
+            const modal = document.getElementById('modalImageView');
+            const modalImg = document.getElementById('modalImageBig');
             modal.style.display = 'flex';
+            modalImg.src = imgUrl;
         };
 
-        window.closeMediaModal = function() {
-            const modal = document.getElementById('mediaModal');
-            const content = document.getElementById('modalMediaContent');
-            modal.style.display = 'none';
-            content.innerHTML = '';
+        window.closeImageModal = function() {
+            document.getElementById('modalImageView').style.display = 'none';
         };
 
-        // Like system
+        document.getElementById('modalImageView').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+                document.getElementById('myPostsModal').style.display = 'none';
+            }
+        });
+
         window.toggleLike = async function(postId) {
             if (!validateUserData(userData)) {
+                console.error('❌ Tentative de like avec userData invalide');
                 alert('Erreur: Veuillez vous reconnecter.');
                 return;
             }
-
             const btn = document.getElementById('like-btn-' + postId);
             if (btn && btn.disabled) return;
-
             if (btn) {
                 btn.disabled = true;
                 btn.style.opacity = '0.6';
             }
-
             try {
                 const likeRef = doc(db, 'likes', `${postId}_${userData.id}`);
                 const likeQuery = query(
@@ -1611,9 +1344,9 @@
                     where('userId', '==', userData.id)
                 );
                 const likeSnapshot = await getDocs(likeQuery);
-                
                 if (!likeSnapshot.empty) {
                     await deleteDoc(likeRef);
+                    console.log('👎 Like supprimé');
                 } else {
                     const likeData = {
                         postId: postId,
@@ -1621,14 +1354,15 @@
                         username: userData.fullName,
                         timestamp: serverTimestamp()
                     };
-                    
+                    if (!likeData.userId || !likeData.postId) {
+                        throw new Error('Données de like invalides');
+                    }
                     await setDoc(likeRef, likeData);
+                    console.log('👍 Like ajouté');
                 }
-
                 await updateLikesCount(postId);
-
             } catch (error) {
-                console.error('Erreur toggle like:', error);
+                console.error('❌ Erreur toggle like:', error);
                 alert('Erreur lors du like. Veuillez réessayer.');
             } finally {
                 if (btn) {
@@ -1642,45 +1376,19 @@
             try {
                 const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
                 const likesSnapshot = await getDocs(likesQuery);
-                
                 const postRef = doc(db, 'posts', postId);
                 await setDoc(postRef, { 
                     likesCount: likesSnapshot.size 
                 }, { merge: true });
             } catch (error) {
-                console.error('Erreur mise à jour compteur likes:', error);
+                console.error('❌ Erreur mise à jour compteur likes:', error);
             }
         }
 
-        async function checkUserLikes(postIds) {
-            if (!validateUserData(userData)) return {};
-
-            try {
-                const userLikes = {};
-                
-                for (const postId of postIds) {
-                    const likesQuery = query(
-                        collection(db, 'likes'), 
-                        where('postId', '==', postId),
-                        where('userId', '==', userData.id)
-                    );
-                    const likesSnapshot = await getDocs(likesQuery);
-                    userLikes[postId] = !likesSnapshot.empty;
-                }
-                
-                return userLikes;
-            } catch (error) {
-                console.error('Erreur vérification likes:', error);
-                return {};
-            }
-        }
-
-        // Comments system
         window.toggleComments = function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
             const isVisible = commentsSection.style.display !== 'none';
             commentsSection.style.display = isVisible ? 'none' : 'block';
-            
             if (!isVisible) {
                 loadComments(postId);
                 setTimeout(() => {
@@ -1695,65 +1403,52 @@
                 const commentsQuery = query(
                     collection(db, 'comments'), 
                     where('postId', '==', postId),
+                    orderBy('timestamp', 'asc'),
                     limit(10)
                 );
-                
                 const commentsSnapshot = await getDocs(commentsQuery);
                 const comments = [];
-                
                 commentsSnapshot.forEach((doc) => {
                     comments.push({ id: doc.id, ...doc.data() });
                 });
-
-                // Tri côté client
-                comments.sort((a, b) => {
-                    const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp || 0);
-                    const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp || 0);
-                    return aTime - bTime;
-                });
-
                 renderComments(postId, comments);
             } catch (error) {
-                console.error('Erreur chargement commentaires:', error);
+                console.error('❌ Erreur chargement commentaires:', error);
             }
         }
 
         function renderComments(postId, comments) {
             const commentsContainer = document.getElementById(`comments-list-${postId}`);
             if (!commentsContainer) return;
-
             const commentsHTML = comments.map(comment => `
                 <div class="comment">
-                    <div class="comment-text">
-                        <span class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</span>
-                        ${escapeHtml(comment.text || '')}
+                    <div class="comment-header">
+                        <div class="comment-avatar">${comment.avatar || 'U'}</div>
+                        <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
+                        <div class="comment-time">${getTimeAgo(comment.timestamp?.toDate?.() || comment.timestamp)}</div>
                     </div>
-                    <div class="comment-time">${getTimeAgo(comment.timestamp?.toDate?.() || comment.timestamp)}</div>
+                    <div class="comment-text">${escapeHtml(comment.text || '')}</div>
                 </div>
             `).join('');
-
             commentsContainer.innerHTML = commentsHTML;
         }
 
         window.submitComment = async function(postId) {
             if (!validateUserData(userData)) {
+                console.error('❌ Tentative de commentaire avec userData invalide');
                 alert('Erreur: Veuillez vous reconnecter.');
                 return;
             }
-
             const input = document.getElementById(`comment-input-${postId}`);
             const commentText = input.value.trim();
-            
             if (!commentText) return;
             if (commentText.length > 500) {
                 alert('Commentaire trop long (max 500 caractères)');
                 return;
             }
-
             input.disabled = true;
             const originalPlaceholder = input.placeholder;
             input.placeholder = 'Envoi en cours...';
-
             try {
                 const commentData = {
                     postId: postId,
@@ -1763,15 +1458,16 @@
                     text: commentText,
                     timestamp: serverTimestamp()
                 };
-
+                if (!commentData.authorId || !commentData.postId) {
+                    throw new Error('Données de commentaire invalides');
+                }
                 await addDoc(collection(db, 'comments'), commentData);
+                console.log('💬 Commentaire ajouté');
                 await updateCommentsCount(postId);
-                
                 input.value = '';
                 loadComments(postId);
-
             } catch (error) {
-                console.error('Erreur ajout commentaire:', error);
+                console.error('❌ Erreur ajout commentaire:', error);
                 alert(`Erreur lors de l'envoi du commentaire: ${error.message}`);
             } finally {
                 input.disabled = false;
@@ -1783,170 +1479,15 @@
             try {
                 const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
                 const commentsSnapshot = await getDocs(commentsQuery);
-                
                 const postRef = doc(db, 'posts', postId);
                 await setDoc(postRef, { 
                     commentsCount: commentsSnapshot.size 
                 }, { merge: true });
             } catch (error) {
-                console.error('Erreur mise à jour compteur commentaires:', error);
+                console.error('❌ Erreur mise à jour compteur commentaires:', error);
             }
         }
 
-        // My posts modal - CORRIGÉ
-        document.getElementById('showMyPostsBtn').addEventListener('click', showMyPostsModal);
-        document.getElementById('closeMyPostsModal').addEventListener('click', () => {
-            document.getElementById('myPostsModal').style.display = 'none';
-        });
-
-        async function showMyPostsModal() {
-            if (!validateUserData(userData)) {
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-
-            const modal = document.getElementById('myPostsModal');
-            const content = document.getElementById('myPostsContent');
-            
-            // Afficher le modal immédiatement
-            modal.style.display = 'flex';
-            
-            content.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-spinner-large"></div><br>Chargement de vos publications...</div>';
-            
-            try {
-                // Query simplifiée sans orderBy pour éviter l'erreur d'index
-                const myPostsQuery = query(
-                    collection(db, 'posts'), 
-                    where('authorId', '==', userData.id)
-                );
-                
-                const myPostsSnapshot = await getDocs(myPostsQuery);
-                const myPosts = [];
-                
-                myPostsSnapshot.forEach((doc) => {
-                    myPosts.push({ id: doc.id, ...doc.data() });
-                });
-                
-                // Tri côté client
-                myPosts.sort((a, b) => {
-                    const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp || 0);
-                    const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp || 0);
-                    return bTime - aTime;
-                });
-                
-                if (myPosts.length === 0) {
-                    content.innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #888888;">
-                            <h3>Aucune publication</h3>
-                            <p>Vous n'avez pas encore publié de contenu.</p>
-                        </div>
-                    `;
-                } else {
-                    const fragment = document.createDocumentFragment();
-                    
-                    myPosts.forEach(post => {
-                        const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
-                        
-                        let mediaPreview = '';
-                        if (post.mediaUrl) {
-                            const isVideo = post.mediaType === 'video';
-                            
-                            mediaPreview = `
-                                <div class="my-post-media">
-                                    ${isVideo ? 
-                                        `<video src="${post.mediaUrl}" preload="metadata"></video>` : 
-                                        `<img src="${post.mediaUrl}" alt="Publication">`
-                                    }
-                                </div>
-                            `;
-                        } else {
-                            mediaPreview = `
-                                <div class="my-post-media" style="background: #333; display: flex; align-items: center; justify-content: center; color: #888;">
-                                    📝
-                                </div>
-                            `;
-                        }
-                        
-                        const postElement = document.createElement('div');
-                        postElement.className = 'my-post-item';
-                        postElement.innerHTML = `
-                            ${mediaPreview}
-                            <div class="my-post-info">
-                                <div class="my-post-text">${escapeHtml(post.text) || "(média uniquement)"}</div>
-                                <div class="my-post-stats">${timeAgo} • ${post.likesCount || 0} j'aime • ${post.commentsCount || 0} commentaires</div>
-                            </div>
-                            <button onclick="deleteMyPost('${post.id}', '${post.mediaPublicId || ''}')" class="delete-post-btn">
-                                Supprimer
-                            </button>
-                        `;
-                        
-                        fragment.appendChild(postElement);
-                    });
-                    
-                    content.innerHTML = '';
-                    content.appendChild(fragment);
-                }
-            } catch (error) {
-                console.error('Erreur chargement mes posts:', error);
-                content.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #ed4956;">
-                        <h3>Erreur de chargement</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        window.deleteMyPost = async function(postId, mediaPublicId) {
-            if (!confirm("Êtes-vous sûr de vouloir supprimer cette publication ? Cette action est irréversible.")) {
-                return;
-            }
-
-            if (!validateUserData(userData)) {
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-
-            const button = event.target;
-            button.disabled = true;
-            button.textContent = 'Suppression...';
-            button.style.opacity = '0.6';
-
-            try {
-                // Suppression du post
-                await deleteDoc(doc(db, 'posts', postId));
-
-                // Suppression des likes associés
-                const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
-                const likesSnapshot = await getDocs(likesQuery);
-                const likesDeletePromises = [];
-                likesSnapshot.forEach((likeDoc) => {
-                    likesDeletePromises.push(deleteDoc(likeDoc.ref));
-                });
-                await Promise.all(likesDeletePromises);
-
-                // Suppression des commentaires associés
-                const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const commentsDeletePromises = [];
-                commentsSnapshot.forEach((commentDoc) => {
-                    commentsDeletePromises.push(deleteDoc(commentDoc.ref));
-                });
-                await Promise.all(commentsDeletePromises);
-
-                // Actualisation de la liste
-                showMyPostsModal();
-
-            } catch (error) {
-                console.error('Erreur suppression:', error);
-                alert(`Erreur lors de la suppression: ${error.message}`);
-                button.disabled = false;
-                button.textContent = 'Supprimer';
-                button.style.opacity = '1';
-            }
-        };
-
-        // Event listeners for Enter key in comments
         document.addEventListener('keydown', function(e) {
             if (e.target.classList.contains('comment-input') && e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -1955,123 +1496,247 @@
             }
         });
 
-        // Close modals when clicking outside
-        document.getElementById('mediaModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeMediaModal();
+        async function checkUserLikes(postIds) {
+            if (!validateUserData(userData)) {
+                return {};
             }
-        });
-
-        document.getElementById('myPostsModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.style.display = 'none';
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeMediaModal();
-                document.getElementById('myPostsModal').style.display = 'none';
-            }
-        });
-
-        // Network status handling
-        function handleOnlineStatus() {
-            isOnline = navigator.onLine;
-            updateConnectionStatus();
-            
-            if (isOnline && userData && document.getElementById('mainApp').style.display !== 'none') {
-                loadPosts();
+            try {
+                const userLikes = {};
+                for (const postId of postIds) {
+                    const likesQuery = query(
+                        collection(db, 'likes'), 
+                        where('postId', '==', postId),
+                        where('userId', '==', userData.id)
+                    );
+                    const likesSnapshot = await getDocs(likesQuery);
+                    userLikes[postId] = !likesSnapshot.empty;
+                }
+                return userLikes;
+            } catch (error) {
+                console.error('❌ Erreur vérification likes:', error);
+                return {};
             }
         }
 
-        window.addEventListener('online', handleOnlineStatus);
-        window.addEventListener('offline', handleOnlineStatus);
-
-        // Page visibility handling
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden && userData && document.getElementById('mainApp').style.display !== 'none') {
-                loadPosts();
+        async function renderPosts() {
+            const feed = document.getElementById('feed');
+            if (posts.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucune publication pour le moment</h3>
+                        <p>Soyez le premier à partager quelque chose !</p>
+                    </div>
+                `;
+                return;
             }
+            const postIds = posts.map(p => p.id);
+            const userLikes = await checkUserLikes(postIds);
+            const fragment = document.createDocumentFragment();
+            posts.forEach(post => {
+                const likesCount = post.likesCount || 0;
+                const commentsCount = post.commentsCount || 0;
+                const isLiked = userLikes[post.id] || false;
+                const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
+                let imageHTML = '';
+                if (post.imageUrl) {
+                    let optimizedUrl = post.imageUrl;
+                    if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
+                        optimizedUrl = uploader.getOptimizedUrl(post.imagePublicId, {
+                            width: 800,
+                            crop: 'limit',
+                            quality: 'auto'
+                        });
+                    }
+                    imageHTML = `
+                        <div style="position: relative;">
+                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
+                                <img src="${optimizedUrl}" alt="Image publication" loading="lazy">
+                                ${post.imagePublicId ? '<div class="cloudinary-badge">⚡ Optimisé</div>' : ''}
+                            </a>
+                        </div>
+                    `;
+                }
+                const postElement = document.createElement('div');
+                postElement.className = 'publication';
+                postElement.setAttribute('data-post-id', post.id);
+                postElement.innerHTML = `
+                    <div class="pub-header">
+                        <div class="pub-avatar">${post.avatar || 'U'}</div>
+                        <div class="pub-info">
+                            <div class="pub-username">${escapeHtml(post.author || 'Utilisateur anonyme')}</div>
+                            <div class="pub-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                    <div class="pub-text">${escapeHtml(post.text || '')}</div>
+                    ${imageHTML}
+                    <div class="pub-actions">
+                        <button class="action-btn ${isLiked ? 'liked' : ''}" 
+                                onclick="toggleLike('${post.id}')" 
+                                id="like-btn-${post.id}">
+                            ${isLiked ? '❤️' : '🤍'} ${likesCount}
+                        </button>
+                        <button class="action-btn" 
+                                onclick="toggleComments('${post.id}')">
+                            💬 ${commentsCount}
+                        </button>
+                    </div>
+                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                        <div id="comments-list-${post.id}"></div>
+                        <div class="comment-form">
+                            <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
+                            <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
+                        </div>
+                    </div>
+                `;
+                fragment.appendChild(postElement);
+            });
+            feed.innerHTML = '';
+            feed.appendChild(fragment);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getTimeAgo(timestamp) {
+            if (!timestamp) return 'Date inconnue';
+            const now = new Date();
+            const time = timestamp instanceof Date ? timestamp : new Date(timestamp);
+            const diffInSeconds = Math.floor((now - time) / 1000);
+            if (diffInSeconds < 60) return 'À l\'instant';
+            if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes}min`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours}h`;
+            } else if (diffInSeconds < 604800) {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days}j`;
+            } else {
+                return time.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+            }
+        }
+
+        document.getElementById('showMyPostsBtn').addEventListener('click', function() {
+            showMyPostsModal();
         });
 
-        // Global error handling
-        window.addEventListener('unhandledrejection', function(event) {
-            if (event.reason && event.reason.code && event.reason.code.includes('firebase')) {
-                console.error('Erreur Firebase non gérée:', event.reason);
-                
-                if (event.reason.message && event.reason.message.includes('undefined')) {
-                    console.warn('Erreur de données utilisateur détectée, rechargement...');
-                    setTimeout(() => {
-                        window.forceReconnect();
-                    }, 1000);
+        document.getElementById('closeMyPostsModal').onclick = function() {
+            document.getElementById('myPostsModal').style.display = 'none';
+        };
+
+        document.getElementById('myPostsModal').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+
+        async function showMyPostsModal() {
+            console.log('🔰 showMyPostsModal appelée');
+            if (!validateUserData(userData)) {
+                console.error('❌ Tentative d\'affichage des posts avec userData invalide');
+                alert('Erreur: Veuillez vous reconnecter.');
+                showRegistrationForm();
+                return;
+            }
+            const listEl = document.getElementById('myPostsList');
+            listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #8e8e8e;"><div class="loading-spinner"></div> Chargement...</div>';
+            try {
+                const myPostsQuery = query(
+                    collection(db, 'posts'), 
+                    where('authorId', '==', userData.id),
+                    orderBy('timestamp', 'desc')
+                );
+                const myPostsSnapshot = await getDocs(myPostsQuery);
+                const myPosts = [];
+                myPostsSnapshot.forEach((doc) => {
+                    myPosts.push({ id: doc.id, ...doc.data() });
+                });
+                if (myPosts.length === 0) {
+                    listEl.innerHTML = `
+                        <div style="color:#8e8e8e; padding:20px; text-align:center;">
+                            <p>Aucune publication trouvée.</p>
+                            <p style="font-size: 12px; margin-top: 8px;">Commencez par publier quelque chose !</p>
+                        </div>
+                    `;
+                } else {
+                    const fragment = document.createDocumentFragment();
+                    myPosts.forEach(post => {
+                        const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
+                        let thumbnailHTML = '';
+                        if (post.imageUrl) {
+                            let thumbUrl = post.imageUrl;
+                            if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
+                                thumbUrl = uploader.getOptimizedUrl(post.imagePublicId, {
+                                    width: 60,
+                                    height: 60,
+                                    crop: 'fill'
+                                });
+                            }
+                            thumbnailHTML = `
+                                <div class="my-post-thumbnail">
+                                    <img src="${thumbUrl}" alt="Aperçu">
+                                </div>
+                            `;
+                        }
+                        const postElement = document.createElement('div');
+                        postElement.className = 'my-post-item';
+                        postElement.innerHTML = `
+                            ${thumbnailHTML}
+                            <div class="my-post-content">
+                                <div class="my-post-text">${escapeHtml(post.text || '')}</div>
+                                <div class="my-post-time">${timeAgo}</div>
+                            </div>
+                            <button class="my-post-delete" onclick="deleteMyPost('${post.id}', this)">Supprimer</button>
+                        `;
+                        fragment.appendChild(postElement);
+                    });
+                    listEl.innerHTML = '';
+                    listEl.appendChild(fragment);
+                }
+            } catch (error) {
+                console.error('❌ Erreur chargement de mes publications:', error);
+                listEl.innerHTML = '<div style="color:#ed4956; padding:20px; text-align:center;">Erreur lors du chargement de vos publications.</div>';
+            }
+            document.getElementById('myPostsModal').style.display = 'flex';
+        }
+
+        window.deleteMyPost = async function(postId, btn) {
+            console.log('🔰 Suppression de la publication:', postId);
+            if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) return;
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Suppression...';
+            }
+            try {
+                await deleteDoc(doc(db, 'posts', postId));
+                console.log('🗑️ Publication supprimée:', postId);
+                showMyPostsModal();
+            } catch (error) {
+                console.error('❌ Erreur suppression publication:', error);
+                alert('Erreur lors de la suppression. Réessayez.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Supprimer';
                 }
             }
+        };
+
+        window.addEventListener('online', () => {
+            console.log('🔰 Passage en ligne');
+            isOnline = true;
+            updateConnectionStatus();
         });
 
-        // Debug functions
-        window.debugUserData = function() {
-            console.log('🔍 DIAGNOSTIC UTILISATEUR:');
-            console.log('userData actuel:', userData);
-            console.log('sessionStorage:', sessionStorage.getItem('expressExchangeUser'));
-            console.log('localStorage:', localStorage.getItem('expressExchangeUser'));
-            console.log('userData valide?', validateUserData(userData));
-            console.log('App initialisée?', isAppInitialized);
-            console.log('En ligne?', isOnline);
-        };
-
-        window.forceReconnect = function() {
-            console.log('🔄 Reconnexion forcée...');
-            userData = null;
-            isAppInitialized = false;
-            sessionStorage.removeItem('expressExchangeUser');
-            localStorage.removeItem('expressExchangeUser');
-            
-            if (unsubscribePosts) {
-                unsubscribePosts();
-            }
-            
-            showRegistrationForm();
-        };
-
-        window.logout = function() {
-            console.log('🚪 Déconnexion...');
-            sessionStorage.removeItem('expressExchangeUser');
-            localStorage.removeItem('expressExchangeUser');
-            userData = null;
-            isAppInitialized = false;
-            
-            if (unsubscribePosts) {
-                unsubscribePosts();
-            }
-            
-            location.reload();
-        };
-
-        // Periodic validation of user data
-        setInterval(function() {
-            if (isAppInitialized && !validateUserData(userData)) {
-                console.error('Données utilisateur corrompues détectées, reconnexion...');
-                window.forceReconnect();
-            }
-        }, 30000);
-
-        // App initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initialisation de l\'application Express Exchange...');
-            
-            // Show loading initially
-            showLoading('Initialisation...');
-            
-            // Check user registration after a brief delay to show loading
-            setTimeout(() => {
-                checkUserRegistration();
-            }, 1500);
+        window.addEventListener('offline', () => {
+            console.log('🔰 Passage hors-ligne');
+            isOnline = false;
+            updateConnectionStatus();
         });
 
-        console.log('🎯 Express Exchange chargé avec succès - Version Thème Noir Corrigée');
-
+        console.log('✅ Script principal Express Exchange chargé');
     </script>
 </body>
 </html>
