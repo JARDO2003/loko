@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -55,6 +54,110 @@
                 transform: translateY(-100px) rotate(360deg);
                 opacity: 0;
             }
+        }
+
+        /* Nouvel indicateur de chargement principal */
+        #globalLoadingIndicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5000;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        #globalLoadingIndicator.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .main-loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #262626;
+            border-top: 3px solid #0095f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .loading-subtext {
+            color: #8e8e8e;
+            font-size: 14px;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        /* Barre de progression en haut */
+        #progressBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #0095f6, #1877f2);
+            z-index: 4999;
+            transition: width 0.3s ease;
+            opacity: 0;
+        }
+
+        #progressBar.visible {
+            opacity: 1;
+        }
+
+        /* Indicateur de chargement du feed */
+        .feed-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            min-height: 200px;
+            color: #8e8e8e;
+        }
+
+        .feed-loading .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #262626;
+            border-top: 2px solid #0095f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        .feed-loading-text {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .feed-loading-tips {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            max-width: 250px;
+            line-height: 1.3;
         }
 
         #registrationOverlay {
@@ -275,13 +378,6 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .controls-left {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
         }
 
         .publish-btn {
@@ -320,28 +416,6 @@
         .my-posts-btn:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: #ffffff;
-        }
-
-        .chat-btn {
-            background: transparent;
-            color: #0095f6;
-            padding: 8px 16px;
-            border: 1px solid #0095f6;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .chat-btn:hover {
-            background: rgba(0, 149, 246, 0.1);
-            border-color: #1877f2;
-            color: #1877f2;
         }
 
         .feed {
@@ -621,11 +695,6 @@
             margin-right: 8px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .cloudinary-badge {
             position: absolute;
             top: 8px;
@@ -762,17 +831,12 @@
                 height: 50px;
             }
 
-            .publish-controls {
-                flex-direction: column;
-                align-items: stretch;
+            .loading-text {
+                font-size: 14px;
             }
 
-            .controls-left {
-                justify-content: center;
-            }
-
-            .publish-btn {
-                width: 100%;
+            .loading-subtext {
+                font-size: 12px;
             }
         }
 
@@ -821,6 +885,16 @@
 <body>
     <div id="particles"></div>
 
+    <!-- Nouvel indicateur de chargement global -->
+    <div id="globalLoadingIndicator">
+        <div class="main-loader"></div>
+        <div class="loading-text">Initialisation d'Express Exchange...</div>
+        <div class="loading-subtext">Veuillez patienter pendant le chargement des données. Cela peut prendre quelques secondes.</div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div id="progressBar"></div>
+
     <div id="registrationOverlay">
         <div class="registration-modal">
             <h2>Rejoignez Express Exchange</h2>
@@ -857,15 +931,19 @@
             </div>
             <div id="mediaPreview" class="media-preview"></div>
             <div class="publish-controls">
-                <div class="controls-left">
-                    <button id="showMyPostsBtn" class="my-posts-btn">Mes publications</button>
-                    <a href="message.html" class="chat-btn">💬 Chater</a>
-                </div>
+                <button id="showMyPostsBtn" class="my-posts-btn">Mes publications</button>
                 <button id="publishBtn" class="publish-btn">Publier</button>
             </div>
         </div>
 
-        <div id="feed" class="feed"></div>
+        <div id="feed" class="feed">
+            <!-- Indicateur de chargement initial du feed -->
+            <div class="feed-loading" id="feedLoading">
+                <div class="loading-spinner"></div>
+                <div class="feed-loading-text">Chargement des publications...</div>
+                <div class="feed-loading-tips">Patientez pendant que nous récupérons les dernières publications de la communauté.</div>
+            </div>
+        </div>
     </div>
 
     <div id="modalImageView" class="modal">
@@ -927,6 +1005,46 @@
         let unsubscribePosts = null;
         let isOnline = navigator.onLine;
         let isAppInitialized = false;
+
+        // Nouvelles fonctions de gestion du chargement
+        function updateProgressBar(percentage) {
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                progressBar.classList.add('visible');
+                progressBar.style.width = percentage + '%';
+                if (percentage >= 100) {
+                    setTimeout(() => {
+                        progressBar.classList.remove('visible');
+                    }, 500);
+                }
+            }
+        }
+
+        function updateLoadingText(text, subtext = null) {
+            const loadingText = document.querySelector('.loading-text');
+            const loadingSubtext = document.querySelector('.loading-subtext');
+            if (loadingText) loadingText.textContent = text;
+            if (subtext && loadingSubtext) loadingSubtext.textContent = subtext;
+        }
+
+        function hideGlobalLoading() {
+            const globalLoading = document.getElementById('globalLoadingIndicator');
+            if (globalLoading) {
+                setTimeout(() => {
+                    globalLoading.classList.add('hidden');
+                    setTimeout(() => {
+                        globalLoading.style.display = 'none';
+                    }, 300);
+                }, 500);
+            }
+        }
+
+        function showFeedLoading(show = true) {
+            const feedLoading = document.getElementById('feedLoading');
+            if (feedLoading) {
+                feedLoading.style.display = show ? 'flex' : 'none';
+            }
+        }
 
         // Classe upload Cloudinary
         class CloudinaryUploader {
@@ -997,6 +1115,9 @@
         }
 
         function getUserData() {
+            updateProgressBar(10);
+            updateLoadingText('Vérification des données utilisateur...', 'Recherche des informations de connexion existantes.');
+            
             try {
                 const sessionData = sessionStorage.getItem('expressExchangeUser');
                 const localData = localStorage.getItem('expressExchangeUser');
@@ -1012,6 +1133,7 @@
                     localStorage.removeItem('expressExchangeUser');
                     return null;
                 }
+                updateProgressBar(30);
                 return parsedData;
             } catch (error) {
                 console.error('❌ Erreur parsing données utilisateur:', error);
@@ -1030,6 +1152,9 @@
         }
 
         function createParticles() {
+            updateProgressBar(50);
+            updateLoadingText('Initialisation de l\'interface...', 'Création des éléments visuels et des animations.');
+            
             const particles = document.getElementById('particles');
             if (!particles) return;
             const isMobile = window.innerWidth < 768;
@@ -1076,6 +1201,7 @@
 
         function showRegistrationForm() {
             console.log('🔰 Affichage du formulaire d\'inscription');
+            hideGlobalLoading();
             const overlay = document.getElementById('registrationOverlay');
             const mainApp = document.getElementById('mainApp');
             if (overlay) overlay.style.display = 'flex';
@@ -1086,9 +1212,14 @@
 
         function checkUserRegistration() {
             console.log('🔍 Vérification de l\'inscription utilisateur...');
+            updateProgressBar(20);
+            updateLoadingText('Vérification de l\'utilisateur...', 'Contrôle des données d\'authentification.');
+            
             userData = getUserData();
             if (userData) {
                 console.log('✅ Utilisateur trouvé:', userData.fullName);
+                updateProgressBar(60);
+                updateLoadingText('Utilisateur trouvé !', `Bonjour ${userData.fullName}, préparation de votre espace...`);
                 hideRegistrationForm();
                 showMainApp();
             } else {
@@ -1103,6 +1234,9 @@
                 return;
             }
             console.log('🎯 Affichage de l\'application principale...');
+            updateProgressBar(80);
+            updateLoadingText('Préparation de votre espace...', 'Chargement des publications et des données récentes.');
+            
             if (!validateUserData(userData)) {
                 console.error('❌ userData invalide lors de showMainApp, retour au formulaire');
                 showRegistrationForm();
@@ -1122,8 +1256,13 @@
                 console.log('👋 Message de bienvenue mis à jour');
             }
             updateConnectionStatus();
+            updateProgressBar(90);
             loadPosts();
             isAppInitialized = true;
+            updateProgressBar(100);
+            setTimeout(() => {
+                hideGlobalLoading();
+            }, 1000);
             console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
 
@@ -1142,6 +1281,9 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Initialisation de l\'application...');
+            updateLoadingText('Démarrage d\'Express Exchange...', 'Initialisation des composants de l\'application.');
+            updateProgressBar(5);
+            
             createParticles();
             updateConnectionStatus();
             setTimeout(() => {
@@ -1223,6 +1365,9 @@
         });
 
         function loadPosts() {
+            console.log('📖 Chargement des publications...');
+            showFeedLoading(true);
+            
             if (unsubscribePosts) {
                 unsubscribePosts();
             }
@@ -1237,9 +1382,22 @@
                     const post = { id: doc.id, ...doc.data() };
                     posts.push(post);
                 });
+                console.log(`📊 ${posts.length} publications chargées`);
+                showFeedLoading(false);
                 renderPosts();
             }, (error) => {
                 console.error('Erreur chargement posts:', error);
+                showFeedLoading(false);
+                const feed = document.getElementById('feed');
+                if (feed) {
+                    feed.innerHTML = `
+                        <div class="empty-state">
+                            <h3>Erreur de chargement</h3>
+                            <p>Impossible de charger les publications. Vérifiez votre connexion.</p>
+                            <button onclick="loadPosts()" style="margin-top: 10px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
+                        </div>
+                    `;
+                }
             });
         }
 
@@ -1431,7 +1589,6 @@
             }
         }
 
-        // CORRECTION 1: Fonction d'affichage des commentaires corrigée
         window.toggleComments = function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
             if (!commentsSection) {
@@ -1454,7 +1611,6 @@
             }
         };
 
-        // CORRECTION 2: Fonction loadComments corrigée sans index complexe
         async function loadComments(postId) {
             console.log('📝 Chargement commentaires pour postId:', postId);
             const commentsContainer = document.getElementById(`comments-list-${postId}`);
@@ -1464,9 +1620,8 @@
             }
             
             try {
-                commentsContainer.innerHTML = '<div style="text-align: center; color: #8e8e8e; padding: 10px;">Chargement des commentaires...</div>';
+                commentsContainer.innerHTML = '<div style="text-align: center; color: #8e8e8e; padding: 10px;"><div class="loading-spinner" style="width: 20px; height: 20px; margin: 0 auto 10px;"></div>Chargement des commentaires...</div>';
                 
-                // Requête simple sans orderBy pour éviter l'index composé
                 const commentsQuery = query(
                     collection(db, 'comments'), 
                     where('postId', '==', postId),
@@ -1484,7 +1639,6 @@
                     });
                 });
                 
-                // Tri côté client par timestamp
                 comments.sort((a, b) => {
                     const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
                     const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
@@ -1500,7 +1654,6 @@
             }
         }
 
-        // CORRECTION 3: Fonction renderComments améliorée
         function renderComments(postId, comments) {
             const commentsContainer = document.getElementById(`comments-list-${postId}`);
             if (!commentsContainer) {
@@ -1567,7 +1720,6 @@
                 console.log('💬 Commentaire ajouté pour postId:', postId);
                 await updateCommentsCount(postId);
                 input.value = '';
-                // Recharger les commentaires après ajout
                 setTimeout(() => loadComments(postId), 500);
             } catch (error) {
                 console.error('❌ Erreur ajout commentaire:', error);
@@ -1628,6 +1780,9 @@
                     <div class="empty-state">
                         <h3>Aucune publication pour le moment</h3>
                         <p>Soyez le premier à partager quelque chose !</p>
+                        <div style="margin-top: 15px; font-size: 12px; color: #666;">
+                            💡 Astuce: Utilisez le champ de texte ci-dessus pour publier votre premier message
+                        </div>
                     </div>
                 `;
                 return;
@@ -1736,7 +1891,6 @@
             if (e.target === this) this.style.display = 'none';
         };
 
-        // CORRECTION 4: Fonction showMyPostsModal corrigée sans index complexe
         async function showMyPostsModal() {
             console.log('🔰 showMyPostsModal appelée');
             if (!validateUserData(userData)) {
@@ -1749,14 +1903,18 @@
             const modal = document.getElementById('myPostsModal');
             const listEl = document.getElementById('myPostsList');
             
-            // Afficher la modal d'abord
             modal.style.display = 'flex';
-            listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #8e8e8e;"><div class="loading-spinner"></div> Chargement...</div>';
+            listEl.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #8e8e8e;">
+                    <div class="loading-spinner" style="width: 30px; height: 30px; margin: 0 auto 15px;"></div>
+                    <div>Chargement de vos publications...</div>
+                    <div style="font-size: 12px; margin-top: 8px; color: #666;">Recherche et organisation de votre contenu</div>
+                </div>
+            `;
             
             try {
                 console.log('🔍 Recherche des publications pour userId:', userData.id);
                 
-                // Requête simple sans orderBy pour éviter l'index composé
                 const myPostsQuery = query(
                     collection(db, 'posts'), 
                     where('authorId', '==', userData.id),
@@ -1774,7 +1932,6 @@
                     });
                 });
                 
-                // Tri côté client par timestamp (du plus récent au plus ancien)
                 myPosts.sort((a, b) => {
                     const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
                     const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
@@ -1861,15 +2018,13 @@
             
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = 'Suppression...';
+                btn.innerHTML = '<div class="loading-spinner" style="width: 12px; height: 12px; margin-right: 4px;"></div>Suppression...';
                 btn.style.opacity = '0.6';
             }
             
             try {
-                // Méthode simplifiée : suppression directe du document
                 const postRef = doc(db, 'posts', postId);
                 
-                // Supprimer les likes associés (requête simple)
                 const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
                 const likesSnapshot = await getDocs(likesQuery);
                 const deleteLikesPromises = [];
@@ -1877,7 +2032,6 @@
                     deleteLikesPromises.push(deleteDoc(doc.ref));
                 });
                 
-                // Supprimer les commentaires associés (requête simple)
                 const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
                 const commentsSnapshot = await getDocs(commentsQuery);
                 const deleteCommentsPromises = [];
@@ -1885,15 +2039,10 @@
                     deleteCommentsPromises.push(deleteDoc(doc.ref));
                 });
                 
-                // Attendre la suppression des likes et commentaires
                 await Promise.all([...deleteLikesPromises, ...deleteCommentsPromises]);
-                
-                // Supprimer la publication
                 await deleteDoc(postRef);
                 
                 console.log('✅ Publication supprimée avec succès:', postId);
-                
-                // Recharger la liste des publications
                 setTimeout(() => showMyPostsModal(), 500);
                 
             } catch (error) {
@@ -1912,6 +2061,10 @@
             console.log('🌍 Passage en ligne');
             isOnline = true;
             updateConnectionStatus();
+            // Recharger les posts quand on revient en ligne
+            if (isAppInitialized) {
+                setTimeout(() => loadPosts(), 1000);
+            }
         });
 
         window.addEventListener('offline', () => {
@@ -1930,7 +2083,62 @@
             });
         };
 
-        console.log('✅ Script principal Express Exchange chargé et corrigé');
+        // Messages d'encouragement pour les utilisateurs impatients
+        const encouragementMessages = [
+            "Patience, nous préparons votre expérience...",
+            "Chargement en cours, merci de patienter...",
+            "Quelques secondes encore pour une expérience optimale...",
+            "Nous organisons tout pour vous, un instant...",
+            "Préparation de votre espace personnel...",
+            "Connexion aux serveurs en cours...",
+            "Récupération des dernières données...",
+            "Optimisation de l'interface...",
+            "Finalisation du chargement..."
+        ];
+
+        let encouragementIndex = 0;
+        let encouragementInterval;
+
+        function startEncouragementMessages() {
+            encouragementInterval = setInterval(() => {
+                if (encouragementIndex < encouragementMessages.length - 1) {
+                    encouragementIndex++;
+                    updateLoadingText(
+                        encouragementMessages[encouragementIndex],
+                        "Express Exchange se charge. Cette opération peut prendre quelques instants selon votre connexion."
+                    );
+                }
+            }, 3000);
+        }
+
+        function stopEncouragementMessages() {
+            if (encouragementInterval) {
+                clearInterval(encouragementInterval);
+                encouragementInterval = null;
+            }
+        }
+
+        // Démarrer les messages d'encouragement après 2 secondes
+        setTimeout(() => {
+            if (!isAppInitialized) {
+                startEncouragementMessages();
+            }
+        }, 2000);
+
+        // Arrêter les messages quand l'app est initialisée
+        const originalShowMainApp = showMainApp;
+        showMainApp = function() {
+            stopEncouragementMessages();
+            originalShowMainApp();
+        };
+
+        const originalShowRegistrationForm = showRegistrationForm;
+        showRegistrationForm = function() {
+            stopEncouragementMessages();
+            originalShowRegistrationForm();
+        };
+
+        console.log('✅ Script principal Express Exchange chargé et corrigé avec indicateurs de chargement');
     </script>
 </body>
 </html>
