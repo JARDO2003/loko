@@ -26,6 +26,7 @@
             margin: 0 auto;
             border-left: 1px solid #262626;
             border-right: 1px solid #262626;
+            position: relative;
         }
 
         /* Sidebar avec liste des utilisateurs */
@@ -35,6 +36,7 @@
             border-right: 1px solid #262626;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -186,6 +188,7 @@
             display: flex;
             flex-direction: column;
             background: #000000;
+            position: relative;
         }
 
         .welcome-screen {
@@ -215,6 +218,7 @@
             border-bottom: 1px solid #262626;
             display: none;
             align-items: center;
+            justify-content: space-between;
             background: #000000;
             position: sticky;
             top: 0;
@@ -223,6 +227,11 @@
 
         .chat-header.active {
             display: flex;
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
         }
 
         .chat-avatar {
@@ -248,6 +257,26 @@
         .chat-status {
             font-size: 12px;
             color: #8e8e8e;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-chat:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .messages-container {
@@ -474,21 +503,39 @@
             line-height: 1.5;
         }
 
+        /* Mode mobile - Chat en plein écran */
+        .mobile-chat-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 1000;
+            display: none;
+        }
+
+        .mobile-chat-mode.active {
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
             .sidebar {
                 width: 100%;
-                height: 50vh;
-                border-right: none;
-                border-bottom: 1px solid #262626;
             }
 
             .chat-area {
-                height: 50vh;
+                display: none;
+            }
+
+            .mobile-chat-mode.active {
+                display: flex;
+            }
+
+            .message-bubble {
+                max-width: 85%;
             }
 
             .sidebar-header {
@@ -500,17 +547,13 @@
             }
 
             .user-item {
-                padding: 10px 15px;
+                padding: 15px;
             }
 
             .user-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 14px;
-            }
-
-            .message-bubble {
-                max-width: 85%;
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
             }
         }
 
@@ -541,22 +584,28 @@
             color: #8e8e8e !important;
         }
 
-        /* Message status */
-        .message-status {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 2px;
+        /* Error message */
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 20px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
         }
 
-        .message.received .message-status {
-            color: #8e8e8e;
+        .error-message.show {
+            display: block;
+            animation: fadeInMessage 0.3s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Sidebar avec liste des utilisateurs -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2 class="sidebar-title">Messages</h2>
                 <div class="search-container">
@@ -572,21 +621,27 @@
             </div>
         </div>
 
-        <!-- Zone de chat principale -->
-        <div class="chat-area">
+        <!-- Zone de chat principale (Desktop) -->
+        <div class="chat-area" id="chatArea">
             <!-- Écran d'accueil -->
             <div class="welcome-screen" id="welcomeScreen">
                 <h2>💬 Express Exchange Messages</h2>
                 <p>Sélectionnez un utilisateur dans la liste pour commencer une conversation.</p>
             </div>
 
+            <!-- Message d'erreur -->
+            <div class="error-message" id="errorMessage"></div>
+
             <!-- Header du chat -->
             <div class="chat-header" id="chatHeader">
-                <div class="chat-avatar" id="chatAvatar">U</div>
-                <div class="chat-info">
-                    <h3 id="chatUserName">Nom d'utilisateur</h3>
-                    <div class="chat-status" id="chatUserStatus">En ligne</div>
+                <div class="chat-user-info">
+                    <div class="chat-avatar" id="chatAvatar">U</div>
+                    <div class="chat-info">
+                        <h3 id="chatUserName">Nom d'utilisateur</h3>
+                        <div class="chat-status" id="chatUserStatus">En ligne</div>
+                    </div>
                 </div>
+                <button class="close-chat" id="closeChatDesktop" style="display: none;">×</button>
             </div>
 
             <!-- Indicateur de frappe -->
@@ -621,6 +676,54 @@
         </div>
     </div>
 
+    <!-- Mode mobile - Chat en plein écran -->
+    <div class="mobile-chat-mode" id="mobileChatMode">
+        <!-- Header du chat mobile -->
+        <div class="chat-header active">
+            <div class="chat-user-info">
+                <div class="chat-avatar" id="mobileChatAvatar">U</div>
+                <div class="chat-info">
+                    <h3 id="mobileChatUserName">Nom d'utilisateur</h3>
+                    <div class="chat-status" id="mobileChatUserStatus">En ligne</div>
+                </div>
+            </div>
+            <button class="close-chat" id="closeChatMobile">×</button>
+        </div>
+
+        <!-- Message d'erreur mobile -->
+        <div class="error-message" id="mobileErrorMessage"></div>
+
+        <!-- Indicateur de frappe mobile -->
+        <div class="typing-indicator" id="mobileTypingIndicator">
+            <span id="mobileTypingUserName">Utilisateur</span> est en train d'écrire
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <!-- Conteneur des messages mobile -->
+        <div class="messages-container active" id="mobileMessagesContainer">
+            <!-- Les messages seront ajoutés ici dynamiquement -->
+        </div>
+
+        <!-- Zone de saisie mobile -->
+        <div class="message-input-container active">
+            <div class="message-input-wrapper">
+                <textarea 
+                    class="message-input" 
+                    id="mobileMessageInput" 
+                    placeholder="Écrivez votre message..."
+                    rows="1"
+                ></textarea>
+                <button class="send-button" id="mobileSendButton" disabled>
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         console.log('💬 Initialisation Express Exchange Messages');
 
@@ -635,10 +738,8 @@
             orderBy, 
             limit, 
             onSnapshot, 
-            deleteDoc,
             serverTimestamp,
-            where,
-            writeBatch
+            where
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
         import { 
             getDatabase, 
@@ -650,11 +751,10 @@
             serverTimestamp as rtdbServerTimestamp,
             query as rtdbQuery,
             orderByChild,
-            limitToLast,
-            equalTo
+            limitToLast
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
 
-        // Configuration Firebase (même que Express Exchange)
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
             authDomain: "data-com-a94a8.firebaseapp.com",
@@ -669,7 +769,7 @@
         // Initialisation Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const rtdb = getDatabase(app); // Realtime Database pour les messages
+        const rtdb = getDatabase(app);
 
         // Variables globales
         let currentUser = null;
@@ -678,7 +778,7 @@
         let currentChatUser = null;
         let messagesUnsubscribe = null;
         let typingTimeout = null;
-        let lastActivity = Date.now();
+        let isMobile = window.innerWidth <= 768;
 
         // Éléments DOM
         const searchInput = document.getElementById('searchInput');
@@ -692,8 +792,19 @@
         const messageInputContainer = document.getElementById('messageInputContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const typingIndicator = document.getElementById('typingIndicator');
-        const typingUserName = document.getElementById('typingUserName');
+        const errorMessage = document.getElementById('errorMessage');
+        const closeChatDesktop = document.getElementById('closeChatDesktop');
+        
+        // Éléments mobile
+        const mobileChatMode = document.getElementById('mobileChatMode');
+        const mobileChatAvatar = document.getElementById('mobileChatAvatar');
+        const mobileChatUserName = document.getElementById('mobileChatUserName');
+        const mobileChatUserStatus = document.getElementById('mobileChatUserStatus');
+        const mobileMessagesContainer = document.getElementById('mobileMessagesContainer');
+        const mobileMessageInput = document.getElementById('mobileMessageInput');
+        const mobileSendButton = document.getElementById('mobileSendButton');
+        const mobileErrorMessage = document.getElementById('mobileErrorMessage');
+        const closeChatMobile = document.getElementById('closeChatMobile');
 
         // Fonction pour récupérer les données utilisateur
         function getCurrentUser() {
@@ -725,21 +836,22 @@
 
         function redirectToMainApp() {
             alert('Vous devez être connecté pour accéder aux messages.');
-            window.location.href = './paste.txt'; // Redirection vers la page principale
+            window.location.href = './index.html';
         }
 
-        // Chargement des utilisateurs inscrits
+        // Chargement des utilisateurs avec pagination
         async function loadUsers() {
             try {
                 console.log('👥 Chargement des utilisateurs...');
                 
-                const usersQuery = query(collection(db, 'users'), limit(100));
+                // Charger plus d'utilisateurs
+                const usersQuery = query(collection(db, 'users'), limit(200));
                 const usersSnapshot = await getDocs(usersQuery);
                 
                 allUsers = [];
                 usersSnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    if (userData.id !== currentUser.id) { // Exclure l'utilisateur actuel
+                    if (userData.id !== currentUser.id && userData.fullName) {
                         allUsers.push({
                             id: doc.id,
                             ...userData
@@ -753,6 +865,7 @@
                 
             } catch (error) {
                 console.error('❌ Erreur chargement utilisateurs:', error);
+                showError('Impossible de charger la liste des utilisateurs');
                 usersList.innerHTML = `
                     <div class="empty-state">
                         <h3>Erreur de chargement</h3>
@@ -781,8 +894,7 @@
                 userElement.className = 'user-item';
                 userElement.dataset.userId = user.id;
                 
-                // Simuler le statut en ligne (dans une vraie app, cela viendrait de la base de données)
-                const isOnline = Math.random() > 0.3; // 70% de chance d'être en ligne
+                const isOnline = Math.random() > 0.3;
                 
                 userElement.innerHTML = `
                     <div class="user-avatar">
@@ -829,498 +941,226 @@
             
             currentChatUser = user;
             
-            // Mise à jour de l'interface
-            document.querySelectorAll('.user-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-user-id="${user.id}"]`)?.classList.add('active');
-            
-            // Affichage du header de chat
-            welcomeScreen.style.display = 'none';
-            chatHeader.classList.add('active');
-            messagesContainer.classList.add('active');
-            messageInputContainer.classList.add('active');
-            
-            // Mise à jour des informations du chat
-            chatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
-            chatUserName.textContent = user.fullName || 'Utilisateur';
-            chatUserStatus.textContent = Math.random() > 0.3 ? 'En ligne' : 'Hors ligne';
-            
-            // Chargement des messages
-            loadMessages(user.id);
-            
-            // Focus sur l'input
-            setTimeout(() => messageInput.focus(), 100);
-        }
-
-        // Chargement des messages avec Realtime Database
-        function loadMessages(userId) {
-            // Désabonner de l'ancien listener s'il existe
-            if (messagesUnsubscribe) {
-                messagesUnsubscribe();
-            }
-            
-            // Créer un ID de conversation unique (trié alphabétiquement)
-            const conversationId = [currentUser.id, userId].sort().join('_');
-            
-            console.log('📨 Chargement messages pour conversation:', conversationId);
-            
-            // Référence vers les messages de cette conversation dans Realtime Database
-            const messagesRef = ref(rtdb, `messages/${conversationId}`);
-            const messagesQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(50));
-            
-            // Écouter les messages en temps réel
-            messagesUnsubscribe = () => off(messagesRef);
-            
-            onValue(messagesQuery, (snapshot) => {
-                const messages = [];
+            // Mise à jour de l'interface selon le type d'écran
+            if (isMobile) {
+                // Mode mobile - plein écran
+                mobileChatMode.classList.add('active');
+                mobileChatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
+                mobileChatUserName.textContent = user.fullName || 'Utilisateur';
+                mobileChatUserStatus.textContent = Math.random() > 0.3 ? 'En ligne' : 'Hors ligne';
                 
-                if (snapshot.exists()) {
-                    snapshot.forEach((childSnapshot) => {
-                        const messageData = childSnapshot.val();
-                        messages.push({
-                            id: childSnapshot.key,
-                            ...messageData
-                        });
-                    });
-                }
-                
-                // Les messages sont déjà triés par timestamp grâce à orderByChild
-                renderMessages(messages);
-                scrollToBottom();
-                
-                // Marquer les messages comme lus
-                markMessagesAsRead(userId);
-                
-            }, (error) => {
-                console.error('❌ Erreur chargement messages:', error);
-                messagesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Erreur de chargement</h3>
-                        <p>Impossible de charger les messages.</p>
-                    </div>
-                `;
-            });
-        }
-
-        // Rendu des messages avec gestion du timestamp Realtime Database
-        function renderMessages(messages) {
-            if (messages.length === 0) {
-                messagesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aucun message</h3>
-                        <p>Commencez la conversation en envoyant un message !</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const fragment = document.createDocumentFragment();
-            
-            messages.forEach(message => {
-                const messageElement = document.createElement('div');
-                messageElement.className = `message ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
-                
-                // Gestion du timestamp pour Realtime Database
-                let timestamp;
-                if (message.createdAt) {
-                    timestamp = new Date(message.createdAt);
-                } else if (message.timestamp && typeof message.timestamp === 'object') {
-                    // Timestamp du serveur Firebase
-                    timestamp = new Date();
-                } else if (message.timestamp) {
-                    timestamp = new Date(message.timestamp);
-                } else {
-                    timestamp = new Date();
-                }
-                
-                const timeString = timestamp.toLocaleTimeString('fr-FR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
+                // Focus sur l'input mobile
+                setTimeout(() => mobileMessageInput.focus(), 100);
+            } else {
+                // Mode desktop
+                document.querySelectorAll('.user-item').forEach(item => {
+                    item.classList.remove('active');
                 });
+                document.querySelector(`[data-user-id="${user.id}"]`)?.classList.add('active');
                 
-                messageElement.innerHTML = `
-                    <div class="message-bubble">
-                        ${escapeHtml(message.text || '')}
-                        <div class="message-time">${timeString}</div>
-                    </div>
-                `;
+                welcomeScreen.style.display = 'none';
+                chatHeader.classList.add('active');
+                messagesContainer.classList.add('active');
+                messageInputContainer.classList.add('active');
                 
-                fragment.appendChild(messageElement);
-            });
-            
-            messagesContainer.innerHTML = '';
-            messagesContainer.appendChild(fragment);
-        }
+                chatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
+                   chatUserName.textContent = user.fullName || 'Utilisateur';
+                chatUserStatus.textContent = Math.random() > 0.3 ? 'En ligne' : 'Hors ligne';
 
-        // Envoi d'un message avec Realtime Database
-        async function sendMessage() {
-            if (!currentChatUser || !currentUser) return;
-            
-            const messageText = messageInput.value.trim();
-            if (!messageText) return;
-            
-            // Désactiver le bouton d'envoi
-            sendButton.disabled = true;
-            messageInput.disabled = true;
-            
-            try {
-                const conversationId = [currentUser.id, currentChatUser.id].sort().join('_');
-                
-                // Référence vers les messages de cette conversation
-                const messagesRef = ref(rtdb, `messages/${conversationId}`);
-                const newMessageRef = push(messagesRef);
-                
-                const messageData = {
-                    senderId: currentUser.id,
-                    senderName: currentUser.fullName,
-                    senderAvatar: currentUser.avatar,
-                    receiverId: currentChatUser.id,
-                    receiverName: currentChatUser.fullName,
-                    text: messageText,
-                    timestamp: rtdbServerTimestamp(),
-                    read: false,
-                    createdAt: Date.now() // Timestamp numérique pour le tri
-                };
-                
-                await set(newMessageRef, messageData);
-                
-                // Mettre à jour les informations de la conversation
-                const conversationRef = ref(rtdb, `conversations/${conversationId}`);
-                await set(conversationRef, {
-                    participants: [currentUser.id, currentChatUser.id],
-                    participantNames: [currentUser.fullName, currentChatUser.fullName],
-                    lastMessage: messageText,
-                    lastMessageTime: rtdbServerTimestamp(),
-                    lastMessageSender: currentUser.id,
-                    updatedAt: Date.now()
-                });
-                
-                // Vider l'input
-                messageInput.value = '';
-                adjustTextareaHeight();
-                
-                console.log('✅ Message envoyé via Realtime Database');
-                
-            } catch (error) {
-                console.error('❌ Erreur envoi message:', error);
-                alert('Erreur lors de l\'envoi du message');
-            } finally {
-                sendButton.disabled = false;
-                messageInput.disabled = false;
-                messageInput.focus();
+                // Focus sur l'input desktop
+                setTimeout(() => messageInput.focus(), 100);
             }
-        }
 
-        // Ajustement automatique de la hauteur du textarea
-        function adjustTextareaHeight() {
-            messageInput.style.height = 'auto';
-            messageInput.style.height = Math.min(messageInput.scrollHeight, 100) + 'px';
-        }
-
-        // Scroll vers le bas
-        function scrollToBottom() {
-            setTimeout(() => {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 100);
-        }
-
-        // Échapper le HTML
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Gestion des indicateurs de frappe
-        function handleTyping() {
-            if (!currentChatUser) return;
-            
-            // Simuler l'indicateur de frappe (dans une vraie app, cela utiliserait des websockets)
-            clearTimeout(typingTimeout);
-            
-            typingTimeout = setTimeout(() => {
-                // Logique de frappe terminée
-            }, 2000);
-        }
-
-        // Mise à jour du statut d'activité
-        function updateLastActivity() {
-            lastActivity = Date.now();
-            
-            // Mettre à jour le statut dans Firebase (optionnel)
-            if (currentUser) {
-                try {
-                    setDoc(doc(db, 'users', currentUser.id), {
-                        lastActive: serverTimestamp()
-                    }, { merge: true });
-                } catch (error) {
-                    console.error('Erreur mise à jour activité:', error);
-                }
+            // Nettoyage des messages précédents
+            if (isMobile) {
+                mobileMessagesContainer.innerHTML = '';
+            } else {
+                messagesContainer.innerHTML = '';
             }
-        }
 
-        // Gestion des événements
-        function setupEventListeners() {
-            // Recherche d'utilisateurs
-            searchInput.addEventListener('input', handleSearch);
-            
-            // Envoi de message avec Enter
-            messageInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                } else if (e.key === 'Enter' && e.shiftKey) {
-                    // Permettre les retours à la ligne avec Shift+Enter
-                    return;
-                }
-            });
-            
-            // Ajustement automatique de la hauteur du textarea
-            messageInput.addEventListener('input', () => {
-                adjustTextareaHeight();
-                handleTyping();
-                updateLastActivity();
-            });
-            
-            // Bouton d'envoi
-            sendButton.addEventListener('click', sendMessage);
-            
-            // Activation du bouton d'envoi selon le contenu
-            messageInput.addEventListener('input', () => {
-                sendButton.disabled = !messageInput.value.trim();
-            });
-            
-            // Mise à jour de l'activité lors des clics
-            document.addEventListener('click', updateLastActivity);
-            document.addEventListener('keypress', updateLastActivity);
-            
-            // Gestion de la fermeture de la page
-            window.addEventListener('beforeunload', () => {
-                if (messagesUnsubscribe) {
-                    messagesUnsubscribe();
-                }
-            });
-        }
-
-        // Simulation de notifications de nouveaux messages
-        function simulateNotifications() {
-            // Dans une vraie application, cela serait géré par les push notifications
-            // ou les websockets pour les notifications en temps réel
-            
-            setInterval(() => {
-                // Simuler l'arrivée de nouveaux messages aléatoirement
-                if (Math.random() > 0.95 && allUsers.length > 0) {
-                    const randomUser = allUsers[Math.floor(Math.random() * allUsers.length)];
-                    console.log('🔔 Simulation notification de:', randomUser.fullName);
-                    
-                    // Ici vous pourriez ajouter une logique pour afficher des badges
-                    // de messages non lus sur les utilisateurs
-                }
-            }, 10000); // Vérifier toutes les 10 secondes
-        }
-
-        // Marquer les messages comme lus avec Realtime Database
-        async function markMessagesAsRead(userId) {
-            if (!currentUser || !userId) return;
-            
-            try {
-                const conversationId = [currentUser.id, userId].sort().join('_');
-                const messagesRef = ref(rtdb, `messages/${conversationId}`);
-                
-                // Obtenir les messages non lus
-                onValue(messagesRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        const updates = {};
-                        
-                        snapshot.forEach((childSnapshot) => {
-                            const message = childSnapshot.val();
-                            
-                            // Marquer comme lu si c'est un message reçu et non lu
-                            if (message.receiverId === currentUser.id && !message.read) {
-                                updates[`messages/${conversationId}/${childSnapshot.key}/read`] = true;
-                            }
-                        });
-                        
-                        // Appliquer les mises à jour
-                        if (Object.keys(updates).length > 0) {
-                            set(ref(rtdb), updates);
-                            console.log('✅ Messages marqués comme lus');
-                        }
-                    }
-                }, { onlyOnce: true });
-                
-            } catch (error) {
-                console.error('❌ Erreur marquage messages lus:', error);
-            }
-        }
-
-        // Fonction pour obtenir le nombre de messages non lus avec Realtime Database
-        async function getUnreadCount(userId) {
-            if (!currentUser || !userId) return 0;
-            
-            return new Promise((resolve) => {
-                try {
-                    const conversationId = [currentUser.id, userId].sort().join('_');
-                    const messagesRef = ref(rtdb, `messages/${conversationId}`);
-                    
-                    onValue(messagesRef, (snapshot) => {
-                        let unreadCount = 0;
-                        
-                        if (snapshot.exists()) {
-                            snapshot.forEach((childSnapshot) => {
-                                const message = childSnapshot.val();
-                                
-                                // Compter les messages non lus reçus
-                                if (message.receiverId === currentUser.id && !message.read) {
-                                    unreadCount++;
-                                }
-                            });
-                        }
-                        
-                        resolve(unreadCount);
-                    }, { onlyOnce: true });
-                    
-                } catch (error) {
-                    console.error('❌ Erreur comptage messages non lus:', error);
-                    resolve(0);
-                }
-            });
-        }
-
-        // Mise à jour des badges de messages non lus
-        async function updateUnreadBadges() {
-            const userItems = document.querySelectorAll('.user-item');
-            
-            for (const userItem of userItems) {
-                const userId = userItem.dataset.userId;
-                if (!userId) continue;
-                
-                const unreadCount = await getUnreadCount(userId);
-                
-                // Supprimer l'ancien badge s'il existe
-                const existingBadge = userItem.querySelector('.unread-badge');
-                if (existingBadge) {
-                    existingBadge.remove();
-                }
-                
-                // Ajouter un nouveau badge si nécessaire
-                if (unreadCount > 0) {
-                    const badge = document.createElement('div');
-                    badge.className = 'unread-badge';
-                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-                    userItem.appendChild(badge);
-                }
-            }
-        }
-
-        // Fonction de débogage
-        window.debugMessages = function() {
-            console.log('🔧 État de l\'application Messages:', {
-                currentUser: currentUser,
-                currentChatUser: currentChatUser,
-                allUsersCount: allUsers.length,
-                filteredUsersCount: filteredUsers.length,
-                hasMessagesListener: !!messagesUnsubscribe
-            });
-        };
-
-        // Gestion des erreurs globales
-        window.addEventListener('error', (e) => {
-            console.error('❌ Erreur globale dans Messages:', e.error);
-        });
-
-        // Gestion des promesses rejetées
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('❌ Promesse rejetée dans Messages:', e.reason);
-        });
-
-        // Fonction de nettoyage lors de la fermeture
-        function cleanup() {
+            // Désabonnement des anciens listeners Firestore
             if (messagesUnsubscribe) {
                 messagesUnsubscribe();
                 messagesUnsubscribe = null;
             }
-            
-            if (typingTimeout) {
-                clearTimeout(typingTimeout);
-                typingTimeout = null;
-            }
-        }
 
-        // Initialisation de l'application Messages
-        async function initializeMessagesApp() {
-            console.log('🚀 Initialisation Express Exchange Messages...');
-            
-            // Vérifier l'utilisateur connecté
-            currentUser = getCurrentUser();
-            if (!currentUser) {
-                return; // L'utilisateur sera redirigé
-            }
-            
-            console.log('👤 Utilisateur connecté:', currentUser.fullName);
-            
-            // Configurer les événements
-            setupEventListeners();
-            
-            // Charger les utilisateurs
-            await loadUsers();
-            
-            // Mettre à jour les badges de messages non lus
-            await updateUnreadBadges();
-            
-            // Démarrer les simulations (pour la démo)
-            simulateNotifications();
-            
-            // Mettre à jour l'activité de l'utilisateur
-            updateLastActivity();
-            
-            console.log('✅ Express Exchange Messages initialisé avec succès');
-        }
+            // Charger les messages en temps réel
+            const chatId = generateChatId(currentUser.id, user.id);
+            const messagesRef = collection(db, 'chats', chatId, 'messages');
+            const messagesQuery = query(messagesRef, orderBy('timestamp', 'asc'), limit(100));
 
-        // Démarrage de l'application
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('📱 DOM chargé, initialisation...');
-            
-            // Petit délai pour s'assurer que tout est prêt
-            setTimeout(() => {
-                initializeMessagesApp().catch(error => {
-                    console.error('❌ Erreur initialisation:', error);
-                    alert('Erreur lors de l\'initialisation de l\'application');
+            messagesUnsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+                if (isMobile) {
+                    mobileMessagesContainer.innerHTML = '';
+                } else {
+                    messagesContainer.innerHTML = '';
+                }
+                snapshot.forEach(doc => {
+                    const msg = doc.data();
+                    renderMessage(msg, msg.senderId === currentUser.id ? 'sent' : 'received', isMobile);
                 });
-            }, 100);
+                // Scroll vers le bas
+                scrollToBottom(isMobile);
+            });
+        }
+
+        // Générer un ID de chat unique pour deux utilisateurs
+        function generateChatId(userId1, userId2) {
+            return [userId1, userId2].sort().join('_');
+        }
+
+        // Rendu d'un message
+        function renderMessage(msg, type, mobile) {
+            const msgContainer = document.createElement('div');
+            msgContainer.className = `message ${type}`;
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = msg.text;
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = formatTimestamp(msg.timestamp);
+
+            msgContainer.appendChild(bubble);
+            msgContainer.appendChild(timeDiv);
+
+            if (mobile) {
+                mobileMessagesContainer.appendChild(msgContainer);
+            } else {
+                messagesContainer.appendChild(msgContainer);
+            }
+        }
+
+        // Formatter un timestamp
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            let date;
+            if (timestamp.seconds) {
+                date = new Date(timestamp.seconds * 1000);
+            } else {
+                date = new Date(timestamp);
+            }
+            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Scroll vers le bas
+        function scrollToBottom(mobile) {
+            if (mobile) {
+                mobileMessagesContainer.scrollTop = mobileMessagesContainer.scrollHeight;
+            } else {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Envoi d'un message
+        async function sendMessage(text, mobile=false) {
+            if (!text.trim() || !currentChatUser) return;
+            const chatId = generateChatId(currentUser.id, currentChatUser.id);
+            const messagesRef = collection(db, 'chats', chatId, 'messages');
+            try {
+                await setDoc(doc(messagesRef), {
+                    text: text,
+                    senderId: currentUser.id,
+                    receiverId: currentChatUser.id,
+                    timestamp: serverTimestamp()
+                });
+            } catch (error) {
+                showError('Erreur lors de l\'envoi du message');
+                if (mobile) showMobileError('Erreur lors de l\'envoi du message');
+            }
+        }
+
+        // Gestion de la saisie du message
+        messageInput.addEventListener('input', () => {
+            sendButton.disabled = messageInput.value.trim() === '';
+        });
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey && messageInput.value.trim()) {
+                e.preventDefault();
+                sendMessage(messageInput.value);
+                messageInput.value = '';
+                sendButton.disabled = true;
+            }
+        });
+        sendButton.addEventListener('click', () => {
+            sendMessage(messageInput.value);
+            messageInput.value = '';
+            sendButton.disabled = true;
         });
 
-        // Nettoyage lors de la fermeture de la page
-        window.addEventListener('beforeunload', cleanup);
-        window.addEventListener('unload', cleanup);
+        // Mobile input
+        mobileMessageInput.addEventListener('input', () => {
+            mobileSendButton.disabled = mobileMessageInput.value.trim() === '';
+        });
+        mobileMessageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey && mobileMessageInput.value.trim()) {
+                e.preventDefault();
+                sendMessage(mobileMessageInput.value, true);
+                mobileMessageInput.value = '';
+                mobileSendButton.disabled = true;
+            }
+        });
+        mobileSendButton.addEventListener('click', () => {
+            sendMessage(mobileMessageInput.value, true);
+            mobileMessageInput.value = '';
+            mobileSendButton.disabled = true;
+        });
 
-        // Fonction publique pour revenir à la page principale
-        window.goToMain = function() {
-            cleanup();
-            window.location.href = './paste.txt';
-        };
+        // Fermeture du chat mobile
+        closeChatMobile.addEventListener('click', () => {
+            mobileChatMode.classList.remove('active');
+            currentChatUser = null;
+        });
+        closeChatDesktop.addEventListener('click', () => {
+            welcomeScreen.style.display = '';
+            chatHeader.classList.remove('active');
+            messagesContainer.classList.remove('active');
+            messageInputContainer.classList.remove('active');
+            currentChatUser = null;
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        });
 
-        console.log('💬 Script Express Exchange Messages chargé');
+        // Recherche utilisateur
+        searchInput.addEventListener('input', handleSearch);
+
+        // Affichage des erreurs
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.classList.add('show');
+            setTimeout(() => errorMessage.classList.remove('show'), 4000);
+        }
+        function showMobileError(msg) {
+            mobileErrorMessage.textContent = msg;
+            mobileErrorMessage.classList.add('show');
+            setTimeout(() => mobileErrorMessage.classList.remove('show'), 4000);
+        }
+
+        // Fonction utilitaire pour l'escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function (m) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[m];
+            });
+        }
+
+        // Initialisation générale
+        window.addEventListener('resize', () => {
+            isMobile = window.innerWidth <= 768;
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            currentUser = getCurrentUser();
+            if (!currentUser) return;
+            await loadUsers();
+        });
     </script>
-
-    <!-- Bouton de retour à la page principale -->
-    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-        <button onclick="goToMain()" style="
-            background: #0095f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0, 149, 246, 0.3);
-        " onmouseover="this.style.background='#1877f2'" onmouseout="this.style.background='#0095f6'">
-            ← Retour
-        </button>
-    </div>
 </body>
 </html>
