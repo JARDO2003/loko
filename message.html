@@ -26,7 +26,6 @@
             margin: 0 auto;
             border-left: 1px solid #262626;
             border-right: 1px solid #262626;
-            position: relative;
         }
 
         /* Sidebar avec liste des utilisateurs */
@@ -36,7 +35,6 @@
             border-right: 1px solid #262626;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -96,7 +94,7 @@
         .users-list {
             flex: 1;
             overflow-y: auto;
-            padding: 0 0 20px 0;
+            padding: 0;
         }
 
         .user-item {
@@ -107,10 +105,6 @@
             transition: all 0.2s ease;
             border-bottom: 1px solid #1a1a1a;
             position: relative;
-        }
-
-        .user-item:last-child {
-            margin-bottom: 20px;
         }
 
         .user-item:hover {
@@ -172,39 +166,18 @@
             text-overflow: ellipsis;
         }
 
-        .user-last-message {
-            font-size: 12px;
-            color: #8e8e8e;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 2px;
-        }
-
-        .user-meta {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: #8e8e8e;
-        }
-
         .unread-badge {
             background: #0095f6;
             color: white;
             border-radius: 50%;
-            min-width: 20px;
+            width: 20px;
             height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: bold;
-            padding: 0 6px;
+            margin-left: 8px;
         }
 
         /* Zone de chat principale */
@@ -213,7 +186,6 @@
             display: flex;
             flex-direction: column;
             background: #000000;
-            position: relative;
         }
 
         .welcome-screen {
@@ -243,7 +215,6 @@
             border-bottom: 1px solid #262626;
             display: none;
             align-items: center;
-            justify-content: space-between;
             background: #000000;
             position: sticky;
             top: 0;
@@ -252,11 +223,6 @@
 
         .chat-header.active {
             display: flex;
-        }
-
-        .chat-user-info {
-            display: flex;
-            align-items: center;
         }
 
         .chat-avatar {
@@ -284,32 +250,11 @@
             color: #8e8e8e;
         }
 
-        .close-chat {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .close-chat:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
         .messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 20px 30px 20px;
+            padding: 20px;
             display: none;
-            scroll-behavior: smooth;
         }
 
         .messages-container.active {
@@ -320,10 +265,6 @@
             margin-bottom: 16px;
             display: flex;
             animation: fadeInMessage 0.3s ease-out;
-        }
-
-        .message:last-child {
-            margin-bottom: 30px;
         }
 
         .message.sent {
@@ -356,17 +297,6 @@
             border-bottom-left-radius: 4px;
         }
 
-        .message-image {
-            max-width: 250px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .message-image:hover {
-            transform: scale(1.02);
-        }
-
         .message-time {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.7);
@@ -380,11 +310,10 @@
         }
 
         .message-input-container {
-            padding: 16px 20px 20px 20px;
+            padding: 16px 20px;
             border-top: 1px solid #262626;
             background: #000000;
             display: none;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .message-input-container.active {
@@ -415,27 +344,6 @@
 
         .message-input::placeholder {
             color: #8e8e8e;
-        }
-
-        .input-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .image-upload-btn {
-            background: none;
-            border: none;
-            color: #0095f6;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
-
-        .image-upload-btn:hover {
-            background: rgba(0, 149, 246, 0.1);
         }
 
         .send-button {
@@ -566,101 +474,21 @@
             line-height: 1.5;
         }
 
-        /* Mode mobile */
-        .mobile-chat-mode {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            z-index: 1000;
-            display: none;
-        }
-
-        .mobile-chat-mode.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .mobile-chat-mode .messages-container {
-            padding: 20px 15px 30px 15px;
-        }
-
-        .mobile-chat-mode .message-input-container {
-            padding: 15px 15px 25px 15px;
-        }
-
-        /* Image viewer modal */
-        .image-viewer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .image-viewer.active {
-            display: flex;
-        }
-
-        .image-viewer img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-
-        .image-viewer-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 24px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sending-indicator {
-            opacity: 0.6;
-            position: relative;
-        }
-
-        .sending-indicator::after {
-            content: '⏳';
-            position: absolute;
-            right: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
             .sidebar {
                 width: 100%;
+                height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid #262626;
             }
 
             .chat-area {
-                display: none;
-            }
-
-            .mobile-chat-mode.active {
-                display: flex;
-            }
-
-            .message-bubble {
-                max-width: 85%;
+                height: 50vh;
             }
 
             .sidebar-header {
@@ -672,49 +500,39 @@
             }
 
             .user-item {
-                padding: 15px;
+                padding: 10px 15px;
             }
 
             .user-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
             }
 
-            .users-list {
-                padding-bottom: 30px;
-            }
-
-            .user-item:last-child {
-                margin-bottom: 30px;
+            .message-bubble {
+                max-width: 85%;
             }
         }
 
-        /* Scrollbar */
+        /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
             background: #000000;
-            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #404040;
-            border-radius: 4px;
-            border: 1px solid #262626;
+            background: #262626;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #555555;
+            background: #404040;
         }
 
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: #404040 #000000;
-        }
-
+        /* Status indicators */
         .status-online {
             color: #42b883 !important;
         }
@@ -723,106 +541,22 @@
             color: #8e8e8e !important;
         }
 
-        .error-message {
-            background: #ff4444;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 20px;
-            font-size: 14px;
-            text-align: center;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: fadeInMessage 0.3s ease-out;
-        }
-
-        .users-list::after {
-            content: '';
-            display: block;
-            height: 20px;
-            width: 100%;
-        }
-
-        .messages-container::after {
-            content: '';
-            display: block;
-            height: 20px;
-            width: 100%;
-        }
-
-        .users-list {
-            padding-bottom: 0;
-            margin-bottom: 0;
-        }
-
-        .messages-container {
-            padding-bottom: 20px;
-        }
-
-        .user-item:last-of-type {
-            border-bottom: none;
-            padding-bottom: 20px;
-        }
-
-        /* Hidden file input */
-        .file-input {
-            display: none;
-        }
-
-        /* Loading indicator for image upload */
-        .upload-progress {
-            background: rgba(0, 149, 246, 0.1);
-            border: 1px solid #0095f6;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px 0;
-            text-align: center;
-            color: #0095f6;
-            font-size: 12px;
-        }
-
-        /* Message status indicators */
+        /* Message status */
         .message-status {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
             margin-top: 2px;
-            justify-content: flex-end;
         }
 
         .message.received .message-status {
-            justify-content: flex-start;
-        }
-
-        .status-icon {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .status-sending {
             color: #8e8e8e;
-        }
-
-        .status-sent {
-            color: #8e8e8e;
-        }
-
-        .status-delivered {
-            color: #0095f6;
-        }
-
-        .status-read {
-            color: #0095f6;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Sidebar avec liste des utilisateurs -->
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar">
             <div class="sidebar-header">
                 <h2 class="sidebar-title">Messages</h2>
                 <div class="search-container">
@@ -838,27 +572,21 @@
             </div>
         </div>
 
-        <!-- Zone de chat principale (Desktop) -->
-        <div class="chat-area" id="chatArea">
+        <!-- Zone de chat principale -->
+        <div class="chat-area">
             <!-- Écran d'accueil -->
             <div class="welcome-screen" id="welcomeScreen">
                 <h2>💬 Express Exchange Messages</h2>
                 <p>Sélectionnez un utilisateur dans la liste pour commencer une conversation.</p>
             </div>
 
-            <!-- Message d'erreur -->
-            <div class="error-message" id="errorMessage"></div>
-
             <!-- Header du chat -->
             <div class="chat-header" id="chatHeader">
-                <div class="chat-user-info">
-                    <div class="chat-avatar" id="chatAvatar">U</div>
-                    <div class="chat-info">
-                        <h3 id="chatUserName">Nom d'utilisateur</h3>
-                        <div class="chat-status" id="chatUserStatus">En ligne</div>
-                    </div>
+                <div class="chat-avatar" id="chatAvatar">U</div>
+                <div class="chat-info">
+                    <h3 id="chatUserName">Nom d'utilisateur</h3>
+                    <div class="chat-status" id="chatUserStatus">En ligne</div>
                 </div>
-                <button class="close-chat" id="closeChatDesktop" style="display: none;">×</button>
             </div>
 
             <!-- Indicateur de frappe -->
@@ -873,6 +601,7 @@
 
             <!-- Conteneur des messages -->
             <div class="messages-container" id="messagesContainer">
+                <!-- Les messages seront ajoutés ici dynamiquement -->
             </div>
 
             <!-- Zone de saisie -->
@@ -884,84 +613,32 @@
                         placeholder="Écrivez votre message..."
                         rows="1"
                     ></textarea>
-                    <div class="input-actions">
-                        <input type="file" class="file-input" id="imageInput" accept="image/*">
-                        <button class="image-upload-btn" id="imageUploadBtn">📷</button>
-                        <button class="send-button" id="sendButton" disabled>➤</button>
-                    </div>
+                    <button class="send-button" id="sendButton" disabled>
+                        ➤
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Mode mobile - Chat en plein écran -->
-    <div class="mobile-chat-mode" id="mobileChatMode">
-        <!-- Header du chat mobile -->
-        <div class="chat-header active">
-            <div class="chat-user-info">
-                <div class="chat-avatar" id="mobileChatAvatar">U</div>
-                <div class="chat-info">
-                    <h3 id="mobileChatUserName">Nom d'utilisateur</h3>
-                    <div class="chat-status" id="mobileChatUserStatus">En ligne</div>
-                </div>
-            </div>
-            <button class="close-chat" id="closeChatMobile">×</button>
-        </div>
-
-        <!-- Message d'erreur mobile -->
-        <div class="error-message" id="mobileErrorMessage"></div>
-
-        <!-- Indicateur de frappe mobile -->
-        <div class="typing-indicator" id="mobileTypingIndicator">
-            <span id="mobileTypingUserName">Utilisateur</span> est en train d'écrire
-            <div class="typing-dots">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        </div>
-
-        <!-- Conteneur des messages mobile -->
-        <div class="messages-container active" id="mobileMessagesContainer">
-        </div>
-
-        <!-- Zone de saisie mobile -->
-        <div class="message-input-container active">
-            <div class="message-input-wrapper">
-                <textarea 
-                    class="message-input" 
-                    id="mobileMessageInput" 
-                    placeholder="Écrivez votre message..."
-                    rows="1"
-                ></textarea>
-                <div class="input-actions">
-                    <input type="file" class="file-input" id="mobileImageInput" accept="image/*">
-                    <button class="image-upload-btn" id="mobileImageUploadBtn">📷</button>
-                    <button class="send-button" id="mobileSendButton" disabled>➤</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Image viewer modal -->
-    <div class="image-viewer" id="imageViewer">
-        <button class="image-viewer-close" id="imageViewerClose">×</button>
-        <img id="imageViewerImg" src="" alt="Image agrandie">
     </div>
 
     <script type="module">
-        console.log('💬 Initialisation Express Exchange Messages avec support images');
+        console.log('💬 Initialisation Express Exchange Messages');
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
             getFirestore, 
             collection, 
             doc, 
+            setDoc, 
             getDocs, 
             query, 
-            limit,
-            orderBy,
-            where
+            orderBy, 
+            limit, 
+            onSnapshot, 
+            deleteDoc,
+            serverTimestamp,
+            where,
+            writeBatch
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
         import { 
             getDatabase, 
@@ -974,16 +651,11 @@
             query as rtdbQuery,
             orderByChild,
             limitToLast,
+            equalTo,
             update
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
-        import {
-            getStorage,
-            ref as storageRef,
-            uploadBytes,
-            getDownloadURL
-        } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js';
 
-        // Configuration Firebase
+        // Configuration Firebase (même que Express Exchange)
         const firebaseConfig = {
             apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
             authDomain: "data-com-a94a8.firebaseapp.com",
@@ -998,18 +670,16 @@
         // Initialisation Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const rtdb = getDatabase(app);
-        const storage = getStorage(app);
+        const rtdb = getDatabase(app); // Realtime Database pour les messages
 
         // Variables globales
         let currentUser = null;
         let allUsers = [];
         let filteredUsers = [];
         let currentChatUser = null;
-        let messagesListener = null;
-        let isMobile = window.innerWidth <= 768;
-        let onlineUsers = new Set();
-        let userChats = new Map(); // Pour stocker les derniers messages de chaque chat
+        let messagesUnsubscribe = null;
+        let typingTimeout = null;
+        let lastActivity = Date.now();
 
         // Éléments DOM
         const searchInput = document.getElementById('searchInput');
@@ -1023,28 +693,8 @@
         const messageInputContainer = document.getElementById('messageInputContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const imageInput = document.getElementById('imageInput');
-        const imageUploadBtn = document.getElementById('imageUploadBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const closeChatDesktop = document.getElementById('closeChatDesktop');
-        
-        // Éléments mobile
-        const mobileChatMode = document.getElementById('mobileChatMode');
-        const mobileChatAvatar = document.getElementById('mobileChatAvatar');
-        const mobileChatUserName = document.getElementById('mobileChatUserName');
-        const mobileChatUserStatus = document.getElementById('mobileChatUserStatus');
-        const mobileMessagesContainer = document.getElementById('mobileMessagesContainer');
-        const mobileMessageInput = document.getElementById('mobileMessageInput');
-        const mobileSendButton = document.getElementById('mobileSendButton');
-        const mobileImageInput = document.getElementById('mobileImageInput');
-        const mobileImageUploadBtn = document.getElementById('mobileImageUploadBtn');
-        const mobileErrorMessage = document.getElementById('mobileErrorMessage');
-        const closeChatMobile = document.getElementById('closeChatMobile');
-
-        // Image viewer
-        const imageViewer = document.getElementById('imageViewer');
-        const imageViewerImg = document.getElementById('imageViewerImg');
-        const imageViewerClose = document.getElementById('imageViewerClose');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const typingUserName = document.getElementById('typingUserName');
 
         // Fonction pour récupérer les données utilisateur
         function getCurrentUser() {
@@ -1076,21 +726,29 @@
 
         function redirectToMainApp() {
             alert('Vous devez être connecté pour accéder aux messages.');
-            window.location.href = './index.html';
+            window.location.href = './index.html'; // Redirection vers la page principale
         }
 
-        // Chargement des utilisateurs avec leurs derniers messages
+        // Fonction pour créer un ID de conversation valide (sans caractères interdits)
+        function createConversationId(userId1, userId2) {
+            // Nettoyer les IDs et les trier pour consistance
+            const cleanId1 = userId1.toString().replace(/[.#$[\]/]/g, '_');
+            const cleanId2 = userId2.toString().replace(/[.#$[\]/]/g, '_');
+            return [cleanId1, cleanId2].sort().join('_to_');
+        }
+
+        // Chargement des utilisateurs inscrits
         async function loadUsers() {
             try {
                 console.log('👥 Chargement des utilisateurs...');
                 
-                const usersQuery = query(collection(db, 'users'), limit(200));
+                const usersQuery = query(collection(db, 'users'), limit(100));
                 const usersSnapshot = await getDocs(usersQuery);
                 
                 allUsers = [];
                 usersSnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    if (userData.id !== currentUser.id && userData.fullName) {
+                    if (userData.id !== currentUser.id) { // Exclure l'utilisateur actuel
                         allUsers.push({
                             id: doc.id,
                             ...userData
@@ -1100,21 +758,10 @@
                 
                 console.log(`✅ ${allUsers.length} utilisateurs chargés`);
                 filteredUsers = [...allUsers];
-                
-                // Charger les derniers messages pour chaque utilisateur
-                await loadUserChats();
-                
                 renderUsers();
-                
-                // Écouter les statuts en ligne
-                listenToOnlineStatus();
-                
-                // Écouter les nouveaux messages
-                listenToAllChats();
                 
             } catch (error) {
                 console.error('❌ Erreur chargement utilisateurs:', error);
-                showError('Impossible de charger la liste des utilisateurs');
                 usersList.innerHTML = `
                     <div class="empty-state">
                         <h3>Erreur de chargement</h3>
@@ -1124,97 +771,7 @@
             }
         }
 
-        // Charger les derniers messages pour tous les chats
-        async function loadUserChats() {
-            const promises = allUsers.map(async (user) => {
-                const chatId = generateChatId(currentUser.id, user.id);
-                const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
-                const lastMessageQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(1));
-                
-                return new Promise((resolve) => {
-                    onValue(lastMessageQuery, (snapshot) => {
-                        if (snapshot.exists()) {
-                            const messages = Object.values(snapshot.val());
-                            const lastMessage = messages[messages.length - 1];
-                            userChats.set(user.id, {
-                                lastMessage: lastMessage,
-                                unreadCount: 0 // À implémenter selon vos besoins
-                            });
-                        }
-                        resolve();
-                    }, { onlyOnce: true });
-                });
-            });
-
-            await Promise.all(promises);
-        }
-
-        // Écouter tous les chats pour les nouveaux messages
-        function listenToAllChats() {
-            allUsers.forEach(user => {
-                const chatId = generateChatId(currentUser.id, user.id);
-                const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
-                const lastMessageQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(1));
-                
-                onValue(lastMessageQuery, (snapshot) => {
-                    if (snapshot.exists()) {
-                        const messages = Object.values(snapshot.val());
-                        const lastMessage = messages[messages.length - 1];
-                        
-                        // Mettre à jour le cache
-                        const existingChat = userChats.get(user.id) || {};
-                        userChats.set(user.id, {
-                            ...existingChat,
-                            lastMessage: lastMessage
-                        });
-                        
-                        // Re-render la liste des utilisateurs pour mettre à jour le dernier message
-                        renderUsers();
-                        
-                        // Si c'est un nouveau message reçu, afficher une notification
-                        if (lastMessage.senderId !== currentUser.id && 
-                            (!existingChat.lastMessage || lastMessage.timestamp > existingChat.lastMessage.timestamp)) {
-                            // Nouveau message reçu
-                            console.log('💬 Nouveau message reçu de:', user.fullName);
-                        }
-                    }
-                });
-            });
-        }
-
-        // Écouter les statuts en ligne
-        function listenToOnlineStatus() {
-            const onlineRef = ref(rtdb, 'presence');
-            onValue(onlineRef, (snapshot) => {
-                onlineUsers.clear();
-                if (snapshot.exists()) {
-                    const presenceData = snapshot.val();
-                    Object.keys(presenceData).forEach(userId => {
-                        if (presenceData[userId].online) {
-                            onlineUsers.add(userId);
-                        }
-                    });
-                    renderUsers(); // Re-render pour mettre à jour les statuts
-                }
-            });
-
-            // Marquer l'utilisateur actuel comme en ligne
-            const userPresenceRef = ref(rtdb, `presence/${currentUser.id}`);
-            set(userPresenceRef, {
-                online: true,
-                lastSeen: rtdbServerTimestamp()
-            });
-
-            // Marquer comme hors ligne à la fermeture
-            window.addEventListener('beforeunload', () => {
-                set(userPresenceRef, {
-                    online: false,
-                    lastSeen: rtdbServerTimestamp()
-                });
-            });
-        }
-
-        // Rendu de la liste des utilisateurs avec leurs derniers messages
+        // Rendu de la liste des utilisateurs
         function renderUsers() {
             if (filteredUsers.length === 0) {
                 usersList.innerHTML = `
@@ -1226,50 +783,15 @@
                 return;
             }
             
-            // Trier les utilisateurs par dernière activité
-            const sortedUsers = [...filteredUsers].sort((a, b) => {
-                const chatA = userChats.get(a.id);
-                const chatB = userChats.get(b.id);
-                
-                const timestampA = chatA?.lastMessage?.timestamp || 0;
-                const timestampB = chatB?.lastMessage?.timestamp || 0;
-                
-                return timestampB - timestampA; // Plus récent en premier
-            });
-            
             const fragment = document.createDocumentFragment();
             
-            sortedUsers.forEach(user => {
+            filteredUsers.forEach(user => {
                 const userElement = document.createElement('div');
                 userElement.className = 'user-item';
                 userElement.dataset.userId = user.id;
                 
-                const isOnline = onlineUsers.has(user.id);
-                const chatData = userChats.get(user.id);
-                const lastMessage = chatData?.lastMessage;
-                
-                let lastMessageText = '';
-                let messageTime = '';
-                
-                if (lastMessage) {
-                    if (lastMessage.type === 'image') {
-                        lastMessageText = '📷 Photo';
-                    } else {
-                        lastMessageText = lastMessage.text || '';
-                    }
-                    
-                    // Limiter la longueur du message
-                    if (lastMessageText.length > 30) {
-                        lastMessageText = lastMessageText.substring(0, 30) + '...';
-                    }
-                    
-                    // Ajouter le préfixe "Vous:" si c'est l'utilisateur actuel qui a envoyé
-                    if (lastMessage.senderId === currentUser.id) {
-                        lastMessageText = 'Vous: ' + lastMessageText;
-                    }
-                    
-                    messageTime = formatTime(lastMessage.timestamp);
-                }
+                // Simuler le statut en ligne (dans une vraie app, cela viendrait de la base de données)
+                const isOnline = Math.random() > 0.3; // 70% de chance d'être en ligne
                 
                 userElement.innerHTML = `
                     <div class="user-avatar">
@@ -1281,11 +803,6 @@
                         <div class="user-status ${isOnline ? 'status-online' : 'status-offline'}">
                             ${isOnline ? 'En ligne' : 'Hors ligne'}
                         </div>
-                        ${lastMessageText ? `<div class="user-last-message">${escapeHtml(lastMessageText)}</div>` : ''}
-                    </div>
-                    <div class="user-meta">
-                        ${messageTime ? `<div class="message-time">${messageTime}</div>` : ''}
-                        ${chatData?.unreadCount > 0 ? `<div class="unread-badge">${chatData.unreadCount}</div>` : ''}
                     </div>
                 `;
                 
@@ -1295,36 +812,6 @@
             
             usersList.innerHTML = '';
             usersList.appendChild(fragment);
-        }
-
-        // Formatter le timestamp pour affichage dans la liste
-        function formatTime(timestamp) {
-            if (!timestamp) return '';
-            
-            const now = new Date();
-            const messageDate = new Date(timestamp);
-            const diffTime = now - messageDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 0) {
-                // Aujourd'hui - afficher l'heure
-                return messageDate.toLocaleTimeString('fr-FR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-            } else if (diffDays === 1) {
-                // Hier
-                return 'Hier';
-            } else if (diffDays < 7) {
-                // Cette semaine - afficher le jour
-                return messageDate.toLocaleDateString('fr-FR', { weekday: 'short' });
-            } else {
-                // Plus ancien - afficher la date
-                return messageDate.toLocaleDateString('fr-FR', { 
-                    day: '2-digit', 
-                    month: '2-digit' 
-                });
-            }
         }
 
         // Recherche d'utilisateurs
@@ -1345,11 +832,6 @@
             renderUsers();
         }
 
-        // Générer un ID de chat unique pour deux utilisateurs
-        function generateChatId(userId1, userId2) {
-            return [userId1, userId2].sort().join('_');
-        }
-
         // Ouverture d'un chat
         async function openChat(user) {
             console.log('💬 Ouverture chat avec:', user.fullName);
@@ -1357,422 +839,495 @@
             currentChatUser = user;
             
             // Mise à jour de l'interface
-            if (isMobile) {
-                mobileChatMode.classList.add('active');
-                mobileChatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
-                mobileChatUserName.textContent = user.fullName || 'Utilisateur';
-                mobileChatUserStatus.textContent = onlineUsers.has(user.id) ? 'En ligne' : 'Hors ligne';
-                setTimeout(() => mobileMessageInput.focus(), 100);
-            } else {
-                document.querySelectorAll('.user-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector(`[data-user-id="${user.id}"]`)?.classList.add('active');
-                
-                welcomeScreen.style.display = 'none';
-                chatHeader.classList.add('active');
-                messagesContainer.classList.add('active');
-                messageInputContainer.classList.add('active');
-                
-                chatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
-                chatUserName.textContent = user.fullName || 'Utilisateur';
-                chatUserStatus.textContent = onlineUsers.has(user.id) ? 'En ligne' : 'Hors ligne';
-                
-                setTimeout(() => messageInput.focus(), 100);
-            }
-
-            // Nettoyage des messages précédents
-            const container = isMobile ? mobileMessagesContainer : messagesContainer;
-            container.innerHTML = '';
-
-            // Arrêter l'ancien listener
-            if (messagesListener) {
-                off(messagesListener);
-                messagesListener = null;
-            }
-
-            // Écouter les messages en temps réel avec Realtime Database
-            const chatId = generateChatId(currentUser.id, user.id);
-            const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
-            const messagesQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(50));
-
-            messagesListener = onValue(messagesQuery, (snapshot) => {
-                container.innerHTML = '';
-                
-                if (snapshot.exists()) {
-                    const messages = [];
-                    snapshot.forEach((childSnapshot) => {
-                        const msg = childSnapshot.val();
-                        msg.id = childSnapshot.key;
-                        messages.push(msg);
-                    });
-                    
-                    // Trier par timestamp
-                    messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-                    
-                    messages.forEach(msg => {
-                        renderMessage(msg, msg.senderId === currentUser.id ? 'sent' : 'received', isMobile);
-                    });
-                    
-                    // Marquer les messages comme lus
-                    markMessagesAsRead(chatId, messages.filter(m => m.senderId !== currentUser.id));
-                }
-                
-                scrollToBottom(isMobile);
-            });
-        }
-
-        // Marquer les messages comme lus
-        function markMessagesAsRead(chatId, receivedMessages) {
-            receivedMessages.forEach(message => {
-                if (!message.read) {
-                    const messageRef = ref(rtdb, `chats/${chatId}/messages/${message.id}`);
-                    update(messageRef, { read: true });
-                }
-            });
-        }
-
-        // Rendu d'un message amélioré
-        function renderMessage(msg, type, mobile) {
-            const msgContainer = document.createElement('div');
-            msgContainer.className = `message ${type}`;
-            if (msg.sending) msgContainer.classList.add('sending-indicator');
-            
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble';
-
-            if (msg.type === 'image') {
-                const img = document.createElement('img');
-                img.src = msg.imageUrl;
-                img.className = 'message-image';
-                img.alt = 'Image envoyée';
-                img.addEventListener('click', () => openImageViewer(msg.imageUrl));
-                img.addEventListener('error', () => {
-                    img.style.display = 'none';
-                    bubble.innerHTML = '<em>Image non disponible</em>';
-                });
-                bubble.appendChild(img);
-            } else {
-                bubble.textContent = msg.text || '';
-            }
-
-            const messageFooter = document.createElement('div');
-            messageFooter.className = 'message-status';
-            
-            const timeSpan = document.createElement('span');
-            timeSpan.className = 'message-time';
-            timeSpan.textContent = formatTimestamp(msg.timestamp);
-            
-            messageFooter.appendChild(timeSpan);
-            
-            // Ajouter les indicateurs de statut pour les messages envoyés
-            if (type === 'sent') {
-                const statusIcon = document.createElement('span');
-                statusIcon.className = 'status-icon';
-                
-                if (msg.sending) {
-                    statusIcon.textContent = '🕐';
-                    statusIcon.className += ' status-sending';
-                } else if (msg.read) {
-                    statusIcon.textContent = '✓✓';
-                    statusIcon.className += ' status-read';
-                } else if (msg.delivered) {
-                    statusIcon.textContent = '✓✓';
-                    statusIcon.className += ' status-delivered';
-                } else {
-                    statusIcon.textContent = '✓';
-                    statusIcon.className += ' status-sent';
-                }
-                
-                messageFooter.appendChild(statusIcon);
-            }
-
-            msgContainer.appendChild(bubble);
-            msgContainer.appendChild(messageFooter);
-
-            const container = mobile ? mobileMessagesContainer : messagesContainer;
-            container.appendChild(msgContainer);
-        }
-
-        // Ouvrir le visualiseur d'images
-        function openImageViewer(imageUrl) {
-            imageViewerImg.src = imageUrl;
-            imageViewer.classList.add('active');
-        }
-
-        // Fermer le visualiseur d'images
-        imageViewerClose.addEventListener('click', () => {
-            imageViewer.classList.remove('active');
-        });
-
-        imageViewer.addEventListener('click', (e) => {
-            if (e.target === imageViewer) {
-                imageViewer.classList.remove('active');
-            }
-        });
-
-        // Formatter un timestamp
-        function formatTimestamp(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        // Scroll vers le bas
-        function scrollToBottom(mobile) {
-            const container = mobile ? mobileMessagesContainer : messagesContainer;
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 100);
-        }
-
-        // Upload d'image
-        async function uploadImage(file) {
-            try {
-                console.log('📷 Upload image:', file.name);
-                
-                // Vérifier la taille (max 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    throw new Error('L\'image est trop volumineuse (max 5MB)');
-                }
-
-                // Créer une référence unique pour l'image
-                const timestamp = Date.now();
-                const fileName = `${currentUser.id}_${timestamp}_${file.name}`;
-                const imageRef = storageRef(storage, `chat-images/${fileName}`);
-
-                // Afficher un indicateur de chargement
-                const container = isMobile ? mobileMessagesContainer : messagesContainer;
-                const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'upload-progress';
-                loadingDiv.textContent = 'Upload en cours...';
-                container.appendChild(loadingDiv);
-                scrollToBottom(isMobile);
-
-                // Upload du fichier
-                const snapshot = await uploadBytes(imageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
-
-                // Supprimer l'indicateur de chargement
-                loadingDiv.remove();
-
-                console.log('✅ Image uploadée:', downloadURL);
-                return downloadURL;
-
-            } catch (error) {
-                console.error('❌ Erreur upload image:', error);
-                showError(error.message || 'Erreur lors de l\'upload de l\'image');
-                return null;
-            }
-        }
-
-        // Envoi d'un message texte
-        async function sendTextMessage(text, mobile = false) {
-            if (!text.trim() || !currentChatUser) return;
-
-            const chatId = generateChatId(currentUser.id, currentChatUser.id);
-            const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
-
-            try {
-                const messageData = {
-                    text: text.trim(),
-                    senderId: currentUser.id,
-                    receiverId: currentChatUser.id,
-                    senderName: currentUser.fullName,
-                    type: 'text',
-                    timestamp: rtdbServerTimestamp(),
-                    delivered: false,
-                    read: false
-                };
-
-                await push(messagesRef, messageData);
-
-                console.log('✅ Message envoyé');
-                
-                // Vider le champ de saisie
-                if (mobile) {
-                    mobileMessageInput.value = '';
-                    mobileSendButton.disabled = true;
-                } else {
-                    messageInput.value = '';
-                    sendButton.disabled = true;
-                }
-                
-            } catch (error) {
-                console.error('❌ Erreur envoi message:', error);
-                showError('Erreur lors de l\'envoi du message');
-            }
-        }
-
-        // Envoi d'une image
-        async function sendImageMessage(imageUrl, mobile = false) {
-            if (!imageUrl || !currentChatUser) return;
-
-            const chatId = generateChatId(currentUser.id, currentChatUser.id);
-            const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
-
-            try {
-                const messageData = {
-                    imageUrl: imageUrl,
-                    senderId: currentUser.id,
-                    receiverId: currentChatUser.id,
-                    senderName: currentUser.fullName,
-                    type: 'image',
-                    timestamp: rtdbServerTimestamp(),
-                    delivered: false,
-                    read: false
-                };
-
-                await push(messagesRef, messageData);
-
-                console.log('✅ Image envoyée');
-            } catch (error) {
-                console.error('❌ Erreur envoi image:', error);
-                showError('Erreur lors de l\'envoi de l\'image');
-            }
-        }
-
-        // Gestionnaires d'événements pour desktop
-        messageInput.addEventListener('input', () => {
-            sendButton.disabled = messageInput.value.trim() === '';
-        });
-
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey && messageInput.value.trim()) {
-                e.preventDefault();
-                sendTextMessage(messageInput.value);
-            }
-        });
-
-        sendButton.addEventListener('click', () => {
-            if (messageInput.value.trim()) {
-                sendTextMessage(messageInput.value);
-            }
-        });
-
-        imageUploadBtn.addEventListener('click', () => {
-            imageInput.click();
-        });
-
-        imageInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const imageUrl = await uploadImage(file);
-                if (imageUrl) {
-                    await sendImageMessage(imageUrl);
-                }
-                imageInput.value = '';
-            }
-        });
-
-        // Gestionnaires d'événements pour mobile
-        mobileMessageInput.addEventListener('input', () => {
-            mobileSendButton.disabled = mobileMessageInput.value.trim() === '';
-        });
-
-        mobileMessageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey && mobileMessageInput.value.trim()) {
-                e.preventDefault();
-                sendTextMessage(mobileMessageInput.value, true);
-            }
-        });
-
-        mobileSendButton.addEventListener('click', () => {
-            if (mobileMessageInput.value.trim()) {
-                sendTextMessage(mobileMessageInput.value, true);
-            }
-        });
-
-        mobileImageUploadBtn.addEventListener('click', () => {
-            mobileImageInput.click();
-        });
-
-        mobileImageInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const imageUrl = await uploadImage(file);
-                if (imageUrl) {
-                    await sendImageMessage(imageUrl, true);
-                }
-                mobileImageInput.value = '';
-            }
-        });
-
-        // Fermeture du chat
-        closeChatMobile.addEventListener('click', () => {
-            mobileChatMode.classList.remove('active');
-            currentChatUser = null;
-            if (messagesListener) {
-                off(messagesListener);
-                messagesListener = null;
-            }
-        });
-
-        closeChatDesktop.addEventListener('click', () => {
-            welcomeScreen.style.display = '';
-            chatHeader.classList.remove('active');
-            messagesContainer.classList.remove('active');
-            messageInputContainer.classList.remove('active');
-            currentChatUser = null;
             document.querySelectorAll('.user-item').forEach(item => {
                 item.classList.remove('active');
             });
-            if (messagesListener) {
-                off(messagesListener);
-                messagesListener = null;
-            }
-        });
-
-        // Recherche utilisateur
-        searchInput.addEventListener('input', handleSearch);
-
-        // Affichage des erreurs
-        function showError(msg) {
-            if (isMobile) {
-                mobileErrorMessage.textContent = msg;
-                mobileErrorMessage.classList.add('show');
-                setTimeout(() => mobileErrorMessage.classList.remove('show'), 4000);
-            } else {
-                errorMessage.textContent = msg;
-                errorMessage.classList.add('show');
-                setTimeout(() => errorMessage.classList.remove('show'), 4000);
-            }
+            document.querySelector(`[data-user-id="${user.id}"]`)?.classList.add('active');
+            
+            // Affichage du header de chat
+            welcomeScreen.style.display = 'none';
+            chatHeader.classList.add('active');
+            messagesContainer.classList.add('active');
+            messageInputContainer.classList.add('active');
+            
+            // Mise à jour des informations du chat
+            chatAvatar.textContent = user.avatar || user.fullName?.charAt(0).toUpperCase() || 'U';
+            chatUserName.textContent = user.fullName || 'Utilisateur';
+            chatUserStatus.textContent = Math.random() > 0.3 ? 'En ligne' : 'Hors ligne';
+            
+            // Chargement des messages
+            loadMessages(user.id);
+            
+            // Focus sur l'input
+            setTimeout(() => messageInput.focus(), 100);
         }
 
-        // Fonction utilitaire pour l'escape HTML
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>"']/g, function (m) {
-                return ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                })[m];
+        // Chargement des messages avec Realtime Database (version corrigée)
+        function loadMessages(userId) {
+            // Désabonner de l'ancien listener s'il existe
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+            }
+            
+            // Créer un ID de conversation valide
+            const conversationId = createConversationId(currentUser.id, userId);
+            
+            console.log('📨 Chargement messages pour conversation:', conversationId);
+            
+            // Référence vers les messages de cette conversation dans Realtime Database
+            const messagesRef = ref(rtdb, `conversations/${conversationId}/messages`);
+            const messagesQuery = rtdbQuery(messagesRef, orderByChild('createdAt'), limitToLast(50));
+            
+            // Écouter les messages en temps réel
+            messagesUnsubscribe = () => off(messagesRef);
+            
+            onValue(messagesQuery, (snapshot) => {
+                const messages = [];
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const messageData = childSnapshot.val();
+                        messages.push({
+                            id: childSnapshot.key,
+                            ...messageData
+                        });
+                    });
+                }
+                
+                // Trier par timestamp
+                messages.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+                
+                renderMessages(messages);
+                scrollToBottom();
+                
+                // Marquer les messages comme lus
+                markMessagesAsRead(userId, conversationId);
+                
+            }, (error) => {
+                console.error('❌ Erreur chargement messages:', error);
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger les messages.</p>
+                    </div>
+                `;
             });
         }
 
-        // Gestion responsive
-        window.addEventListener('resize', () => {
-            isMobile = window.innerWidth <= 768;
-        });
-
-        // Initialisation
-        window.addEventListener('DOMContentLoaded', async () => {
-            currentUser = getCurrentUser();
-            if (!currentUser) return;
-            
-            console.log('🚀 Initialisation pour:', currentUser.fullName);
-            await loadUsers();
-        });
-
-        // Nettoyage à la fermeture
-        window.addEventListener('beforeunload', () => {
-            if (messagesListener) {
-                off(messagesListener);
+        // Rendu des messages (version corrigée)
+        function renderMessages(messages) {
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucun message</h3>
+                        <p>Commencez la conversation en envoyant un message !</p>
+                    </div>
+                `;
+                return;
             }
+            
+            const fragment = document.createDocumentFragment();
+            
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${message.senderId === currentUser.id ? 'sent' : 'received'}`;
+                
+                // Gestion du timestamp
+                let timestamp;
+                if (message.createdAt) {
+                    timestamp = new Date(message.createdAt);
+                } else {
+                    timestamp = new Date();
+                }
+                
+                const timeString = timestamp.toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                messageElement.innerHTML = `
+                    <div class="message-bubble">
+                        ${escapeHtml(message.text || '')}
+                        <div class="message-time">${timeString}</div>
+                    </div>
+                `;
+                
+                fragment.appendChild(messageElement);
+            });
+            
+            messagesContainer.innerHTML = '';
+            messagesContainer.appendChild(fragment);
+        }
+
+        // Envoi d'un message (version corrigée)
+        async function sendMessage() {
+            if (!currentChatUser || !currentUser) return;
+            
+            const messageText = messageInput.value.trim();
+            if (!messageText) return;
+            
+            // Désactiver le bouton d'envoi
+            sendButton.disabled = true;
+            messageInput.disabled = true;
+            
+            try {
+                const conversationId = createConversationId(currentUser.id, currentChatUser.id);
+                
+                // Référence vers les messages de cette conversation
+                const messagesRef = ref(rtdb, `conversations/${conversationId}/messages`);
+                const newMessageRef = push(messagesRef);
+                
+                const messageData = {
+                    senderId: currentUser.id,
+                    senderName: currentUser.fullName || 'Utilisateur',
+                    senderAvatar: currentUser.avatar || '',
+                    receiverId: currentChatUser.id,
+                    receiverName: currentChatUser.fullName || 'Utilisateur',
+                    text: messageText,
+                    read: false,
+                    createdAt: Date.now() // Timestamp numérique pour le tri
+                };
+                
+                await set(newMessageRef, messageData);
+                
+                // Mettre à jour les métadonnées de la conversation
+                const conversationMetaRef = ref(rtdb, `conversations/${conversationId}/meta`);
+                await set(conversationMetaRef, {
+                    participants: [currentUser.id, currentChatUser.id],
+                    participantNames: [currentUser.fullName || 'Utilisateur', currentChatUser.fullName || 'Utilisateur'],
+                    lastMessage: messageText,
+                    lastMessageTime: Date.now(),
+                    lastMessageSender: currentUser.id,
+                    updatedAt: Date.now()
+                });
+                
+                // Vider l'input
+                messageInput.value = '';
+                adjustTextareaHeight();
+                
+                console.log('✅ Message envoyé via Realtime Database');
+                
+            } catch (error) {
+                console.error('❌ Erreur envoi message:', error);
+                alert('Erreur lors de l\'envoi du message');
+            } finally {
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Ajustement automatique de la hauteur du textarea
+        function adjustTextareaHeight() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 100) + 'px';
+        }
+
+        // Scroll vers le bas
+        function scrollToBottom() {
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
+        }
+
+        // Échapper le HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Gestion des indicateurs de frappe
+        function handleTyping() {
+            if (!currentChatUser) return;
+            
+            // Simuler l'indicateur de frappe (dans une vraie app, cela utiliserait des websockets)
+            clearTimeout(typingTimeout);
+            
+            typingTimeout = setTimeout(() => {
+                // Logique de frappe terminée
+            }, 2000);
+        }
+
+        // Mise à jour du statut d'activité
+        function updateLastActivity() {
+            lastActivity = Date.now();
+            
+            // Mettre à jour le statut dans Firebase (optionnel)
+            if (currentUser) {
+                try {
+                    setDoc(doc(db, 'users', currentUser.id), {
+                        lastActive: serverTimestamp()
+                    }, { merge: true });
+                } catch (error) {
+                    console.error('Erreur mise à jour activité:', error);
+                }
+            }
+        }
+
+        // Gestion des événements
+        function setupEventListeners() {
+            // Recherche d'utilisateurs
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Envoi de message avec Enter
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                } else if (e.key === 'Enter' && e.shiftKey) {
+                    // Permettre les retours à la ligne avec Shift+Enter
+                    return;
+                }
+            });
+            
+            // Ajustement automatique de la hauteur du textarea
+            messageInput.addEventListener('input', () => {
+                adjustTextareaHeight();
+                handleTyping();
+                updateLastActivity();
+            });
+            
+            // Bouton d'envoi
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Activation du bouton d'envoi selon le contenu
+            messageInput.addEventListener('input', () => {
+                sendButton.disabled = !messageInput.value.trim();
+            });
+            
+            // Mise à jour de l'activité lors des clics
+            document.addEventListener('click', updateLastActivity);
+            document.addEventListener('keypress', updateLastActivity);
+            
+            // Gestion de la fermeture de la page
+            window.addEventListener('beforeunload', () => {
+                if (messagesUnsubscribe) {
+                    messagesUnsubscribe();
+                }
+            });
+        }
+
+        // Simulation de notifications de nouveaux messages
+        function simulateNotifications() {
+            // Dans une vraie application, cela serait géré par les push notifications
+            // ou les websockets pour les notifications en temps réel
+            
+            setInterval(() => {
+                // Simuler l'arrivée de nouveaux messages aléatoirement
+                if (Math.random() > 0.95 && allUsers.length > 0) {
+                    const randomUser = allUsers[Math.floor(Math.random() * allUsers.length)];
+                    console.log('🔔 Simulation notification de:', randomUser.fullName);
+                    
+                    // Ici vous pourriez ajouter une logique pour afficher des badges
+                    // de messages non lus sur les utilisateurs
+                }
+            }, 10000); // Vérifier toutes les 10 secondes
+        }
+
+        // Marquer les messages comme lus (version corrigée)
+        async function markMessagesAsRead(userId, conversationId) {
+            if (!currentUser || !userId) return;
+            
+            try {
+                const messagesRef = ref(rtdb, `conversations/${conversationId}/messages`);
+                
+                // Obtenir les messages non lus et les marquer comme lus
+                onValue(messagesRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const updates = {};
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const message = childSnapshot.val();
+                            
+                            // Marquer comme lu si c'est un message reçu et non lu
+                            if (message.receiverId === currentUser.id && !message.read) {
+                                updates[`conversations/${conversationId}/messages/${childSnapshot.key}/read`] = true;
+                            }
+                        });
+                        
+                        // Appliquer les mises à jour si nécessaire
+                        if (Object.keys(updates).length > 0) {
+                            update(ref(rtdb), updates).then(() => {
+                                console.log('✅ Messages marqués comme lus');
+                            }).catch((error) => {
+                                console.error('❌ Erreur marquage lecture:', error);
+                            });
+                        }
+                    }
+                }, { onlyOnce: true });
+                
+            } catch (error) {
+                console.error('❌ Erreur marquage messages lus:', error);
+            }
+        }
+
+        // Fonction pour obtenir le nombre de messages non lus (version corrigée)
+        async function getUnreadCount(userId) {
+            if (!currentUser || !userId) return 0;
+            
+            return new Promise((resolve) => {
+                try {
+                    const conversationId = createConversationId(currentUser.id, userId);
+                    const messagesRef = ref(rtdb, `conversations/${conversationId}/messages`);
+                    
+                    onValue(messagesRef, (snapshot) => {
+                        let unreadCount = 0;
+                        
+                        if (snapshot.exists()) {
+                            snapshot.forEach((childSnapshot) => {
+                                const message = childSnapshot.val();
+                                
+                                // Compter les messages non lus reçus
+                                if (message.receiverId === currentUser.id && !message.read) {
+                                    unreadCount++;
+                                }
+                            });
+                        }
+                        
+                        resolve(unreadCount);
+                    }, { onlyOnce: true });
+                    
+                } catch (error) {
+                    console.error('❌ Erreur comptage messages non lus:', error);
+                    resolve(0);
+                }
+            });
+        }
+
+        // Mise à jour des badges de messages non lus
+        async function updateUnreadBadges() {
+            const userItems = document.querySelectorAll('.user-item');
+            
+            for (const userItem of userItems) {
+                const userId = userItem.dataset.userId;
+                if (!userId) continue;
+                
+                const unreadCount = await getUnreadCount(userId);
+                
+                // Supprimer l'ancien badge s'il existe
+                const existingBadge = userItem.querySelector('.unread-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                // Ajouter un nouveau badge si nécessaire
+                if (unreadCount > 0) {
+                    const badge = document.createElement('div');
+                    badge.className = 'unread-badge';
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    userItem.appendChild(badge);
+                }
+            }
+        }
+
+        // Fonction de débogage
+        window.debugMessages = function() {
+            console.log('🔧 État de l\'application Messages:', {
+                currentUser: currentUser,
+                currentChatUser: currentChatUser,
+                allUsersCount: allUsers.length,
+                filteredUsersCount: filteredUsers.length,
+                hasMessagesListener: !!messagesUnsubscribe
+            });
+        };
+
+        // Gestion des erreurs globales
+        window.addEventListener('error', (e) => {
+            console.error('❌ Erreur globale dans Messages:', e.error);
         });
+
+        // Gestion des promesses rejetées
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('❌ Promesse rejetée dans Messages:', e.reason);
+        });
+
+        // Fonction de nettoyage lors de la fermeture
+        function cleanup() {
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
+            }
+            
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
+                typingTimeout = null;
+            }
+        }
+
+        // Initialisation de l'application Messages
+        async function initializeMessagesApp() {
+            console.log('🚀 Initialisation Express Exchange Messages...');
+            
+            // Vérifier l'utilisateur connecté
+            currentUser = getCurrentUser();
+            if (!currentUser) {
+                return; // L'utilisateur sera redirigé
+            }
+            
+            console.log('👤 Utilisateur connecté:', currentUser.fullName);
+            
+            // Configurer les événements
+            setupEventListeners();
+            
+            // Charger les utilisateurs
+            await loadUsers();
+            
+            // Mettre à jour les badges de messages non lus
+            await updateUnreadBadges();
+            
+            // Démarrer les simulations (pour la démo)
+            simulateNotifications();
+            
+            // Mettre à jour l'activité de l'utilisateur
+            updateLastActivity();
+            
+            console.log('✅ Express Exchange Messages initialisé avec succès');
+        }
+
+        // Démarrage de l'application
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📱 DOM chargé, initialisation...');
+            
+            // Petit délai pour s'assurer que tout est prêt
+            setTimeout(() => {
+                initializeMessagesApp().catch(error => {
+                    console.error('❌ Erreur initialisation:', error);
+                    alert('Erreur lors de l\'initialisation de l\'application');
+                });
+            }, 100);
+        });
+
+        // Nettoyage lors de la fermeture de la page
+        window.addEventListener('beforeunload', cleanup);
+        window.addEventListener('unload', cleanup);
+
+        // Fonction publique pour revenir à la page principale
+        window.goToMain = function() {
+            cleanup();
+            window.location.href = './index.html';
+        };
+
+        console.log('💬 Script Express Exchange Messages chargé');
     </script>
+
+    <!-- Bouton de retour à la page principale -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button onclick="goToMain()" style="
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 149, 246, 0.3);
+        " onmouseover="this.style.background='#1877f2'" onmouseout="this.style.background='#0095f6'">
+            ← Retour
+        </button>
+    </div>
 </body>
 </html>
