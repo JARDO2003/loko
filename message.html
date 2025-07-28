@@ -172,18 +172,39 @@
             text-overflow: ellipsis;
         }
 
+        .user-last-message {
+            font-size: 12px;
+            color: #8e8e8e;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #8e8e8e;
+        }
+
         .unread-badge {
             background: #0095f6;
             color: white;
             border-radius: 50%;
-            width: 20px;
+            min-width: 20px;
             height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: bold;
-            margin-left: 8px;
+            padding: 0 6px;
         }
 
         /* Zone de chat principale */
@@ -762,6 +783,40 @@
             color: #0095f6;
             font-size: 12px;
         }
+
+        /* Message status indicators */
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 2px;
+            justify-content: flex-end;
+        }
+
+        .message.received .message-status {
+            justify-content: flex-start;
+        }
+
+        .status-icon {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .status-sending {
+            color: #8e8e8e;
+        }
+
+        .status-sent {
+            color: #8e8e8e;
+        }
+
+        .status-delivered {
+            color: #0095f6;
+        }
+
+        .status-read {
+            color: #0095f6;
+        }
     </style>
 </head>
 <body>
@@ -904,7 +959,9 @@
             doc, 
             getDocs, 
             query, 
-            limit
+            limit,
+            orderBy,
+            where
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
         import { 
             getDatabase, 
@@ -916,7 +973,8 @@
             serverTimestamp as rtdbServerTimestamp,
             query as rtdbQuery,
             orderByChild,
-            limitToLast
+            limitToLast,
+            update
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
         import {
             getStorage,
@@ -951,6 +1009,7 @@
         let messagesListener = null;
         let isMobile = window.innerWidth <= 768;
         let onlineUsers = new Set();
+        let userChats = new Map(); // Pour stocker les derniers messages de chaque chat
 
         // Éléments DOM
         const searchInput = document.getElementById('searchInput');
@@ -1020,7 +1079,7 @@
             window.location.href = './index.html';
         }
 
-        // Chargement des utilisateurs
+        // Chargement des utilisateurs avec leurs derniers messages
         async function loadUsers() {
             try {
                 console.log('👥 Chargement des utilisateurs...');
@@ -1041,10 +1100,17 @@
                 
                 console.log(`✅ ${allUsers.length} utilisateurs chargés`);
                 filteredUsers = [...allUsers];
+                
+                // Charger les derniers messages pour chaque utilisateur
+                await loadUserChats();
+                
                 renderUsers();
                 
                 // Écouter les statuts en ligne
                 listenToOnlineStatus();
+                
+                // Écouter les nouveaux messages
+                listenToAllChats();
                 
             } catch (error) {
                 console.error('❌ Erreur chargement utilisateurs:', error);
@@ -1056,6 +1122,64 @@
                     </div>
                 `;
             }
+        }
+
+        // Charger les derniers messages pour tous les chats
+        async function loadUserChats() {
+            const promises = allUsers.map(async (user) => {
+                const chatId = generateChatId(currentUser.id, user.id);
+                const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
+                const lastMessageQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(1));
+                
+                return new Promise((resolve) => {
+                    onValue(lastMessageQuery, (snapshot) => {
+                        if (snapshot.exists()) {
+                            const messages = Object.values(snapshot.val());
+                            const lastMessage = messages[messages.length - 1];
+                            userChats.set(user.id, {
+                                lastMessage: lastMessage,
+                                unreadCount: 0 // À implémenter selon vos besoins
+                            });
+                        }
+                        resolve();
+                    }, { onlyOnce: true });
+                });
+            });
+
+            await Promise.all(promises);
+        }
+
+        // Écouter tous les chats pour les nouveaux messages
+        function listenToAllChats() {
+            allUsers.forEach(user => {
+                const chatId = generateChatId(currentUser.id, user.id);
+                const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
+                const lastMessageQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(1));
+                
+                onValue(lastMessageQuery, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const messages = Object.values(snapshot.val());
+                        const lastMessage = messages[messages.length - 1];
+                        
+                        // Mettre à jour le cache
+                        const existingChat = userChats.get(user.id) || {};
+                        userChats.set(user.id, {
+                            ...existingChat,
+                            lastMessage: lastMessage
+                        });
+                        
+                        // Re-render la liste des utilisateurs pour mettre à jour le dernier message
+                        renderUsers();
+                        
+                        // Si c'est un nouveau message reçu, afficher une notification
+                        if (lastMessage.senderId !== currentUser.id && 
+                            (!existingChat.lastMessage || lastMessage.timestamp > existingChat.lastMessage.timestamp)) {
+                            // Nouveau message reçu
+                            console.log('💬 Nouveau message reçu de:', user.fullName);
+                        }
+                    }
+                });
+            });
         }
 
         // Écouter les statuts en ligne
@@ -1090,7 +1214,7 @@
             });
         }
 
-        // Rendu de la liste des utilisateurs
+        // Rendu de la liste des utilisateurs avec leurs derniers messages
         function renderUsers() {
             if (filteredUsers.length === 0) {
                 usersList.innerHTML = `
@@ -1102,14 +1226,50 @@
                 return;
             }
             
+            // Trier les utilisateurs par dernière activité
+            const sortedUsers = [...filteredUsers].sort((a, b) => {
+                const chatA = userChats.get(a.id);
+                const chatB = userChats.get(b.id);
+                
+                const timestampA = chatA?.lastMessage?.timestamp || 0;
+                const timestampB = chatB?.lastMessage?.timestamp || 0;
+                
+                return timestampB - timestampA; // Plus récent en premier
+            });
+            
             const fragment = document.createDocumentFragment();
             
-            filteredUsers.forEach(user => {
+            sortedUsers.forEach(user => {
                 const userElement = document.createElement('div');
                 userElement.className = 'user-item';
                 userElement.dataset.userId = user.id;
                 
                 const isOnline = onlineUsers.has(user.id);
+                const chatData = userChats.get(user.id);
+                const lastMessage = chatData?.lastMessage;
+                
+                let lastMessageText = '';
+                let messageTime = '';
+                
+                if (lastMessage) {
+                    if (lastMessage.type === 'image') {
+                        lastMessageText = '📷 Photo';
+                    } else {
+                        lastMessageText = lastMessage.text || '';
+                    }
+                    
+                    // Limiter la longueur du message
+                    if (lastMessageText.length > 30) {
+                        lastMessageText = lastMessageText.substring(0, 30) + '...';
+                    }
+                    
+                    // Ajouter le préfixe "Vous:" si c'est l'utilisateur actuel qui a envoyé
+                    if (lastMessage.senderId === currentUser.id) {
+                        lastMessageText = 'Vous: ' + lastMessageText;
+                    }
+                    
+                    messageTime = formatTime(lastMessage.timestamp);
+                }
                 
                 userElement.innerHTML = `
                     <div class="user-avatar">
@@ -1121,6 +1281,11 @@
                         <div class="user-status ${isOnline ? 'status-online' : 'status-offline'}">
                             ${isOnline ? 'En ligne' : 'Hors ligne'}
                         </div>
+                        ${lastMessageText ? `<div class="user-last-message">${escapeHtml(lastMessageText)}</div>` : ''}
+                    </div>
+                    <div class="user-meta">
+                        ${messageTime ? `<div class="message-time">${messageTime}</div>` : ''}
+                        ${chatData?.unreadCount > 0 ? `<div class="unread-badge">${chatData.unreadCount}</div>` : ''}
                     </div>
                 `;
                 
@@ -1130,6 +1295,36 @@
             
             usersList.innerHTML = '';
             usersList.appendChild(fragment);
+        }
+
+        // Formatter le timestamp pour affichage dans la liste
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            
+            const now = new Date();
+            const messageDate = new Date(timestamp);
+            const diffTime = now - messageDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                // Aujourd'hui - afficher l'heure
+                return messageDate.toLocaleTimeString('fr-FR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            } else if (diffDays === 1) {
+                // Hier
+                return 'Hier';
+            } else if (diffDays < 7) {
+                // Cette semaine - afficher le jour
+                return messageDate.toLocaleDateString('fr-FR', { weekday: 'short' });
+            } else {
+                // Plus ancien - afficher la date
+                return messageDate.toLocaleDateString('fr-FR', { 
+                    day: '2-digit', 
+                    month: '2-digit' 
+                });
+            }
         }
 
         // Recherche d'utilisateurs
@@ -1187,11 +1382,8 @@
             }
 
             // Nettoyage des messages précédents
-            if (isMobile) {
-                mobileMessagesContainer.innerHTML = '';
-            } else {
-                messagesContainer.innerHTML = '';
-            }
+            const container = isMobile ? mobileMessagesContainer : messagesContainer;
+            container.innerHTML = '';
 
             // Arrêter l'ancien listener
             if (messagesListener) {
@@ -1202,10 +1394,9 @@
             // Écouter les messages en temps réel avec Realtime Database
             const chatId = generateChatId(currentUser.id, user.id);
             const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
-            const messagesQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(100));
+            const messagesQuery = rtdbQuery(messagesRef, orderByChild('timestamp'), limitToLast(50));
 
             messagesListener = onValue(messagesQuery, (snapshot) => {
-                const container = isMobile ? mobileMessagesContainer : messagesContainer;
                 container.innerHTML = '';
                 
                 if (snapshot.exists()) {
@@ -1222,13 +1413,26 @@
                     messages.forEach(msg => {
                         renderMessage(msg, msg.senderId === currentUser.id ? 'sent' : 'received', isMobile);
                     });
+                    
+                    // Marquer les messages comme lus
+                    markMessagesAsRead(chatId, messages.filter(m => m.senderId !== currentUser.id));
                 }
                 
                 scrollToBottom(isMobile);
             });
         }
 
-        // Rendu d'un message
+        // Marquer les messages comme lus
+        function markMessagesAsRead(chatId, receivedMessages) {
+            receivedMessages.forEach(message => {
+                if (!message.read) {
+                    const messageRef = ref(rtdb, `chats/${chatId}/messages/${message.id}`);
+                    update(messageRef, { read: true });
+                }
+            });
+        }
+
+        // Rendu d'un message amélioré
         function renderMessage(msg, type, mobile) {
             const msgContainer = document.createElement('div');
             msgContainer.className = `message ${type}`;
@@ -1252,12 +1456,39 @@
                 bubble.textContent = msg.text || '';
             }
 
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'message-time';
-            timeDiv.textContent = formatTimestamp(msg.timestamp);
+            const messageFooter = document.createElement('div');
+            messageFooter.className = 'message-status';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = formatTimestamp(msg.timestamp);
+            
+            messageFooter.appendChild(timeSpan);
+            
+            // Ajouter les indicateurs de statut pour les messages envoyés
+            if (type === 'sent') {
+                const statusIcon = document.createElement('span');
+                statusIcon.className = 'status-icon';
+                
+                if (msg.sending) {
+                    statusIcon.textContent = '🕐';
+                    statusIcon.className += ' status-sending';
+                } else if (msg.read) {
+                    statusIcon.textContent = '✓✓';
+                    statusIcon.className += ' status-read';
+                } else if (msg.delivered) {
+                    statusIcon.textContent = '✓✓';
+                    statusIcon.className += ' status-delivered';
+                } else {
+                    statusIcon.textContent = '✓';
+                    statusIcon.className += ' status-sent';
+                }
+                
+                messageFooter.appendChild(statusIcon);
+            }
 
             msgContainer.appendChild(bubble);
-            msgContainer.appendChild(timeDiv);
+            msgContainer.appendChild(messageFooter);
 
             const container = mobile ? mobileMessagesContainer : messagesContainer;
             container.appendChild(msgContainer);
@@ -1343,16 +1574,30 @@
             const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
 
             try {
-                await push(messagesRef, {
+                const messageData = {
                     text: text.trim(),
                     senderId: currentUser.id,
                     receiverId: currentChatUser.id,
                     senderName: currentUser.fullName,
                     type: 'text',
-                    timestamp: rtdbServerTimestamp()
-                });
+                    timestamp: rtdbServerTimestamp(),
+                    delivered: false,
+                    read: false
+                };
+
+                await push(messagesRef, messageData);
 
                 console.log('✅ Message envoyé');
+                
+                // Vider le champ de saisie
+                if (mobile) {
+                    mobileMessageInput.value = '';
+                    mobileSendButton.disabled = true;
+                } else {
+                    messageInput.value = '';
+                    sendButton.disabled = true;
+                }
+                
             } catch (error) {
                 console.error('❌ Erreur envoi message:', error);
                 showError('Erreur lors de l\'envoi du message');
@@ -1367,14 +1612,18 @@
             const messagesRef = ref(rtdb, `chats/${chatId}/messages`);
 
             try {
-                await push(messagesRef, {
+                const messageData = {
                     imageUrl: imageUrl,
                     senderId: currentUser.id,
                     receiverId: currentChatUser.id,
                     senderName: currentUser.fullName,
                     type: 'image',
-                    timestamp: rtdbServerTimestamp()
-                });
+                    timestamp: rtdbServerTimestamp(),
+                    delivered: false,
+                    read: false
+                };
+
+                await push(messagesRef, messageData);
 
                 console.log('✅ Image envoyée');
             } catch (error) {
@@ -1392,15 +1641,13 @@
             if (e.key === 'Enter' && !e.shiftKey && messageInput.value.trim()) {
                 e.preventDefault();
                 sendTextMessage(messageInput.value);
-                messageInput.value = '';
-                sendButton.disabled = true;
             }
         });
 
         sendButton.addEventListener('click', () => {
-            sendTextMessage(messageInput.value);
-            messageInput.value = '';
-            sendButton.disabled = true;
+            if (messageInput.value.trim()) {
+                sendTextMessage(messageInput.value);
+            }
         });
 
         imageUploadBtn.addEventListener('click', () => {
@@ -1427,15 +1674,13 @@
             if (e.key === 'Enter' && !e.shiftKey && mobileMessageInput.value.trim()) {
                 e.preventDefault();
                 sendTextMessage(mobileMessageInput.value, true);
-                mobileMessageInput.value = '';
-                mobileSendButton.disabled = true;
             }
         });
 
         mobileSendButton.addEventListener('click', () => {
-            sendTextMessage(mobileMessageInput.value, true);
-            mobileMessageInput.value = '';
-            mobileSendButton.disabled = true;
+            if (mobileMessageInput.value.trim()) {
+                sendTextMessage(mobileMessageInput.value, true);
+            }
         });
 
         mobileImageUploadBtn.addEventListener('click', () => {
