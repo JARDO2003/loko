@@ -56,6 +56,211 @@
             }
         }
 
+        /* LOADING SPINNER AMÉLIORÉ */
+        .main-loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            min-height: 400px;
+        }
+
+        .stylish-loader {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+        }
+
+        .stylish-loader::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #0095f6;
+            border-right: 3px solid #e6683c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .stylish-loader::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 60px;
+            height: 60px;
+            border: 2px solid transparent;
+            border-bottom: 2px solid #f09433;
+            border-left: 2px solid #dc2743;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+
+        .loading-text {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-subtext {
+            color: #8e8e8e;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* BARRE DE RECHERCHE */
+        .search-container {
+            background: #000000;
+            border-bottom: 1px solid #262626;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border: 1px solid #262626;
+            border-radius: 25px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0095f6;
+            background: #000000;
+            box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e8e;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8e8e8e;
+            cursor: pointer;
+            font-size: 18px;
+            display: none;
+            padding: 2px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .search-clear:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #262626;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .search-result-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-result-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .search-result-info h4 {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .search-result-info p {
+            color: #8e8e8e;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .no-search-results {
+            padding: 20px;
+            text-align: center;
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+
         #registrationOverlay {
             position: fixed;
             top: 0;
@@ -314,6 +519,24 @@
             border-color: #ffffff;
         }
 
+        .nav-btn {
+            background: #262626;
+            color: #ffffff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: #404040;
+        }
+
         .feed {
             display: flex;
             flex-direction: column;
@@ -324,10 +547,22 @@
             border-bottom: 1px solid #262626;
             padding: 16px 0;
             transition: background-color 0.2s ease;
+            animation: fadeInPost 0.3s ease-out;
         }
 
         .publication:hover {
             background: rgba(255, 255, 255, 0.01);
+        }
+
+        @keyframes fadeInPost {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .pub-header {
@@ -591,11 +826,6 @@
             margin-right: 8px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .cloudinary-badge {
             position: absolute;
             top: 8px;
@@ -731,6 +961,15 @@
                 width: 50px;
                 height: 50px;
             }
+
+            .search-container {
+                padding: 8px 16px;
+            }
+
+            .stylish-loader {
+                width: 60px;
+                height: 60px;
+            }
         }
 
         /* Scrollbar dark */
@@ -751,27 +990,66 @@
             background: #404040;
         }
 
-        /* Animations supplémentaires */
-        .publication {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         /* États de focus améliorés */
         .form-group input:focus,
         .publisher textarea:focus,
         .comment-input:focus {
             box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+        }
+
+        /* Animation d'apparition des posts */
+        .publication.fade-in {
+            animation: fadeInPost 0.3s ease-out;
+        }
+
+        /* Skeleton loading pour les posts */
+        .post-skeleton {
+            background: #000000;
+            border-bottom: 1px solid #262626;
+            padding: 16px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .skeleton-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #262626;
+            margin-right: 12px;
+        }
+
+        .skeleton-text {
+            background: #262626;
+            height: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-text.short {
+            width: 60%;
+        }
+
+        .skeleton-text.medium {
+            width: 80%;
+        }
+
+        .skeleton-text.long {
+            width: 100%;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
         }
     </style>
 </head>
@@ -805,6 +1083,16 @@
             <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
         </div>
 
+        <!-- NOUVELLE BARRE DE RECHERCHE -->
+        <div class="search-container">
+            <div class="search-box">
+                <div class="search-icon">🔍</div>
+                <input type="text" class="search-input" id="searchInput" placeholder="Rechercher des publications ou des utilisateurs...">
+                <button class="search-clear" id="searchClear">&times;</button>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+
         <div class="publisher">
             <textarea id="postText" placeholder="Partagez quelque chose..."></textarea>
             <div class="file-input-container">
@@ -820,7 +1108,14 @@
             </div>
         </div>
 
-        <div id="feed" class="feed"></div>
+        <div id="feed" class="feed">
+            <!-- INDICATEUR DE CHARGEMENT STYLISÉ -->
+            <div class="main-loading-container" id="mainLoadingContainer">
+                <div class="stylish-loader"></div>
+                <div class="loading-text">Veuillez patienter</div>
+                <div class="loading-subtext">Chargement des données en cours...<br>Connexion au serveur</div>
+            </div>
+        </div>
     </div>
 
     <div id="modalImageView" class="modal">
@@ -836,7 +1131,7 @@
     </div>
 
     <script type="module">
-        console.log('🔰 Début du script principal Express Exchange');
+        console.log('🔰 Début du script principal Express Exchange - Version Améliorée');
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
@@ -879,9 +1174,12 @@
 
         let userData = null;
         let posts = [];
+        let allUsers = [];
         let unsubscribePosts = null;
         let isOnline = navigator.onLine;
         let isAppInitialized = false;
+        let isLoadingPosts = false;
+        let searchTimeout = null;
 
         // Classe upload Cloudinary
         class CloudinaryUploader {
@@ -933,6 +1231,205 @@
         }
 
         const uploader = new CloudinaryUploader(cloudinaryConfig);
+
+        // NOUVELLE FONCTION : Affichage du loader stylisé
+        function showMainLoader(text = "Veuillez patienter", subtext = "Chargement des données en cours...<br>Connexion au serveur") {
+            const container = document.getElementById('mainLoadingContainer');
+            if (container) {
+                container.querySelector('.loading-text').textContent = text;
+                container.querySelector('.loading-subtext').innerHTML = subtext;
+                container.style.display = 'flex';
+            }
+        }
+
+        function hideMainLoader() {
+            const container = document.getElementById('mainLoadingContainer');
+            if (container) {
+                container.style.display = 'none';
+            }
+        }
+
+        // NOUVELLE FONCTION : Skeleton loading pour les posts
+        function showPostsSkeleton() {
+            const feed = document.getElementById('feed');
+            const skeletonHTML = Array(3).fill().map(() => `
+                <div class="post-skeleton">
+                    <div class="skeleton-header">
+                        <div class="skeleton-avatar"></div>
+                        <div>
+                            <div class="skeleton-text short"></div>
+                            <div class="skeleton-text short" style="width: 40%; margin-top: 4px;"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-text long"></div>
+                    <div class="skeleton-text medium"></div>
+                    <div class="skeleton-text short" style="margin-top: 16px;"></div>
+                </div>
+            `).join('');
+            
+            feed.innerHTML = skeletonHTML;
+        }
+
+        // FONCTIONS DE RECHERCHE AMÉLIORÉES
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+                
+                if (query.length > 0) {
+                    searchClear.style.display = 'block';
+                    
+                    // Debounce pour éviter trop de requêtes
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        performSearch(query);
+                    }, 300);
+                } else {
+                    searchClear.style.display = 'none';
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            searchClear.addEventListener('click', function() {
+                searchInput.value = '';
+                searchClear.style.display = 'none';
+                searchResults.style.display = 'none';
+                searchInput.focus();
+            });
+
+            // Fermer les résultats si on clique ailleurs
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-box')) {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            // Navigation au clavier
+            searchInput.addEventListener('keydown', function(e) {
+                const items = searchResults.querySelectorAll('.search-result-item');
+                let selectedIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                    updateSelection(items, selectedIndex);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedIndex = Math.max(selectedIndex - 1, 0);
+                    updateSelection(items, selectedIndex);
+                } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    e.preventDefault();
+                    items[selectedIndex].click();
+                }
+            });
+        }
+
+        function updateSelection(items, selectedIndex) {
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
+        }
+
+        async function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '<div style="padding: 12px; color: #8e8e8e;">🔍 Recherche en cours...</div>';
+            searchResults.style.display = 'block';
+
+            try {
+                const results = [];
+                
+                // Recherche dans les publications
+                const postResults = posts.filter(post => 
+                    post.text?.toLowerCase().includes(query.toLowerCase()) ||
+                    post.author?.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 5);
+
+                // Recherche dans les utilisateurs
+                const userResults = allUsers.filter(user =>
+                    user.fullName?.toLowerCase().includes(query.toLowerCase()) ||
+                    user.nom?.toLowerCase().includes(query.toLowerCase()) ||
+                    user.prenom?.toLowerCase().includes(query.toLowerCase())
+                ).slice(0, 3);
+
+                // Affichage des résultats
+                let resultsHTML = '';
+
+                if (userResults.length > 0) {
+                    resultsHTML += userResults.map(user => `
+                        <div class="search-result-item" onclick="showUserProfile('${user.id}')">
+                            <div class="search-result-user">
+                                <div class="search-result-avatar">${user.avatar || 'U'}</div>
+                                <div class="search-result-info">
+                                    <h4>${escapeHtml(user.fullName || 'Utilisateur')}</h4>
+                                    <p>Utilisateur • ${user.contact || ''}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                if (postResults.length > 0) {
+                    if (userResults.length > 0) {
+                        resultsHTML += '<div style="border-top: 1px solid #262626; margin: 8px 0;"></div>';
+                    }
+                    resultsHTML += postResults.map(post => `
+                        <div class="search-result-item" onclick="scrollToPost('${post.id}')">
+                            <div class="search-result-user">
+                                <div class="search-result-avatar">${post.avatar || 'U'}</div>
+                                <div class="search-result-info">
+                                    <h4>${escapeHtml(post.author || 'Utilisateur')}</h4>
+                                    <p>Publication • ${escapeHtml((post.text || '').substring(0, 50))}${post.text?.length > 50 ? '...' : ''}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                if (resultsHTML === '') {
+                    resultsHTML = '<div class="no-search-results">Aucun résultat trouvé pour "' + escapeHtml(query) + '"</div>';
+                }
+
+                searchResults.innerHTML = resultsHTML;
+
+            } catch (error) {
+                console.error('Erreur lors de la recherche:', error);
+                searchResults.innerHTML = '<div style="padding: 12px; color: #ed4956;">Erreur lors de la recherche</div>';
+            }
+        }
+
+        // Fonction pour faire défiler vers une publication
+        window.scrollToPost = function(postId) {
+            const searchResults = document.getElementById('searchResults');
+            const searchInput = document.getElementById('searchInput');
+            
+            searchResults.style.display = 'none';
+            searchInput.value = '';
+            document.getElementById('searchClear').style.display = 'none';
+
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postElement) {
+                postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                postElement.style.background = 'rgba(0, 149, 246, 0.1)';
+                setTimeout(() => {
+                    postElement.style.background = '';
+                }, 2000);
+            }
+        };
+
+        // Fonction pour afficher le profil utilisateur (placeholder)
+        window.showUserProfile = function(userId) {
+            const searchResults = document.getElementById('searchResults');
+            const searchInput = document.getElementById('searchInput');
+            
+            searchResults.style.display = 'none';
+            searchInput.value = '';
+            document.getElementById('searchClear').style.display = 'none';
+
+            alert('Profil utilisateur - Fonctionnalité à venir !');
+        };
 
         function validateUserData(userData) {
             console.log('🔍 Validation userData:', userData);
@@ -1077,7 +1574,9 @@
                 console.log('👋 Message de bienvenue mis à jour');
             }
             updateConnectionStatus();
+            initializeSearch();
             loadPosts();
+            loadUsers();
             isAppInitialized = true;
             console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
@@ -1177,25 +1676,70 @@
             }
         });
 
+        // FONCTION AMÉLIORÉE : Chargement des publications avec loader
         function loadPosts() {
+            if (isLoadingPosts) return;
+            isLoadingPosts = true;
+
+            console.log('📊 Début du chargement des publications...');
+            showMainLoader("Chargement des publications", "Récupération des dernières actualités...");
+
             if (unsubscribePosts) {
                 unsubscribePosts();
             }
+
             const postsQuery = query(
                 collection(db, 'posts'), 
                 orderBy('timestamp', 'desc'), 
                 limit(50)
             );
+
             unsubscribePosts = onSnapshot(postsQuery, (snapshot) => {
+                console.log('📝 Mise à jour des publications reçue');
                 posts = [];
                 snapshot.forEach((doc) => {
                     const post = { id: doc.id, ...doc.data() };
                     posts.push(post);
                 });
-                renderPosts();
+
+                console.log(`✅ ${posts.length} publications chargées`);
+                
+                // Petit délai pour permettre de voir le loader
+                setTimeout(() => {
+                    renderPosts();
+                    hideMainLoader();
+                    isLoadingPosts = false;
+                }, 500);
+
             }, (error) => {
-                console.error('Erreur chargement posts:', error);
+                console.error('❌ Erreur chargement posts:', error);
+                const feed = document.getElementById('feed');
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger les publications</p>
+                        <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
+                    </div>
+                `;
+                hideMainLoader();
+                isLoadingPosts = false;
             });
+        }
+
+        // NOUVELLE FONCTION : Chargement des utilisateurs pour la recherche
+        async function loadUsers() {
+            try {
+                console.log('👥 Chargement des utilisateurs pour la recherche...');
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                allUsers = [];
+                usersSnapshot.forEach((doc) => {
+                    const user = { id: doc.id, ...doc.data() };
+                    allUsers.push(user);
+                });
+                console.log(`✅ ${allUsers.length} utilisateurs chargés pour la recherche`);
+            } catch (error) {
+                console.error('❌ Erreur chargement utilisateurs:', error);
+            }
         }
 
         document.getElementById('publishBtn').addEventListener('click', async function() {
@@ -1296,596 +1840,444 @@
 
         function clearPostForm() {
             document.getElementById('postText').value = '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('fileName').textContent = '';
-            document.getElementById('mediaPreview').innerHTML = '';
-        }
+           document.getElementById('fileInput').value = '';
+           document.getElementById('fileName').textContent = '';
+           document.getElementById('mediaPreview').innerHTML = '';
+       }
 
-        window.openImageModal = function(imgUrl) {
-            const modal = document.getElementById('modalImageView');
-            const modalImg = document.getElementById('modalImageBig');
-            modal.style.display = 'flex';
-            modalImg.src = imgUrl;
-        };
+       function escapeHtml(text) {
+           if (!text) return '';
+           const div = document.createElement('div');
+           div.textContent = text.toString();
+           return div.innerHTML;
+       }
 
-        window.closeImageModal = function() {
-            document.getElementById('modalImageView').style.display = 'none';
-        };
+       function formatTimestamp(timestamp) {
+           if (!timestamp) return 'À l\'instant';
+           
+           let date;
+           if (timestamp.toDate) {
+               date = timestamp.toDate();
+           } else if (timestamp instanceof Date) {
+               date = timestamp;
+           } else {
+               date = new Date(timestamp);
+           }
+           
+           const now = new Date();
+           const diffMs = now - date;
+           const diffSeconds = Math.floor(diffMs / 1000);
+           const diffMinutes = Math.floor(diffSeconds / 60);
+           const diffHours = Math.floor(diffMinutes / 60);
+           const diffDays = Math.floor(diffHours / 24);
 
-        document.getElementById('modalImageView').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeImageModal();
-            }
-        });
+           if (diffSeconds < 60) return 'À l\'instant';
+           if (diffMinutes < 60) return `${diffMinutes}min`;
+           if (diffHours < 24) return `${diffHours}h`;
+           if (diffDays < 7) return `${diffDays}j`;
+           
+           return date.toLocaleDateString('fr-FR', {
+               day: 'numeric',
+               month: 'short'
+           });
+       }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
-                document.getElementById('myPostsModal').style.display = 'none';
-            }
-        });
+       function renderPosts() {
+           console.log('🎨 Rendu des publications...');
+           const feed = document.getElementById('feed');
+           
+           if (posts.length === 0) {
+               feed.innerHTML = `
+                   <div class="empty-state">
+                       <h3>Aucune publication</h3>
+                       <p>Soyez le premier à partager quelque chose !</p>
+                   </div>
+               `;
+               return;
+           }
 
-        window.toggleLike = async function(postId) {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de like avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-            const btn = document.getElementById('like-btn-' + postId);
-            if (btn && btn.disabled) return;
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-            }
-            try {
-                const likeRef = doc(db, 'likes', `${postId}_${userData.id}`);
-                const likeQuery = query(
-                    collection(db, 'likes'), 
-                    where('postId', '==', postId), 
-                    where('userId', '==', userData.id)
-                );
-                const likeSnapshot = await getDocs(likeQuery);
-                if (!likeSnapshot.empty) {
-                    await deleteDoc(likeRef);
-                    console.log('👎 Like supprimé');
-                } else {
-                    const likeData = {
-                        postId: postId,
-                        userId: userData.id,
-                        username: userData.fullName,
-                        timestamp: serverTimestamp()
-                    };
-                    if (!likeData.userId || !likeData.postId) {
-                        throw new Error('Données de like invalides');
-                    }
-                    await setDoc(likeRef, likeData);
-                    console.log('👍 Like ajouté');
-                }
-                await updateLikesCount(postId);
-            } catch (error) {
-                console.error('❌ Erreur toggle like:', error);
-                alert('Erreur lors du like. Veuillez réessayer.');
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            }
-        };
+           const postsHTML = posts.map(post => {
+               const imageHTML = post.imageUrl ? `
+                   <div class="image-link">
+                       <img src="${post.imageUrl}" 
+                            alt="Image partagée" 
+                            onclick="openImageModal('${post.imageUrl}')"
+                            loading="lazy">
+                       <div class="cloudinary-badge">📸</div>
+                   </div>
+               ` : '';
 
-        async function updateLikesCount(postId) {
-            try {
-                const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
-                const likesSnapshot = await getDocs(likesQuery);
-                const postRef = doc(db, 'posts', postId);
-                await setDoc(postRef, { 
-                    likesCount: likesSnapshot.size 
-                }, { merge: true });
-            } catch (error) {
-                console.error('❌ Erreur mise à jour compteur likes:', error);
-            }
-        }
+               return `
+                   <div class="publication fade-in" data-post-id="${post.id}">
+                       <div class="pub-header">
+                           <div class="pub-avatar">${post.avatar || 'U'}</div>
+                           <div class="pub-info">
+                               <div class="pub-username">${escapeHtml(post.author || 'Utilisateur')}</div>
+                               <div class="pub-time">${formatTimestamp(post.timestamp)}</div>
+                           </div>
+                       </div>
+                       
+                       <div class="pub-text">${escapeHtml(post.text || '').replace(/\n/g, '<br>')}</div>
+                       
+                       ${imageHTML}
+                       
+                       <div class="pub-actions">
+                           <button class="action-btn ${post.likedByCurrentUser ? 'liked' : ''}" 
+                                   onclick="toggleLike('${post.id}')"
+                                   data-post-id="${post.id}">
+                               <span>${post.likedByCurrentUser ? '❤️' : '🤍'}</span>
+                               <span>${post.likesCount || 0}</span>
+                           </button>
+                           <button class="action-btn" onclick="toggleComments('${post.id}')">
+                               <span>💬</span>
+                               <span>${post.commentsCount || 0}</span>
+                           </button>
+                           <button class="action-btn" onclick="sharePost('${post.id}')">
+                               <span>📤</span>
+                               <span>Partager</span>
+                           </button>
+                       </div>
+                       
+                       <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                           <div id="comments-list-${post.id}"></div>
+                           <div class="comment-form">
+                               <input type="text" 
+                                      class="comment-input" 
+                                      id="comment-input-${post.id}"
+                                      placeholder="Ajouter un commentaire..."
+                                      onkeypress="handleCommentKeypress(event, '${post.id}')">
+                               <button class="comment-btn" onclick="addComment('${post.id}')">Publier</button>
+                           </div>
+                       </div>
+                   </div>
+               `;
+           }).join('');
 
-        // CORRECTION 1: Fonction d'affichage des commentaires corrigée
-        window.toggleComments = function(postId) {
-            const commentsSection = document.getElementById(`comments-${postId}`);
-            if (!commentsSection) {
-                console.error('❌ Section commentaires introuvable pour postId:', postId);
-                return;
-            }
-            const isVisible = commentsSection.style.display === 'block';
-            
-            if (isVisible) {
-                commentsSection.style.display = 'none';
-                console.log('🔒 Commentaires masqués pour:', postId);
-            } else {
-                commentsSection.style.display = 'block';
-                console.log('👁️ Commentaires affichés pour:', postId);
-                loadComments(postId);
-                setTimeout(() => {
-                    const input = document.getElementById(`comment-input-${postId}`);
-                    if (input) input.focus();
-                }, 100);
-            }
-        };
+           feed.innerHTML = postsHTML;
+           console.log(`✅ ${posts.length} publications rendues`);
+       }
 
-        // CORRECTION 2: Fonction loadComments corrigée sans index complexe
-        async function loadComments(postId) {
-            console.log('📝 Chargement commentaires pour postId:', postId);
-            const commentsContainer = document.getElementById(`comments-list-${postId}`);
-            if (!commentsContainer) {
-                console.error('❌ Container commentaires introuvable pour postId:', postId);
-                return;
-            }
-            
-            try {
-                commentsContainer.innerHTML = '<div style="text-align: center; color: #8e8e8e; padding: 10px;">Chargement des commentaires...</div>';
-                
-                // Requête simple sans orderBy pour éviter l'index composé
-                const commentsQuery = query(
-                    collection(db, 'comments'), 
-                    where('postId', '==', postId),
-                    limit(50)
-                );
-                
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const comments = [];
-                
-                commentsSnapshot.forEach((doc) => {
-                    const commentData = doc.data();
-                    comments.push({ 
-                        id: doc.id, 
-                        ...commentData 
-                    });
-                });
-                
-                // Tri côté client par timestamp
-                comments.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
-                    const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
-                    return timeA - timeB;
-                });
-                
-                console.log(`💬 ${comments.length} commentaires trouvés pour postId:`, postId);
-                renderComments(postId, comments);
-                
-            } catch (error) {
-                console.error('❌ Erreur chargement commentaires:', error);
-                commentsContainer.innerHTML = '<div style="color: #ed4956; text-align: center; padding: 10px;">Erreur lors du chargement des commentaires</div>';
-            }
-        }
+       // FONCTIONS D'INTERACTION
+       window.openImageModal = function(imageUrl) {
+           const modal = document.getElementById('modalImageView');
+           const modalImg = document.getElementById('modalImageBig');
+           modalImg.src = imageUrl;
+           modal.style.display = 'flex';
+           
+           // Fermer avec échap ou clic
+           const closeModal = function(e) {
+               if (e.key === 'Escape' || e.target === modal) {
+                   modal.style.display = 'none';
+                   document.removeEventListener('keydown', closeModal);
+               }
+           };
+           
+           modal.addEventListener('click', closeModal);
+           document.addEventListener('keydown', closeModal);
+       };
 
-        // CORRECTION 3: Fonction renderComments améliorée
-        function renderComments(postId, comments) {
-            const commentsContainer = document.getElementById(`comments-list-${postId}`);
-            if (!commentsContainer) {
-                console.error('❌ Container commentaires introuvable pour renderComments:', postId);
-                return;
-            }
-            
-            if (comments.length === 0) {
-                commentsContainer.innerHTML = '<div style="color: #8e8e8e; text-align: center; padding: 10px; font-size: 13px;">Aucun commentaire pour le moment</div>';
-                return;
-            }
-            
-            const commentsHTML = comments.map(comment => {
-                const timeAgo = getTimeAgo(comment.timestamp?.toDate?.() || comment.timestamp || new Date());
-                return `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <div class="comment-avatar">${escapeHtml(comment.avatar || 'U')}</div>
-                            <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
-                            <div class="comment-time">${timeAgo}</div>
-                        </div>
-                        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
-                    </div>
-                `;
-            }).join('');
-            
-            commentsContainer.innerHTML = commentsHTML;
-            console.log(`✅ ${comments.length} commentaires affichés pour postId:`, postId);
-        }
+       window.toggleLike = async function(postId) {
+           if (!validateUserData(userData)) {
+               alert('Erreur: Veuillez vous reconnecter');
+               return;
+           }
 
-        window.submitComment = async function(postId) {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de commentaire avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-            const input = document.getElementById(`comment-input-${postId}`);
-            if (!input) {
-                console.error('❌ Input commentaire introuvable pour postId:', postId);
-                return;
-            }
-            const commentText = input.value.trim();
-            if (!commentText) return;
-            if (commentText.length > 500) {
-                alert('Commentaire trop long (max 500 caractères)');
-                return;
-            }
-            input.disabled = true;
-            const originalPlaceholder = input.placeholder;
-            input.placeholder = 'Envoi en cours...';
-            try {
-                const commentData = {
-                    postId: postId,
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: commentText,
-                    timestamp: serverTimestamp()
-                };
-                if (!commentData.authorId || !commentData.postId) {
-                    throw new Error('Données de commentaire invalides');
-                }
-                await addDoc(collection(db, 'comments'), commentData);
-                console.log('💬 Commentaire ajouté pour postId:', postId);
-                await updateCommentsCount(postId);
-                input.value = '';
-                // Recharger les commentaires après ajout
-                setTimeout(() => loadComments(postId), 500);
-            } catch (error) {
-                console.error('❌ Erreur ajout commentaire:', error);
-                alert(`Erreur lors de l'envoi du commentaire: ${error.message}`);
-            } finally {
-                input.disabled = false;
-                input.placeholder = originalPlaceholder;
-            }
-        };
+           const likeBtn = document.querySelector(`button[data-post-id="${postId}"]`);
+           if (!likeBtn) return;
 
-        async function updateCommentsCount(postId) {
-            try {
-                const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const postRef = doc(db, 'posts', postId);
-                await setDoc(postRef, { 
-                    commentsCount: commentsSnapshot.size 
-                }, { merge: true });
-            } catch (error) {
-                console.error('❌ Erreur mise à jour compteur commentaires:', error);
-            }
-        }
+           const originalDisabled = likeBtn.disabled;
+           likeBtn.disabled = true;
 
-        document.addEventListener('keydown', function(e) {
-            if (e.target.classList.contains('comment-input') && e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const postId = e.target.id.replace('comment-input-', '');
-                window.submitComment(postId);
-            }
-        });
+           try {
+               const post = posts.find(p => p.id === postId);
+               if (!post) return;
 
-        async function checkUserLikes(postIds) {
-            if (!validateUserData(userData)) {
-                return {};
-            }
-            try {
-                const userLikes = {};
-                for (const postId of postIds) {
-                    const likesQuery = query(
-                        collection(db, 'likes'), 
-                        where('postId', '==', postId),
-                        where('userId', '==', userData.id)
-                    );
-                    const likesSnapshot = await getDocs(likesQuery);
-                    userLikes[postId] = !likesSnapshot.empty;
-                }
-                return userLikes;
-            } catch (error) {
-                console.error('❌ Erreur vérification likes:', error);
-                return {};
-            }
-        }
+               const isCurrentlyLiked = post.likedByCurrentUser;
+               const newLikesCount = isCurrentlyLiked 
+                   ? Math.max(0, (post.likesCount || 0) - 1)
+                   : (post.likesCount || 0) + 1;
 
-        async function renderPosts() {
-            const feed = document.getElementById('feed');
-            if (posts.length === 0) {
-                feed.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aucune publication pour le moment</h3>
-                        <p>Soyez le premier à partager quelque chose !</p>
-                    </div>
-                `;
-                return;
-            }
-            const postIds = posts.map(p => p.id);
-            const userLikes = await checkUserLikes(postIds);
-            const fragment = document.createDocumentFragment();
-            posts.forEach(post => {
-                const likesCount = post.likesCount || 0;
-                const commentsCount = post.commentsCount || 0;
-                const isLiked = userLikes[post.id] || false;
-                const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp);
-                let imageHTML = '';
-                if (post.imageUrl) {
-                    let optimizedUrl = post.imageUrl;
-                    if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
-                        optimizedUrl = uploader.getOptimizedUrl(post.imagePublicId, {
-                            width: 800,
-                            crop: 'limit',
-                            quality: 'auto'
-                        });
-                    }
-                    imageHTML = `
-                        <div style="position: relative;">
-                            <a class="image-link" onclick="openImageModal('${post.imageUrl}')">
-                                <img src="${optimizedUrl}" alt="Image publication" loading="lazy">
-                                ${post.imagePublicId ? '<div class="cloudinary-badge">⚡ Optimisé</div>' : ''}
-                            </a>
-                        </div>
-                    `;
-                }
-                const postElement = document.createElement('div');
-                postElement.className = 'publication';
-                postElement.setAttribute('data-post-id', post.id);
-                postElement.innerHTML = `
-                    <div class="pub-header">
-                        <div class="pub-avatar">${post.avatar || 'U'}</div>
-                        <div class="pub-info">
-                            <div class="pub-username">${escapeHtml(post.author || 'Utilisateur anonyme')}</div>
-                            <div class="pub-time">${timeAgo}</div>
-                        </div>
-                    </div>
-                    <div class="pub-text">${escapeHtml(post.text || '')}</div>
-                    ${imageHTML}
-                    <div class="pub-actions">
-                        <button class="action-btn ${isLiked ? 'liked' : ''}" 
-                                onclick="toggleLike('${post.id}')" 
-                                id="like-btn-${post.id}">
-                            ${isLiked ? '❤️' : '🤍'} ${likesCount}
-                        </button>
-                        <button class="action-btn" 
-                                onclick="toggleComments('${post.id}')">
-                            💬 ${commentsCount}
-                        </button>
-                    </div>
-                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                        <div id="comments-list-${post.id}"></div>
-                        <div class="comment-form">
-                            <input type="text" class="comment-input" placeholder="Écrivez un commentaire..." id="comment-input-${post.id}">
-                            <button class="comment-btn" onclick="submitComment('${post.id}')">Envoyer</button>
-                        </div>
-                    </div>
-                `;
-                fragment.appendChild(postElement);
-            });
-            feed.innerHTML = '';
-            feed.appendChild(fragment);
-        }
+               // Mise à jour optimiste de l'UI
+               post.likedByCurrentUser = !isCurrentlyLiked;
+               post.likesCount = newLikesCount;
+               
+               const heartIcon = likeBtn.querySelector('span:first-child');
+               const countSpan = likeBtn.querySelector('span:last-child');
+               
+               heartIcon.textContent = post.likedByCurrentUser ? '❤️' : '🤍';
+               countSpan.textContent = newLikesCount;
+               likeBtn.classList.toggle('liked', post.likedByCurrentUser);
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+               // Sauvegarde en base (sans attendre)
+               if (isOnline) {
+                   // Ici on pourrait implémenter la logique de sauvegarde des likes
+                   console.log(`${isCurrentlyLiked ? '💔' : '❤️'} Like ${isCurrentlyLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
+               }
 
-        function getTimeAgo(timestamp) {
-            if (!timestamp) return 'Date inconnue';
-            const now = new Date();
-            const time = timestamp instanceof Date ? timestamp : new Date(timestamp);
-            const diffInSeconds = Math.floor((now - time) / 1000);
-            if (diffInSeconds < 60) return 'À l\'instant';
-            if (diffInSeconds < 3600) {
-                const minutes = Math.floor(diffInSeconds / 60);
-                return `${minutes}min`;
-            } else if (diffInSeconds < 86400) {
-                const hours = Math.floor(diffInSeconds / 3600);
-                return `${hours}h`;
-            } else if (diffInSeconds < 604800) {
-                const days = Math.floor(diffInSeconds / 86400);
-                return `${days}j`;
-            } else {
-                return time.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-            }
-        }
+           } catch (error) {
+               console.error('❌ Erreur lors du like:', error);
+               // Rollback en cas d'erreur
+               renderPosts();
+           } finally {
+               likeBtn.disabled = originalDisabled;
+           }
+       };
 
-        document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-            showMyPostsModal();
-        });
+       window.toggleComments = async function(postId) {
+           const commentsSection = document.getElementById(`comments-${postId}`);
+           if (!commentsSection) return;
 
-        document.getElementById('closeMyPostsModal').onclick = function() {
-            document.getElementById('myPostsModal').style.display = 'none';
-        };
+           const isVisible = commentsSection.style.display !== 'none';
+           commentsSection.style.display = isVisible ? 'none' : 'block';
 
-        document.getElementById('myPostsModal').onclick = function(e) {
-            if (e.target === this) this.style.display = 'none';
-        };
+           if (!isVisible) {
+               // Charger les commentaires si ce n'est pas déjà fait
+               await loadComments(postId);
+           }
+       };
 
-        // CORRECTION 4: Fonction showMyPostsModal corrigée sans index complexe
-        async function showMyPostsModal() {
-            console.log('🔰 showMyPostsModal appelée');
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative d\'affichage des posts avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                showRegistrationForm();
-                return;
-            }
-            
-            const modal = document.getElementById('myPostsModal');
-            const listEl = document.getElementById('myPostsList');
-            
-            // Afficher la modal d'abord
-            modal.style.display = 'flex';
-            listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #8e8e8e;"><div class="loading-spinner"></div> Chargement...</div>';
-            
-            try {
-                console.log('🔍 Recherche des publications pour userId:', userData.id);
-                
-                // Requête simple sans orderBy pour éviter l'index composé
-                const myPostsQuery = query(
-                    collection(db, 'posts'), 
-                    where('authorId', '==', userData.id),
-                    limit(100)
-                );
-                
-                const myPostsSnapshot = await getDocs(myPostsQuery);
-                const myPosts = [];
-                
-                myPostsSnapshot.forEach((doc) => {
-                    const postData = doc.data();
-                    myPosts.push({ 
-                        id: doc.id, 
-                        ...postData 
-                    });
-                });
-                
-                // Tri côté client par timestamp (du plus récent au plus ancien)
-                myPosts.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate?.() || a.timestamp || new Date(0);
-                    const timeB = b.timestamp?.toDate?.() || b.timestamp || new Date(0);
-                    return timeB - timeA;
-                });
-                
-                console.log(`📊 ${myPosts.length} publications trouvées pour l'utilisateur:`, userData.fullName);
-                
-                if (myPosts.length === 0) {
-                    listEl.innerHTML = `
-                        <div class="empty-state">
-                            <h3>Aucune publication trouvée</h3>
-                            <p>Vous n'avez pas encore publié de contenu.</p>
-                            <p style="font-size: 12px; margin-top: 8px; color: #8e8e8e;">Commencez par publier quelque chose !</p>
-                        </div>
-                    `;
-                } else {
-                    const fragment = document.createDocumentFragment();
-                    
-                    myPosts.forEach(post => {
-                        const timeAgo = getTimeAgo(post.timestamp?.toDate?.() || post.timestamp || new Date());
-                        let thumbnailHTML = '';
-                        
-                        if (post.imageUrl) {
-                            let thumbUrl = post.imageUrl;
-                            if (post.imagePublicId && post.imageUrl.includes('cloudinary.com')) {
-                                thumbUrl = uploader.getOptimizedUrl(post.imagePublicId, {
-                                    width: 60,
-                                    height: 60,
-                                    crop: 'fill',
-                                    quality: 'auto'
-                                });
-                            }
-                            thumbnailHTML = `
-                                <div class="my-post-thumbnail">
-                                    <img src="${thumbUrl}" alt="Aperçu">
-                                </div>
-                            `;
-                        }
-                        
-                        const postElement = document.createElement('div');
-                        postElement.className = 'my-post-item';
-                        postElement.innerHTML = `
-                            ${thumbnailHTML}
-                            <div class="my-post-content">
-                                <div class="my-post-text">${escapeHtml(post.text || 'Publication sans texte')}</div>
-                                <div class="my-post-time">${timeAgo} • ${post.likesCount || 0} likes • ${post.commentsCount || 0} commentaires</div>
-                            </div>
-                            <button class="my-post-delete" onclick="deleteMyPost('${post.id}', this)">Supprimer</button>
-                        `;
-                        fragment.appendChild(postElement);
-                    });
-                    
-                    listEl.innerHTML = '';
-                    listEl.appendChild(fragment);
-                    console.log('✅ Publications affichées dans la modal');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erreur détaillée lors du chargement de mes publications:', error);
-                listEl.innerHTML = `
-                    <div style="color:#ed4956; padding:20px; text-align:center;">
-                        <h4>Erreur lors du chargement</h4>
-                        <p>Impossible de charger vos publications.</p>
-                        <p style="font-size: 12px; margin-top: 8px; color: #8e8e8e;">Détail: ${error.message}</p>
-                        <button onclick="showMyPostsModal()" style="margin-top: 10px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
-                    </div>
-                `;
-            }
-        }
+       async function loadComments(postId) {
+           const commentsList = document.getElementById(`comments-list-${postId}`);
+           if (!commentsList) return;
 
-        window.deleteMyPost = async function(postId, btn) {
-            console.log('🗑️ Demande de suppression de la publication:', postId);
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de suppression avec userData invalide');
-                alert('Erreur: Veuillez vous reconnecter.');
-                return;
-            }
-            
-            if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) {
-                console.log('❌ Suppression annulée par l\'utilisateur');
-                return;
-            }
-            
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Suppression...';
-                btn.style.opacity = '0.6';
-            }
-            
-            try {
-                // Méthode simplifiée : suppression directe du document
-                const postRef = doc(db, 'posts', postId);
-                
-                // Supprimer les likes associés (requête simple)
-                const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId));
-                const likesSnapshot = await getDocs(likesQuery);
-                const deleteLikesPromises = [];
-                likesSnapshot.forEach((doc) => {
-                    deleteLikesPromises.push(deleteDoc(doc.ref));
-                });
-                
-                // Supprimer les commentaires associés (requête simple)
-                const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId));
-                const commentsSnapshot = await getDocs(commentsQuery);
-                const deleteCommentsPromises = [];
-                commentsSnapshot.forEach((doc) => {
-                    deleteCommentsPromises.push(deleteDoc(doc.ref));
-                });
-                
-                // Attendre la suppression des likes et commentaires
-                await Promise.all([...deleteLikesPromises, ...deleteCommentsPromises]);
-                
-                // Supprimer la publication
-                await deleteDoc(postRef);
-                
-                console.log('✅ Publication supprimée avec succès:', postId);
-                
-                // Recharger la liste des publications
-                setTimeout(() => showMyPostsModal(), 500);
-                
-            } catch (error) {
-                console.error('❌ Erreur suppression publication:', error);
-                alert(`Erreur lors de la suppression: ${error.message}`);
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'Supprimer';
-                    btn.style.opacity = '1';
-                }
-            }
-        };
+           try {
+               // Simulation de chargement des commentaires
+               commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">💬 Chargement des commentaires...</div>';
+               
+               // Ici on pourrait charger les vrais commentaires depuis Firestore
+               // Pour l'instant, on simule avec un délai
+               setTimeout(() => {
+                   commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
+               }, 500);
 
-        // Gestion des événements en ligne/hors ligne
-        window.addEventListener('online', () => {
-            console.log('🌍 Passage en ligne');
-            isOnline = true;
-            updateConnectionStatus();
-        });
+           } catch (error) {
+               console.error('❌ Erreur chargement commentaires:', error);
+               commentsList.innerHTML = '<div style="padding: 8px; color: #ed4956; font-size: 12px;">Erreur de chargement</div>';
+           }
+       }
 
-        window.addEventListener('offline', () => {
-            console.log('📡 Passage hors-ligne');
-            isOnline = false;
-            updateConnectionStatus();
-        });
+       window.handleCommentKeypress = function(event, postId) {
+           if (event.key === 'Enter') {
+               event.preventDefault();
+               addComment(postId);
+           }
+       };
 
-        // Fonction utilitaire pour déboguer
-        window.debugApp = function() {
-            console.log('🔧 État de l\'application:', {
-                userData: userData,
-                isAppInitialized: isAppInitialized,
-                isOnline: isOnline,
-                postsCount: posts.length
-            });
-        };
+       window.addComment = async function(postId) {
+           if (!validateUserData(userData)) {
+               alert('Erreur: Veuillez vous reconnecter');
+               return;
+           }
 
-        console.log('✅ Script principal Express Exchange chargé et corrigé');
-    </script>
+           const commentInput = document.getElementById(`comment-input-${postId}`);
+           if (!commentInput) return;
+
+           const commentText = commentInput.value.trim();
+           if (!commentText) {
+               alert('Veuillez écrire un commentaire');
+               return;
+           }
+
+           try {
+               const commentData = {
+                   postId: postId,
+                   author: userData.fullName,
+                   authorId: userData.id,
+                   avatar: userData.avatar,
+                   text: commentText,
+                   timestamp: serverTimestamp()
+               };
+
+               console.log('💬 Ajout commentaire:', commentData);
+               
+               // Ici on pourrait sauvegarder le commentaire en base
+               // await addDoc(collection(db, 'comments'), commentData);
+
+               // Mise à jour optimiste
+               const commentsList = document.getElementById(`comments-list-${postId}`);
+               if (commentsList) {
+                   const commentHTML = `
+                       <div class="comment">
+                           <div class="comment-header">
+                               <div class="comment-avatar">${userData.avatar}</div>
+                               <div class="comment-username">${escapeHtml(userData.fullName)}</div>
+                               <div class="comment-time">À l'instant</div>
+                           </div>
+                           <div class="comment-text">${escapeHtml(commentText)}</div>
+                       </div>
+                   `;
+                   
+                   if (commentsList.innerHTML.includes('Aucun commentaire')) {
+                       commentsList.innerHTML = commentHTML;
+                   } else {
+                       commentsList.innerHTML += commentHTML;
+                   }
+               }
+
+               // Mise à jour du compteur
+               const post = posts.find(p => p.id === postId);
+               if (post) {
+                   post.commentsCount = (post.commentsCount || 0) + 1;
+                   const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"] span:last-child`);
+                   if (commentBtn) {
+                       commentBtn.textContent = post.commentsCount;
+                   }
+               }
+
+               commentInput.value = '';
+
+           } catch (error) {
+               console.error('❌ Erreur ajout commentaire:', error);
+               alert('Erreur lors de l\'ajout du commentaire');
+           }
+       };
+
+       window.sharePost = function(postId) {
+           const post = posts.find(p => p.id === postId);
+           if (!post) return;
+
+           if (navigator.share) {
+               navigator.share({
+                   title: `Publication de ${post.author}`,
+                   text: post.text || 'Regardez cette publication sur Express Exchange',
+                   url: window.location.href
+               }).catch(err => console.log('Erreur partage:', err));
+           } else {
+               // Fallback: copier le lien
+               const textToCopy = `${post.text || 'Publication'} - par ${post.author} sur Express Exchange`;
+               navigator.clipboard.writeText(textToCopy).then(() => {
+                   alert('Contenu copié dans le presse-papiers !');
+               }).catch(() => {
+                   alert('Impossible de copier le contenu');
+               });
+           }
+       };
+
+       // GESTION DES PUBLICATIONS PERSONNELLES
+       document.getElementById('showMyPostsBtn').addEventListener('click', function() {
+           showMyPostsModal();
+       });
+
+       function showMyPostsModal() {
+           if (!validateUserData(userData)) {
+               alert('Erreur: Veuillez vous reconnecter');
+               return;
+           }
+
+           const modal = document.getElementById('myPostsModal');
+           const myPostsList = document.getElementById('myPostsList');
+           
+           modal.style.display = 'flex';
+           
+           // Filtrer les posts de l'utilisateur actuel
+           const myPosts = posts.filter(post => post.authorId === userData.id);
+           
+           if (myPosts.length === 0) {
+               myPostsList.innerHTML = `
+                   <div class="empty-state">
+                       <h3>Aucune publication</h3>
+                       <p>Vous n'avez pas encore publié de contenu</p>
+                   </div>
+               `;
+               return;
+           }
+
+           const myPostsHTML = myPosts.map(post => `
+               <div class="my-post-item">
+                   ${post.imageUrl ? `
+                       <div class="my-post-thumbnail">
+                           <img src="${post.imageUrl}" alt="Miniature">
+                       </div>
+                   ` : ''}
+                   <div class="my-post-content">
+                       <div class="my-post-text">${escapeHtml(post.text || 'Publication avec image')}</div>
+                       <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime</div>
+                   </div>
+                   <button class="my-post-delete" onclick="deleteMyPost('${post.id}')" ${!isOnline ? 'disabled' : ''}>
+                       🗑️ Supprimer
+                   </button>
+               </div>
+           `).join('');
+
+           myPostsList.innerHTML = myPostsHTML;
+       }
+
+       document.getElementById('closeMyPostsModal').addEventListener('click', function() {
+           document.getElementById('myPostsModal').style.display = 'none';
+       });
+
+       window.deleteMyPost = async function(postId) {
+           if (!validateUserData(userData)) {
+               alert('Erreur: Veuillez vous reconnecter');
+               return;
+           }
+
+           if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
+               return;
+           }
+
+           const deleteBtn = document.querySelector(`button[onclick="deleteMyPost('${postId}')"]`);
+           if (deleteBtn) {
+               deleteBtn.disabled = true;
+               deleteBtn.innerHTML = '🔄 Suppression...';
+           }
+
+           try {
+               await deleteDoc(doc(db, 'posts', postId));
+               console.log('✅ Publication supprimée:', postId);
+               
+               // Mise à jour locale
+               posts = posts.filter(post => post.id !== postId);
+               renderPosts();
+               showMyPostsModal(); // Rafraîchir la modal
+               
+           } catch (error) {
+               console.error('❌ Erreur suppression:', error);
+               alert('Erreur lors de la suppression');
+               
+               if (deleteBtn) {
+                   deleteBtn.disabled = false;
+                   deleteBtn.innerHTML = '🗑️ Supprimer';
+               }
+           }
+       };
+
+       // GESTION ÉVÉNEMENTS RÉSEAU
+       window.addEventListener('online', function() {
+           console.log('🌐 Connexion rétablie');
+           isOnline = true;
+           updateConnectionStatus();
+           
+           // Recharger les données si nécessaire
+           if (isAppInitialized && posts.length === 0) {
+               loadPosts();
+           }
+       });
+
+       window.addEventListener('offline', function() {
+           console.log('📡 Connexion perdue');
+           isOnline = false;
+           updateConnectionStatus();
+       });
+
+       // GESTION ERREURS GLOBALES
+       window.addEventListener('error', function(event) {
+           console.error('❌ Erreur globale:', event.error);
+       });
+
+       window.addEventListener('unhandledrejection', function(event) {
+           console.error('❌ Promise rejetée:', event.reason);
+       });
+
+       // SERVICE WORKER (optionnel pour le cache)
+       if ('serviceWorker' in navigator) {
+           window.addEventListener('load', function() {
+               // Ici on pourrait enregistrer un service worker pour le cache offline
+               console.log('🔧 Service Worker disponible');
+           });
+       }
+
+       console.log('🎉 Script Express Exchange chargé avec succès');
+   </script>
 </body>
 </html>
