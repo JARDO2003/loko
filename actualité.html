@@ -1175,7 +1175,9 @@
         let userData = null;
         let posts = [];
         let allUsers = [];
+        let allComments = [];
         let unsubscribePosts = null;
+        let unsubscribeComments = null;
         let isOnline = navigator.onLine;
         let isAppInitialized = false;
         let isLoadingPosts = false;
@@ -1276,6 +1278,8 @@
             const searchClear = document.getElementById('searchClear');
             const searchResults = document.getElementById('searchResults');
 
+            if (!searchInput) return;
+
             searchInput.addEventListener('input', function(e) {
                 const query = e.target.value.trim();
                 
@@ -1335,6 +1339,8 @@
 
         async function performSearch(query) {
             const searchResults = document.getElementById('searchResults');
+            if (!searchResults) return;
+
             searchResults.innerHTML = '<div style="padding: 12px; color: #8e8e8e;">🔍 Recherche en cours...</div>';
             searchResults.style.display = 'block';
 
@@ -1405,9 +1411,10 @@
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
             
-            searchResults.style.display = 'none';
-            searchInput.value = '';
-            document.getElementById('searchClear').style.display = 'none';
+            if (searchResults) searchResults.style.display = 'none';
+            if (searchInput) searchInput.value = '';
+            const searchClear = document.getElementById('searchClear');
+            if (searchClear) searchClear.style.display = 'none';
 
             const postElement = document.querySelector(`[data-post-id="${postId}"]`);
             if (postElement) {
@@ -1424,9 +1431,10 @@
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
             
-            searchResults.style.display = 'none';
-            searchInput.value = '';
-            document.getElementById('searchClear').style.display = 'none';
+            if (searchResults) searchResults.style.display = 'none';
+            if (searchInput) searchInput.value = '';
+            const searchClear = document.getElementById('searchClear');
+            if (searchClear) searchClear.style.display = 'none';
 
             alert('Profil utilisateur - Fonctionnalité à venir !');
         };
@@ -1577,6 +1585,7 @@
             initializeSearch();
             loadPosts();
             loadUsers();
+            loadComments();
             isAppInitialized = true;
             console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
@@ -1591,6 +1600,9 @@
             if (unsubscribePosts) {
                 unsubscribePosts();
             }
+            if (unsubscribeComments) {
+                unsubscribeComments();
+            }
             location.reload();
         };
 
@@ -1603,78 +1615,81 @@
             }, 100);
         });
 
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            console.log('📋 Soumission du formulaire d\'inscription...');
-            const submitBtn = e.target.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            const nom = document.getElementById('nom').value.trim();
-            const prenom = document.getElementById('prenom').value.trim();
-            const contact = document.getElementById('contact').value.trim();
-            if (!nom || !prenom || !contact) {
-                alert('Veuillez remplir tous les champs');
-                return;
-            }
-            if (nom.length < 2 || prenom.length < 2) {
-                alert('Le nom et prénom doivent contenir au moins 2 caractères');
-                return;
-            }
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading-spinner"></div>Inscription...';
-            try {
-                const timestamp = Date.now();
-                const randomSuffix = Math.random().toString(36).substr(2, 9);
-                const userId = `user_${timestamp}_${randomSuffix}`;
-                userData = {
-                    id: userId,
-                    nom: nom,
-                    prenom: prenom,
-                    contact: contact,
-                    fullName: `${prenom} ${nom}`,
-                    avatar: `${prenom[0].toUpperCase()}${nom[0].toUpperCase()}`,
-                    registeredAt: new Date().toISOString(),
-                    username: `${prenom.toLowerCase()}.${nom.toLowerCase()}`,
-                    email: `${contact}@placeholder.com`
-                };
-                console.log('👤 Création utilisateur:', userData);
-                if (!validateUserData(userData)) {
-                    throw new Error('Données utilisateur invalides après création');
+        const registrationForm = document.getElementById('registrationForm');
+        if (registrationForm) {
+            registrationForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('📋 Soumission du formulaire d\'inscription...');
+                const submitBtn = e.target.querySelector('.submit-btn');
+                const originalText = submitBtn.textContent;
+                const nom = document.getElementById('nom').value.trim();
+                const prenom = document.getElementById('prenom').value.trim();
+                const contact = document.getElementById('contact').value.trim();
+                if (!nom || !prenom || !contact) {
+                    alert('Veuillez remplir tous les champs');
+                    return;
                 }
+                if (nom.length < 2 || prenom.length < 2) {
+                    alert('Le nom et prénom doivent contenir au moins 2 caractères');
+                    return;
+                }
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loading-spinner"></div>Inscription...';
                 try {
-                    const userDataString = JSON.stringify(userData);
-                    sessionStorage.setItem('expressExchangeUser', userDataString);
-                    localStorage.setItem('expressExchangeUser', userDataString);
-                    console.log('💾 Données sauvegardées localement');
-                } catch (storageError) {
-                    console.error('❌ Erreur sauvegarde locale:', storageError);
-                    throw new Error('Impossible de sauvegarder les données localement');
-                }
-                if (isOnline) {
-                    try {
-                        await setDoc(doc(db, 'users', userData.id), {
-                            ...userData,
-                            createdAt: serverTimestamp(),
-                            lastActive: serverTimestamp()
-                        });
-                        console.log('☁️ Utilisateur sauvegardé dans Firestore');
-                    } catch (firebaseError) {
-                        console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
+                    const timestamp = Date.now();
+                    const randomSuffix = Math.random().toString(36).substr(2, 9);
+                    const userId = `user_${timestamp}_${randomSuffix}`;
+                    userData = {
+                        id: userId,
+                        nom: nom,
+                        prenom: prenom,
+                        contact: contact,
+                        fullName: `${prenom} ${nom}`,
+                        avatar: `${prenom[0].toUpperCase()}${nom[0].toUpperCase()}`,
+                        registeredAt: new Date().toISOString(),
+                        username: `${prenom.toLowerCase()}.${nom.toLowerCase()}`,
+                        email: `${contact}@placeholder.com`
+                    };
+                    console.log('👤 Création utilisateur:', userData);
+                    if (!validateUserData(userData)) {
+                        throw new Error('Données utilisateur invalides après création');
                     }
-                } else {
-                    console.log('📡 Mode hors-ligne, sauvegarde locale uniquement');
+                    try {
+                        const userDataString = JSON.stringify(userData);
+                        sessionStorage.setItem('expressExchangeUser', userDataString);
+                        localStorage.setItem('expressExchangeUser', userDataString);
+                        console.log('💾 Données sauvegardées localement');
+                    } catch (storageError) {
+                        console.error('❌ Erreur sauvegarde locale:', storageError);
+                        throw new Error('Impossible de sauvegarder les données localement');
+                    }
+                    if (isOnline) {
+                        try {
+                            await setDoc(doc(db, 'users', userData.id), {
+                                ...userData,
+                                createdAt: serverTimestamp(),
+                                lastActive: serverTimestamp()
+                            });
+                            console.log('☁️ Utilisateur sauvegardé dans Firestore');
+                        } catch (firebaseError) {
+                            console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
+                        }
+                    } else {
+                        console.log('📡 Mode hors-ligne, sauvegarde locale uniquement');
+                    }
+                    hideRegistrationForm();
+                    showMainApp();
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'inscription:', error);
+                    alert(`Erreur lors de l'inscription: ${error.message}`);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    userData = null;
+                    sessionStorage.removeItem('expressExchangeUser');
+                    localStorage.removeItem('expressExchangeUser');
                 }
-                hideRegistrationForm();
-                showMainApp();
-            } catch (error) {
-                console.error('❌ Erreur lors de l\'inscription:', error);
-                alert(`Erreur lors de l'inscription: ${error.message}`);
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-                userData = null;
-                sessionStorage.removeItem('expressExchangeUser');
-                localStorage.removeItem('expressExchangeUser');
-            }
-        });
+            });
+        }
 
         // FONCTION AMÉLIORÉE : Chargement des publications avec loader
         function loadPosts() {
@@ -1714,13 +1729,15 @@
             }, (error) => {
                 console.error('❌ Erreur chargement posts:', error);
                 const feed = document.getElementById('feed');
-                feed.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Erreur de chargement</h3>
-                        <p>Impossible de charger les publications</p>
-                        <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
-                    </div>
-                `;
+                if (feed) {
+                    feed.innerHTML = `
+                        <div class="empty-state">
+                            <h3>Erreur de chargement</h3>
+                            <p>Impossible de charger les publications</p>
+                            <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
+                        </div>
+                    `;
+                }
                 hideMainLoader();
                 isLoadingPosts = false;
             });
@@ -1742,542 +1759,594 @@
             }
         }
 
-        document.getElementById('publishBtn').addEventListener('click', async function() {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de publication avec userData invalide');
-                alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
-                showRegistrationForm();
-                return;
+        // NOUVELLE FONCTION : Chargement des commentaires
+        function loadComments() {
+            console.log('💬 Chargement des commentaires...');
+            
+            if (unsubscribeComments) {
+                unsubscribeComments();
             }
-            const text = document.getElementById('postText').value.trim();
-            const fileInput = document.getElementById('fileInput');
-            const publishBtn = document.getElementById('publishBtn');
-            if (!text && !fileInput.files[0]) {
-                alert('Veuillez ajouter du texte ou une image');
-                return;
-            }
-            if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-                alert("Seules les images sont autorisées.");
-                return;
-            }
-            publishBtn.disabled = true;
-            publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-            try {
-                const postData = {
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: text || '',
-                    timestamp: serverTimestamp(),
-                    likesCount: 0,
-                    commentsCount: 0,
-                    imageUrl: null,
-                    imagePublicId: null,
-                    createdBy: userData.id,
-                    userValidated: true
-                };
-                console.log('📝 Données de publication:', {
-                    authorId: postData.authorId,
-                    author: postData.author,
-                    textLength: text.length,
-                    hasImage: !!fileInput.files[0]
+
+            const commentsQuery = query(
+                collection(db, 'comments'), 
+                orderBy('timestamp', 'desc')
+            );
+
+            unsubscribeComments = onSnapshot(commentsQuery, (snapshot) => {
+                console.log('💬 Mise à jour des commentaires reçue');
+                allComments = [];
+                snapshot.forEach((doc) => {
+                    const comment = { id: doc.id, ...doc.data() };
+                    allComments.push(comment);
                 });
-                if (!postData.authorId || postData.authorId.trim() === '') {
-                    throw new Error('authorId manquant ou vide');
+
+                console.log(`✅ ${allComments.length} commentaires chargés`);
+                
+                // Mettre à jour les compteurs de commentaires dans les posts
+                updateCommentsCount();
+
+            }, (error) => {
+                console.error('❌ Erreur chargement commentaires:', error);
+            });
+        }
+
+        // FONCTION : Mise à jour des compteurs de commentaires
+        function updateCommentsCount() {
+            posts.forEach(post => {
+                const postComments = allComments.filter(comment => comment.postId === post.id);
+                post.commentsCount = postComments.length;
+            });
+        }
+
+        const publishBtn = document.getElementById('publishBtn');
+        if (publishBtn) {
+            publishBtn.addEventListener('click', async function() {
+                if (!validateUserData(userData)) {
+                    console.error('❌ Tentative de publication avec userData invalide');
+                    alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
+                    showRegistrationForm();
+                    return;
                 }
-                if (fileInput.files[0]) {
-                    const file = fileInput.files[0];
-                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
-                    const uploadResult = await uploader.uploadImage(file, {
-                        maxWidth: 1200
-                    });
-                    postData.imageUrl = uploadResult.url;
-                    postData.imagePublicId = uploadResult.publicId;
-                    postData.imageWidth = uploadResult.width;
-                    postData.imageHeight = uploadResult.height;
-                    postData.imageSize = uploadResult.bytes;
+                const text = document.getElementById('postText').value.trim();
+                const fileInput = document.getElementById('fileInput');
+                const publishBtn = document.getElementById('publishBtn');
+                if (!text && !fileInput.files[0]) {
+                    alert('Veuillez ajouter du texte ou une image');
+                    return;
                 }
+                if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
+                    alert("Seules les images sont autorisées.");
+                    return;
+                }
+                publishBtn.disabled = true;
                 publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
                 try {
-                    const docRef = await addDoc(collection(db, 'posts'), postData);
-                    console.log('✅ Publication créée avec ID:', docRef.id);
-                } catch (firestoreError) {
-                    console.error('❌ Erreur Firestore détaillée:', firestoreError);
-                    throw new Error(`Erreur Firestore: ${firestoreError.message}`);
+                    const postData = {
+                        author: userData.fullName,
+                        authorId: userData.id,
+                        avatar: userData.avatar,
+                        text: text || '',
+                        timestamp: serverTimestamp(),
+                        likesCount: 0,
+                        commentsCount: 0,
+                        imageUrl: null,
+                        imagePublicId: null,
+                        createdBy: userData.id,
+                        userValidated: true
+                    };
+                    console.log('📝 Données de publication:', {
+                        authorId: postData.authorId,
+                        author: postData.author,
+                        textLength: text.length,
+                        hasImage: !!fileInput.files[0]
+                    });
+                    if (!postData.authorId || postData.authorId.trim() === '') {
+                        throw new Error('authorId manquant ou vide');
+                    }
+                    if (fileInput.files[0]) {
+                        const file = fileInput.files[0];
+                        publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
+                        const uploadResult = await uploader.uploadImage(file, {
+                            maxWidth: 1200
+                        });
+                        postData.imageUrl = uploadResult.url;
+                        postData.imagePublicId = uploadResult.publicId;
+                        postData.imageWidth = uploadResult.width;
+                        postData.imageHeight = uploadResult.height;
+                        postData.imageSize = uploadResult.bytes;
+                    }
+                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
+                    try {
+                        const docRef = await addDoc(collection(db, 'posts'), postData);
+                        console.log('✅ Publication créée avec ID:', docRef.id);
+                    } catch (firestoreError) {
+                        console.error('❌ Erreur Firestore détaillée:', firestoreError);
+                        throw new Error(`Erreur Firestore: ${firestoreError.message}`);
+                    }
+                    clearPostForm();
+                } catch (error) {
+                    console.error('❌ Erreur lors de la publication:', error);
+                    alert(`Erreur lors de la publication: ${error.message}`);
+                } finally {
+                    resetPublishButton();
                 }
-                clearPostForm();
-            } catch (error) {
-                console.error('❌ Erreur lors de la publication:', error);
-                alert(`Erreur lors de la publication: ${error.message}`);
-            } finally {
-                resetPublishButton();
-            }
-        });
+            });
+        }
 
         function resetPublishButton() {
             const publishBtn = document.getElementById('publishBtn');
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'Publier';
+            if (publishBtn) {
+                publishBtn.disabled = false;
+                publishBtn.textContent = 'Publier';
+            }
         }
 
-        document.getElementById('fileInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                const fileName = document.getElementById('fileName');
+                const preview = document.getElementById('mediaPreview');
+                if (file) {
+                    if (fileName) fileName.textContent = file.name;
+                    if (fileName) fileName.style.color = '#8e8e8e';
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        if (preview) {
+                            preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    if (fileName) fileName.textContent = '';
+                    if (preview) preview.innerHTML = '';
+                }
+            });
+        }
+
+        function clearPostForm() {
+            const postText = document.getElementById('postText');
+            const fileInput = document.getElementById('fileInput');
             const fileName = document.getElementById('fileName');
             const preview = document.getElementById('mediaPreview');
-            if (file) {
-                fileName.textContent = file.name;
-                fileName.style.color = '#8e8e8e';
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
-                };
-                reader.readAsDataURL(file);
+            
+            if (postText) postText.value = '';
+            if (fileInput) fileInput.value = '';
+            if (fileName) fileName.textContent = '';
+            if (preview) preview.innerHTML = '';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text.toString();
+            return div.innerHTML;
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'À l\'instant';
+            
+            let date;
+            if (timestamp.toDate) {
+                date = timestamp.toDate();
+            } else if (timestamp instanceof Date) {
+                date = timestamp;
             } else {
-                fileName.textContent = '';
-                preview.innerHTML = '';
+                date = new Date(timestamp);
+            }
+            
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffSeconds < 60) return 'À l\'instant';
+            if (diffMinutes < 60) return `${diffMinutes}min`;
+            if (diffHours < 24) return `${diffHours}h`;
+            if (diffDays < 7) return `${diffDays}j`;
+            
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short'
+            });
+        }
+
+        function renderPosts() {
+            console.log('🎨 Rendu des publications...');
+            const feed = document.getElementById('feed');
+            
+            if (!feed) return;
+            
+            if (posts.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucune publication</h3>
+                        <p>Soyez le premier à partager quelque chose !</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const postsHTML = posts.map(post => {
+                const imageHTML = post.imageUrl ? `
+                    <div class="image-link">
+                        <img src="${post.imageUrl}" 
+                             alt="Image partagée" 
+                             onclick="openImageModal('${post.imageUrl}')"
+                             loading="lazy">
+                        <div class="cloudinary-badge">📸</div>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="publication fade-in" data-post-id="${post.id}">
+                        <div class="pub-header">
+                            <div class="pub-avatar">${post.avatar || 'U'}</div>
+                            <div class="pub-info">
+                                <div class="pub-username">${escapeHtml(post.author || 'Utilisateur')}</div>
+                                <div class="pub-time">${formatTimestamp(post.timestamp)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="pub-text">${escapeHtml(post.text || '').replace(/\n/g, '<br>')}</div>
+                        
+                        ${imageHTML}
+                        
+                        <div class="pub-actions">
+                            <button class="action-btn ${post.likedByCurrentUser ? 'liked' : ''}" 
+                                    onclick="toggleLike('${post.id}')"
+                                    data-post-id="${post.id}">
+                                <span>${post.likedByCurrentUser ? '❤️' : '🤍'}</span>
+                                <span>${post.likesCount || 0}</span>
+                            </button>
+                            <button class="action-btn" onclick="toggleComments('${post.id}')">
+                                <span>💬</span>
+                                <span>${post.commentsCount || 0}</span>
+                            </button>
+                            <button class="action-btn" onclick="sharePost('${post.id}')">
+                                <span>📤</span>
+                                <span>Partager</span>
+                            </button>
+                        </div>
+                        
+                        <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                            <div id="comments-list-${post.id}"></div>
+                            <div class="comment-form">
+                                <input type="text" 
+                                       class="comment-input" 
+                                       id="comment-input-${post.id}"
+                                       placeholder="Ajouter un commentaire..."
+                                       onkeypress="handleCommentKeypress(event, '${post.id}')">
+                                <button class="comment-btn" onclick="addComment('${post.id}')">Publier</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            feed.innerHTML = postsHTML;
+            console.log(`✅ ${posts.length} publications rendues`);
+        }
+
+        // FONCTIONS D'INTERACTION
+        window.openImageModal = function(imageUrl) {
+            const modal = document.getElementById('modalImageView');
+            const modalImg = document.getElementById('modalImageBig');
+            if (modal && modalImg) {
+                modalImg.src = imageUrl;
+                modal.style.display = 'flex';
+                
+                // Fermer avec échap ou clic
+                const closeModal = function(e) {
+                    if (e.key === 'Escape' || e.target === modal) {
+                        modal.style.display = 'none';
+                        document.removeEventListener('keydown', closeModal);
+                    }
+                };
+                
+                modal.addEventListener('click', closeModal);
+                document.addEventListener('keydown', closeModal);
+            }
+        };
+
+        window.toggleLike = async function(postId) {
+            if (!validateUserData(userData)) {
+                alert('Erreur: Veuillez vous reconnecter');
+                return;
+            }
+
+            const likeBtn = document.querySelector(`button[data-post-id="${postId}"]`);
+            if (!likeBtn) return;
+
+            const originalDisabled = likeBtn.disabled;
+            likeBtn.disabled = true;
+
+            try {
+                const post = posts.find(p => p.id === postId);
+                if (!post) return;
+
+                const isCurrentlyLiked = post.likedByCurrentUser;
+                const newLikesCount = isCurrentlyLiked 
+                    ? Math.max(0, (post.likesCount || 0) - 1)
+                    : (post.likesCount || 0) + 1;
+
+                // Mise à jour optimiste de l'UI
+                post.likedByCurrentUser = !isCurrentlyLiked;
+                post.likesCount = newLikesCount;
+                
+                const heartIcon = likeBtn.querySelector('span:first-child');
+                const countSpan = likeBtn.querySelector('span:last-child');
+                
+                if (heartIcon) heartIcon.textContent = post.likedByCurrentUser ? '❤️' : '🤍';
+                if (countSpan) countSpan.textContent = newLikesCount;
+                likeBtn.classList.toggle('liked', post.likedByCurrentUser);
+
+                // Sauvegarde en base (sans attendre)
+                if (isOnline) {
+                    console.log(`${isCurrentlyLiked ? '💔' : '❤️'} Like ${isCurrentlyLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
+                }
+
+            } catch (error) {
+                console.error('❌ Erreur lors du like:', error);
+                // Rollback en cas d'erreur
+                renderPosts();
+            } finally {
+                likeBtn.disabled = originalDisabled;
+            }
+        };
+
+        window.toggleComments = async function(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (!commentsSection) return;
+
+            const isVisible = commentsSection.style.display !== 'none';
+            commentsSection.style.display = isVisible ? 'none' : 'block';
+
+            if (!isVisible) {
+                // Charger les commentaires
+                await loadCommentsForPost(postId);
+            }
+        };
+
+        async function loadCommentsForPost(postId) {
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            if (!commentsList) return;
+
+            try {
+                commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">💬 Chargement des commentaires...</div>';
+                
+                // Filtrer les commentaires pour ce post
+                const postComments = allComments.filter(comment => comment.postId === postId);
+                
+                if (postComments.length === 0) {
+                    commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
+                    return;
+                }
+
+                // Trier par timestamp (plus récent en dernier)
+                postComments.sort((a, b) => {
+                    const timeA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp || 0);
+                    const timeB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp || 0);
+                    return timeA - timeB;
+                });
+
+                const commentsHTML = postComments.map(comment => `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <div class="comment-avatar">${comment.avatar || 'U'}</div>
+                            <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
+                            <div class="comment-time">${formatTimestamp(comment.timestamp)}</div>
+                        </div>
+                        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
+                    </div>
+                `).join('');
+
+                commentsList.innerHTML = commentsHTML;
+
+            } catch (error) {
+                console.error('❌ Erreur chargement commentaires:', error);
+                commentsList.innerHTML = '<div style="padding: 8px; color: #ed4956; font-size: 12px;">Erreur de chargement</div>';
+            }
+        }
+
+        window.handleCommentKeypress = function(event, postId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addComment(postId);
+            }
+        };
+
+        window.addComment = async function(postId) {
+            if (!validateUserData(userData)) {
+                alert('Erreur: Veuillez vous reconnecter');
+                return;
+            }
+
+            const commentInput = document.getElementById(`comment-input-${postId}`);
+            if (!commentInput) return;
+
+            const commentText = commentInput.value.trim();
+            if (!commentText) {
+                alert('Veuillez écrire un commentaire');
+                return;
+            }
+
+            try {
+                const commentData = {
+                    postId: postId,
+                    author: userData.fullName,
+                    authorId: userData.id,
+                    avatar: userData.avatar,
+                    text: commentText,
+                    timestamp: serverTimestamp()
+                };
+
+                console.log('💬 Ajout commentaire:', commentData);
+                
+                // Sauvegarder le commentaire en base
+                const docRef = await addDoc(collection(db, 'comments'), commentData);
+                console.log('✅ Commentaire créé avec ID:', docRef.id);
+
+                // Vider le champ
+                commentInput.value = '';
+
+                // Les commentaires seront automatiquement mis à jour via onSnapshot
+
+            } catch (error) {
+                console.error('❌ Erreur ajout commentaire:', error);
+                alert('Erreur lors de l\'ajout du commentaire');
+            }
+        };
+
+        window.sharePost = function(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: `Publication de ${post.author}`,
+                    text: post.text || 'Regardez cette publication sur Express Exchange',
+                    url: window.location.href
+                }).catch(err => console.log('Erreur partage:', err));
+            } else {
+                // Fallback: copier le lien
+                const textToCopy = `${post.text || 'Publication'} - par ${post.author} sur Express Exchange`;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert('Contenu copié dans le presse-papiers !');
+                }).catch(() => {
+                    alert('Impossible de copier le contenu');
+                });
+            }
+        };
+
+        // GESTION DES PUBLICATIONS PERSONNELLES
+        const showMyPostsBtn = document.getElementById('showMyPostsBtn');
+        if (showMyPostsBtn) {
+            showMyPostsBtn.addEventListener('click', function() {
+                showMyPostsModal();
+            });
+        }
+
+        function showMyPostsModal() {
+            if (!validateUserData(userData)) {
+                alert('Erreur: Veuillez vous reconnecter');
+                return;
+            }
+
+            const modal = document.getElementById('myPostsModal');
+            const myPostsList = document.getElementById('myPostsList');
+            
+            if (!modal || !myPostsList) return;
+            
+            modal.style.display = 'flex';
+            
+            // Filtrer les posts de l'utilisateur actuel
+            const myPosts = posts.filter(post => post.authorId === userData.id);
+            
+            if (myPosts.length === 0) {
+                myPostsList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucune publication</h3>
+                        <p>Vous n'avez pas encore publié de contenu</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const myPostsHTML = myPosts.map(post => `
+                <div class="my-post-item">
+                    ${post.imageUrl ? `
+                        <div class="my-post-thumbnail">
+                            <img src="${post.imageUrl}" alt="Miniature">
+                        </div>
+                    ` : ''}
+                    <div class="my-post-content">
+                        <div class="my-post-text">${escapeHtml(post.text || 'Publication avec image')}</div>
+                        <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime</div>
+                    </div>
+                    <button class="my-post-delete" onclick="deleteMyPost('${post.id}')" ${!isOnline ? 'disabled' : ''}>
+                        🗑️ Supprimer
+                    </button>
+                </div>
+            `).join('');
+
+            myPostsList.innerHTML = myPostsHTML;
+        }
+
+        const closeMyPostsModal = document.getElementById('closeMyPostsModal');
+        if (closeMyPostsModal) {
+            closeMyPostsModal.addEventListener('click', function() {
+                const modal = document.getElementById('myPostsModal');
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        window.deleteMyPost = async function(postId) {
+            if (!validateUserData(userData)) {
+                alert('Erreur: Veuillez vous reconnecter');
+                return;
+            }
+
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
+                return;
+            }
+
+            const deleteBtn = document.querySelector(`button[onclick="deleteMyPost('${postId}')"]`);
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '🔄 Suppression...';
+            }
+
+            try {
+                await deleteDoc(doc(db, 'posts', postId));
+                console.log('✅ Publication supprimée:', postId);
+                
+                // Mise à jour locale
+                posts = posts.filter(post => post.id !== postId);
+                renderPosts();
+                showMyPostsModal(); // Rafraîchir la modal
+                
+            } catch (error) {
+                console.error('❌ Erreur suppression:', error);
+                alert('Erreur lors de la suppression');
+                
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = '🗑️ Supprimer';
+                }
+            }
+        };
+
+        // GESTION ÉVÉNEMENTS RÉSEAU
+        window.addEventListener('online', function() {
+            console.log('🌐 Connexion rétablie');
+            isOnline = true;
+            updateConnectionStatus();
+            
+            // Recharger les données si nécessaire
+            if (isAppInitialized && posts.length === 0) {
+                loadPosts();
             }
         });
 
-        function clearPostForm() {
-            document.getElementById('postText').value = '';
-           document.getElementById('fileInput').value = '';
-           document.getElementById('fileName').textContent = '';
-           document.getElementById('mediaPreview').innerHTML = '';
-       }
+        window.addEventListener('offline', function() {
+            console.log('📡 Connexion perdue');
+            isOnline = false;
+            updateConnectionStatus();
+        });
 
-       function escapeHtml(text) {
-           if (!text) return '';
-           const div = document.createElement('div');
-           div.textContent = text.toString();
-           return div.innerHTML;
-       }
+        // GESTION ERREURS GLOBALES
+        window.addEventListener('error', function(event) {
+            console.error('❌ Erreur globale:', event.error);
+        });
 
-       function formatTimestamp(timestamp) {
-           if (!timestamp) return 'À l\'instant';
-           
-           let date;
-           if (timestamp.toDate) {
-               date = timestamp.toDate();
-           } else if (timestamp instanceof Date) {
-               date = timestamp;
-           } else {
-               date = new Date(timestamp);
-           }
-           
-           const now = new Date();
-           const diffMs = now - date;
-           const diffSeconds = Math.floor(diffMs / 1000);
-           const diffMinutes = Math.floor(diffSeconds / 60);
-           const diffHours = Math.floor(diffMinutes / 60);
-           const diffDays = Math.floor(diffHours / 24);
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('❌ Promise rejetée:', event.reason);
+        });
 
-           if (diffSeconds < 60) return 'À l\'instant';
-           if (diffMinutes < 60) return `${diffMinutes}min`;
-           if (diffHours < 24) return `${diffHours}h`;
-           if (diffDays < 7) return `${diffDays}j`;
-           
-           return date.toLocaleDateString('fr-FR', {
-               day: 'numeric',
-               month: 'short'
-           });
-       }
-
-       function renderPosts() {
-           console.log('🎨 Rendu des publications...');
-           const feed = document.getElementById('feed');
-           
-           if (posts.length === 0) {
-               feed.innerHTML = `
-                   <div class="empty-state">
-                       <h3>Aucune publication</h3>
-                       <p>Soyez le premier à partager quelque chose !</p>
-                   </div>
-               `;
-               return;
-           }
-
-           const postsHTML = posts.map(post => {
-               const imageHTML = post.imageUrl ? `
-                   <div class="image-link">
-                       <img src="${post.imageUrl}" 
-                            alt="Image partagée" 
-                            onclick="openImageModal('${post.imageUrl}')"
-                            loading="lazy">
-                       <div class="cloudinary-badge">📸</div>
-                   </div>
-               ` : '';
-
-               return `
-                   <div class="publication fade-in" data-post-id="${post.id}">
-                       <div class="pub-header">
-                           <div class="pub-avatar">${post.avatar || 'U'}</div>
-                           <div class="pub-info">
-                               <div class="pub-username">${escapeHtml(post.author || 'Utilisateur')}</div>
-                               <div class="pub-time">${formatTimestamp(post.timestamp)}</div>
-                           </div>
-                       </div>
-                       
-                       <div class="pub-text">${escapeHtml(post.text || '').replace(/\n/g, '<br>')}</div>
-                       
-                       ${imageHTML}
-                       
-                       <div class="pub-actions">
-                           <button class="action-btn ${post.likedByCurrentUser ? 'liked' : ''}" 
-                                   onclick="toggleLike('${post.id}')"
-                                   data-post-id="${post.id}">
-                               <span>${post.likedByCurrentUser ? '❤️' : '🤍'}</span>
-                               <span>${post.likesCount || 0}</span>
-                           </button>
-                           <button class="action-btn" onclick="toggleComments('${post.id}')">
-                               <span>💬</span>
-                               <span>${post.commentsCount || 0}</span>
-                           </button>
-                           <button class="action-btn" onclick="sharePost('${post.id}')">
-                               <span>📤</span>
-                               <span>Partager</span>
-                           </button>
-                       </div>
-                       
-                       <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                           <div id="comments-list-${post.id}"></div>
-                           <div class="comment-form">
-                               <input type="text" 
-                                      class="comment-input" 
-                                      id="comment-input-${post.id}"
-                                      placeholder="Ajouter un commentaire..."
-                                      onkeypress="handleCommentKeypress(event, '${post.id}')">
-                               <button class="comment-btn" onclick="addComment('${post.id}')">Publier</button>
-                           </div>
-                       </div>
-                   </div>
-               `;
-           }).join('');
-
-           feed.innerHTML = postsHTML;
-           console.log(`✅ ${posts.length} publications rendues`);
-       }
-
-       // FONCTIONS D'INTERACTION
-       window.openImageModal = function(imageUrl) {
-           const modal = document.getElementById('modalImageView');
-           const modalImg = document.getElementById('modalImageBig');
-           modalImg.src = imageUrl;
-           modal.style.display = 'flex';
-           
-           // Fermer avec échap ou clic
-           const closeModal = function(e) {
-               if (e.key === 'Escape' || e.target === modal) {
-                   modal.style.display = 'none';
-                   document.removeEventListener('keydown', closeModal);
-               }
-           };
-           
-           modal.addEventListener('click', closeModal);
-           document.addEventListener('keydown', closeModal);
-       };
-
-       window.toggleLike = async function(postId) {
-           if (!validateUserData(userData)) {
-               alert('Erreur: Veuillez vous reconnecter');
-               return;
-           }
-
-           const likeBtn = document.querySelector(`button[data-post-id="${postId}"]`);
-           if (!likeBtn) return;
-
-           const originalDisabled = likeBtn.disabled;
-           likeBtn.disabled = true;
-
-           try {
-               const post = posts.find(p => p.id === postId);
-               if (!post) return;
-
-               const isCurrentlyLiked = post.likedByCurrentUser;
-               const newLikesCount = isCurrentlyLiked 
-                   ? Math.max(0, (post.likesCount || 0) - 1)
-                   : (post.likesCount || 0) + 1;
-
-               // Mise à jour optimiste de l'UI
-               post.likedByCurrentUser = !isCurrentlyLiked;
-               post.likesCount = newLikesCount;
-               
-               const heartIcon = likeBtn.querySelector('span:first-child');
-               const countSpan = likeBtn.querySelector('span:last-child');
-               
-               heartIcon.textContent = post.likedByCurrentUser ? '❤️' : '🤍';
-               countSpan.textContent = newLikesCount;
-               likeBtn.classList.toggle('liked', post.likedByCurrentUser);
-
-               // Sauvegarde en base (sans attendre)
-               if (isOnline) {
-                   // Ici on pourrait implémenter la logique de sauvegarde des likes
-                   console.log(`${isCurrentlyLiked ? '💔' : '❤️'} Like ${isCurrentlyLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
-               }
-
-           } catch (error) {
-               console.error('❌ Erreur lors du like:', error);
-               // Rollback en cas d'erreur
-               renderPosts();
-           } finally {
-               likeBtn.disabled = originalDisabled;
-           }
-       };
-
-       window.toggleComments = async function(postId) {
-           const commentsSection = document.getElementById(`comments-${postId}`);
-           if (!commentsSection) return;
-
-           const isVisible = commentsSection.style.display !== 'none';
-           commentsSection.style.display = isVisible ? 'none' : 'block';
-
-           if (!isVisible) {
-               // Charger les commentaires si ce n'est pas déjà fait
-               await loadComments(postId);
-           }
-       };
-
-       async function loadComments(postId) {
-           const commentsList = document.getElementById(`comments-list-${postId}`);
-           if (!commentsList) return;
-
-           try {
-               // Simulation de chargement des commentaires
-               commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">💬 Chargement des commentaires...</div>';
-               
-               // Ici on pourrait charger les vrais commentaires depuis Firestore
-               // Pour l'instant, on simule avec un délai
-               setTimeout(() => {
-                   commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
-               }, 500);
-
-           } catch (error) {
-               console.error('❌ Erreur chargement commentaires:', error);
-               commentsList.innerHTML = '<div style="padding: 8px; color: #ed4956; font-size: 12px;">Erreur de chargement</div>';
-           }
-       }
-
-       window.handleCommentKeypress = function(event, postId) {
-           if (event.key === 'Enter') {
-               event.preventDefault();
-               addComment(postId);
-           }
-       };
-
-       window.addComment = async function(postId) {
-           if (!validateUserData(userData)) {
-               alert('Erreur: Veuillez vous reconnecter');
-               return;
-           }
-
-           const commentInput = document.getElementById(`comment-input-${postId}`);
-           if (!commentInput) return;
-
-           const commentText = commentInput.value.trim();
-           if (!commentText) {
-               alert('Veuillez écrire un commentaire');
-               return;
-           }
-
-           try {
-               const commentData = {
-                   postId: postId,
-                   author: userData.fullName,
-                   authorId: userData.id,
-                   avatar: userData.avatar,
-                   text: commentText,
-                   timestamp: serverTimestamp()
-               };
-
-               console.log('💬 Ajout commentaire:', commentData);
-               
-               // Ici on pourrait sauvegarder le commentaire en base
-               // await addDoc(collection(db, 'comments'), commentData);
-
-               // Mise à jour optimiste
-               const commentsList = document.getElementById(`comments-list-${postId}`);
-               if (commentsList) {
-                   const commentHTML = `
-                       <div class="comment">
-                           <div class="comment-header">
-                               <div class="comment-avatar">${userData.avatar}</div>
-                               <div class="comment-username">${escapeHtml(userData.fullName)}</div>
-                               <div class="comment-time">À l'instant</div>
-                           </div>
-                           <div class="comment-text">${escapeHtml(commentText)}</div>
-                       </div>
-                   `;
-                   
-                   if (commentsList.innerHTML.includes('Aucun commentaire')) {
-                       commentsList.innerHTML = commentHTML;
-                   } else {
-                       commentsList.innerHTML += commentHTML;
-                   }
-               }
-
-               // Mise à jour du compteur
-               const post = posts.find(p => p.id === postId);
-               if (post) {
-                   post.commentsCount = (post.commentsCount || 0) + 1;
-                   const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"] span:last-child`);
-                   if (commentBtn) {
-                       commentBtn.textContent = post.commentsCount;
-                   }
-               }
-
-               commentInput.value = '';
-
-           } catch (error) {
-               console.error('❌ Erreur ajout commentaire:', error);
-               alert('Erreur lors de l\'ajout du commentaire');
-           }
-       };
-
-       window.sharePost = function(postId) {
-           const post = posts.find(p => p.id === postId);
-           if (!post) return;
-
-           if (navigator.share) {
-               navigator.share({
-                   title: `Publication de ${post.author}`,
-                   text: post.text || 'Regardez cette publication sur Express Exchange',
-                   url: window.location.href
-               }).catch(err => console.log('Erreur partage:', err));
-           } else {
-               // Fallback: copier le lien
-               const textToCopy = `${post.text || 'Publication'} - par ${post.author} sur Express Exchange`;
-               navigator.clipboard.writeText(textToCopy).then(() => {
-                   alert('Contenu copié dans le presse-papiers !');
-               }).catch(() => {
-                   alert('Impossible de copier le contenu');
-               });
-           }
-       };
-
-       // GESTION DES PUBLICATIONS PERSONNELLES
-       document.getElementById('showMyPostsBtn').addEventListener('click', function() {
-           showMyPostsModal();
-       });
-
-       function showMyPostsModal() {
-           if (!validateUserData(userData)) {
-               alert('Erreur: Veuillez vous reconnecter');
-               return;
-           }
-
-           const modal = document.getElementById('myPostsModal');
-           const myPostsList = document.getElementById('myPostsList');
-           
-           modal.style.display = 'flex';
-           
-           // Filtrer les posts de l'utilisateur actuel
-           const myPosts = posts.filter(post => post.authorId === userData.id);
-           
-           if (myPosts.length === 0) {
-               myPostsList.innerHTML = `
-                   <div class="empty-state">
-                       <h3>Aucune publication</h3>
-                       <p>Vous n'avez pas encore publié de contenu</p>
-                   </div>
-               `;
-               return;
-           }
-
-           const myPostsHTML = myPosts.map(post => `
-               <div class="my-post-item">
-                   ${post.imageUrl ? `
-                       <div class="my-post-thumbnail">
-                           <img src="${post.imageUrl}" alt="Miniature">
-                       </div>
-                   ` : ''}
-                   <div class="my-post-content">
-                       <div class="my-post-text">${escapeHtml(post.text || 'Publication avec image')}</div>
-                       <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime</div>
-                   </div>
-                   <button class="my-post-delete" onclick="deleteMyPost('${post.id}')" ${!isOnline ? 'disabled' : ''}>
-                       🗑️ Supprimer
-                   </button>
-               </div>
-           `).join('');
-
-           myPostsList.innerHTML = myPostsHTML;
-       }
-
-       document.getElementById('closeMyPostsModal').addEventListener('click', function() {
-           document.getElementById('myPostsModal').style.display = 'none';
-       });
-
-       window.deleteMyPost = async function(postId) {
-           if (!validateUserData(userData)) {
-               alert('Erreur: Veuillez vous reconnecter');
-               return;
-           }
-
-           if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
-               return;
-           }
-
-           const deleteBtn = document.querySelector(`button[onclick="deleteMyPost('${postId}')"]`);
-           if (deleteBtn) {
-               deleteBtn.disabled = true;
-               deleteBtn.innerHTML = '🔄 Suppression...';
-           }
-
-           try {
-               await deleteDoc(doc(db, 'posts', postId));
-               console.log('✅ Publication supprimée:', postId);
-               
-               // Mise à jour locale
-               posts = posts.filter(post => post.id !== postId);
-               renderPosts();
-               showMyPostsModal(); // Rafraîchir la modal
-               
-           } catch (error) {
-               console.error('❌ Erreur suppression:', error);
-               alert('Erreur lors de la suppression');
-               
-               if (deleteBtn) {
-                   deleteBtn.disabled = false;
-                   deleteBtn.innerHTML = '🗑️ Supprimer';
-               }
-           }
-       };
-
-       // GESTION ÉVÉNEMENTS RÉSEAU
-       window.addEventListener('online', function() {
-           console.log('🌐 Connexion rétablie');
-           isOnline = true;
-           updateConnectionStatus();
-           
-           // Recharger les données si nécessaire
-           if (isAppInitialized && posts.length === 0) {
-               loadPosts();
-           }
-       });
-
-       window.addEventListener('offline', function() {
-           console.log('📡 Connexion perdue');
-           isOnline = false;
-           updateConnectionStatus();
-       });
-
-       // GESTION ERREURS GLOBALES
-       window.addEventListener('error', function(event) {
-           console.error('❌ Erreur globale:', event.error);
-       });
-
-       window.addEventListener('unhandledrejection', function(event) {
-           console.error('❌ Promise rejetée:', event.reason);
-       });
-
-       // SERVICE WORKER (optionnel pour le cache)
-       if ('serviceWorker' in navigator) {
-           window.addEventListener('load', function() {
-               // Ici on pourrait enregistrer un service worker pour le cache offline
-               console.log('🔧 Service Worker disponible');
-           });
-       }
-
-       console.log('🎉 Script Express Exchange chargé avec succès');
-   </script>
+        console.log('🎉 Script Express Exchange chargé avec succès');
+    </script>
 </body>
 </html>
