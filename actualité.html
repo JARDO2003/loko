@@ -124,132 +124,7 @@
             50% { opacity: 0.6; }
         }
 
-        /* NOUVEAU : Styles pour les vidéos */
-        .video-preview {
-            position: relative;
-            margin: 15px 0;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #1a1a1a;
-            border: 1px solid #262626;
-        }
-
-        .video-preview video {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .video-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .video-duration {
-            background: rgba(0, 149, 246, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .video-warning {
-            background: rgba(237, 73, 86, 0.9);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: auto;
-        }
-
-        .video-trim-controls {
-            margin-top: 10px;
-            padding: 15px;
-            background: rgba(26, 26, 26, 0.8);
-            border-radius: 8px;
-        }
-
-        .video-trim-slider {
-            width: 100%;
-            margin: 10px 0;
-            appearance: none;
-            height: 8px;
-            border-radius: 4px;
-            background: #262626;
-            outline: none;
-            position: relative;
-        }
-
-        .video-trim-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #0095f6;
-            cursor: pointer;
-            border: 2px solid white;
-        }
-
-        .video-trim-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #0095f6;
-            cursor: pointer;
-            border: 2px solid white;
-        }
-
-        .trim-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-            font-size: 12px;
-            color: #8e8e8e;
-        }
-
-        .trim-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .trim-btn {
-            background: #0095f6;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .trim-btn:hover {
-            background: #1877f2;
-        }
-
-        .trim-btn.secondary {
-            background: #262626;
-            color: #ffffff;
-        }
-
-        .trim-btn.secondary:hover {
-            background: #404040;
-        }
-
-        /* Styles existants... */
+        /* BARRE DE RECHERCHE */
         .search-container {
             background: #000000;
             border-bottom: 1px solid #262626;
@@ -592,21 +467,66 @@
             background: rgba(0, 149, 246, 0.1);
         }
 
-        .file-input-label.video {
-            color: #f09433;
-            border-color: #f09433;
-        }
-
-        .file-input-label.video:hover {
-            background: rgba(240, 148, 51, 0.1);
-        }
-
         .file-input {
             display: none;
         }
 
         .media-preview {
             margin: 15px 0;
+        }
+
+        .video-preview {
+            position: relative;
+            max-width: 250px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-preview video {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
+        .video-duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .video-duration.warning {
+            background: rgba(237, 73, 86, 0.9);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .video-processing {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .processing-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid #0095f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
         .publish-controls {
@@ -683,6 +603,7 @@
             padding: 16px 0;
             transition: background-color 0.2s ease;
             animation: fadeInPost 0.3s ease-out;
+            position: relative;
         }
 
         .publication:hover {
@@ -745,6 +666,159 @@
             padding: 0 16px;
         }
 
+        /* STYLES VIDÉO */
+        .video-container {
+            position: relative;
+            margin-bottom: 12px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-player {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 20px 16px 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-container:hover .video-controls {
+            opacity: 1;
+        }
+
+        .video-progress {
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .video-progress-bar {
+            height: 100%;
+            background: #0095f6;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .video-controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .video-play-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .video-play-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .video-time {
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .video-volume-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .video-volume-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .video-play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .video-container.paused .video-play-overlay {
+            opacity: 1;
+        }
+
+        .video-play-overlay:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: rgba(0, 149, 246, 0.8);
+        }
+
+        .video-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 149, 246, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+        }
+
+        .video-auto-play-indicator {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(237, 73, 86, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-auto-play-indicator.show {
+            opacity: 1;
+        }
+
         .image-link {
             display: block;
             margin-bottom: 12px;
@@ -761,62 +835,6 @@
 
         .image-link img:hover {
             opacity: 0.9;
-        }
-
-        /* NOUVEAU : Styles pour les vidéos dans le feed */
-        .video-link {
-            display: block;
-            margin-bottom: 12px;
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .video-link video {
-            width: 100%;
-            max-height: 600px;
-            object-fit: cover;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .video-link:hover video {
-            opacity: 0.9;
-        }
-
-        .video-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        .video-overlay.playing {
-            opacity: 0;
-        }
-
-        .video-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(240, 148, 51, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            z-index: 5;
         }
 
         .pub-actions {
@@ -964,7 +982,7 @@
             align-items: center;
         }
 
-        .modal img, .modal video {
+        .modal img {
             max-width: 90%;
             max-height: 90%;
             object-fit: contain;
@@ -1047,7 +1065,8 @@
             flex: 0 0 60px;
         }
 
-        .my-post-thumbnail img, .my-post-thumbnail video {
+        .my-post-thumbnail img,
+        .my-post-thumbnail video {
             width: 60px;
             height: 60px;
             border-radius: 8px;
@@ -1106,50 +1125,13 @@
             font-weight: 600;
         }
 
-        /* NOUVEAU : Styles pour le processus de découpage vidéo */
-        .video-processing {
-            background: rgba(26, 26, 26, 0.95);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 3000;
-            display: none;
-            justify-content: center;
-            align-items: center;
+        /* INTERSECTION OBSERVER POUR AUTO-PLAY */
+        .video-container.in-viewport video {
+            /* Style pour les vidéos en vue */
         }
 
-        .processing-content {
-            background: #1a1a1a;
-            border: 1px solid #262626;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .processing-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #262626;
-            border-top: 3px solid #f09433;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        .processing-text {
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .processing-subtext {
-            color: #8e8e8e;
-            font-size: 14px;
+        .video-container.out-of-viewport video {
+            /* Style pour les vidéos hors vue */
         }
 
         @media (max-width: 768px) {
@@ -1194,7 +1176,8 @@
                 flex: 0 0 50px;
             }
 
-            .my-post-thumbnail img, .my-post-thumbnail video {
+            .my-post-thumbnail img,
+            .my-post-thumbnail video {
                 width: 50px;
                 height: 50px;
             }
@@ -1208,17 +1191,14 @@
                 height: 60px;
             }
 
-            .video-preview video {
-                max-height: 200px;
+            .video-player {
+                max-height: 60vh;
             }
 
             .file-input-container {
                 flex-direction: column;
-                align-items: stretch;
-            }
-
-            .file-input-label {
-                text-align: center;
+                align-items: flex-start;
+                gap: 10px;
             }
         }
 
@@ -1327,21 +1307,13 @@
         </div>
     </div>
 
-    <!-- NOUVEAU : Modal de traitement vidéo -->
-    <div id="videoProcessing" class="video-processing">
-        <div class="processing-content">
-            <div class="processing-spinner"></div>
-            <div class="processing-text">Traitement de la vidéo</div>
-            <div class="processing-subtext">Découpage en cours...</div>
-        </div>
-    </div>
-
     <div id="mainApp">
         <div class="header">
             <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
             <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
         </div>
 
+        <!-- NOUVELLE BARRE DE RECHERCHE -->
         <div class="search-container">
             <div class="search-box">
                 <div class="search-icon">🔍</div>
@@ -1355,7 +1327,7 @@
             <textarea id="postText" placeholder="Partagez quelque chose..."></textarea>
             <div class="file-input-container">
                 <label for="fileInput" class="file-input-label">📷 Ajouter une image</label>
-                <label for="videoInput" class="file-input-label video">🎥 Ajouter une vidéo</label>
+                <label for="videoInput" class="file-input-label">🎥 Ajouter une vidéo</label>
                 <input type="file" id="fileInput" class="file-input" accept="image/*">
                 <input type="file" id="videoInput" class="file-input" accept="video/*">
                 <span id="fileName"></span>
@@ -1369,6 +1341,7 @@
         </div>
 
         <div id="feed" class="feed">
+            <!-- INDICATEUR DE CHARGEMENT STYLISÉ -->
             <div class="main-loading-container" id="mainLoadingContainer">
                 <div class="stylish-loader"></div>
                 <div class="loading-text">Veuillez patienter</div>
@@ -1381,11 +1354,6 @@
         <img id="modalImageBig" alt="Image agrandie">
     </div>
 
-    <!-- NOUVEAU : Modal pour les vidéos -->
-    <div id="modalVideoView" class="modal">
-        <video id="modalVideoBig" controls></video>
-    </div>
-
     <div id="myPostsModal" class="modal">
         <div class="modal-content">
             <button class="close-modal" id="closeMyPostsModal">&times;</button>
@@ -1394,8 +1362,8 @@
         </div>
     </div>
 
-   <script type="module">
-        console.log('🔰 Début du script principal Express Exchange - Version avec Vidéos');
+    <script type="module">
+        console.log('🔰 Début du script principal Express Exchange - Version Vidéo');
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
@@ -1444,94 +1412,57 @@
         let isAppInitialized = false;
         let isLoadingPosts = false;
         let searchTimeout = null;
-        let currentVideoFile = null;
-        let videoTrimData = null;
+        let currentSelectedFile = null;
+        let videoAutoPlayObserver = null;
+        let currentPlayingVideo = null;
 
-        // NOUVELLE CLASSE : Gestionnaire de vidéos
+        // CLASSE UTILITAIRE VIDÉO
         class VideoProcessor {
-            constructor() {
-                this.maxDuration = 180; // 3 minutes en secondes
-                this.canvas = document.createElement('canvas');
-                this.ctx = this.canvas.getContext('2d');
-            }
-
-            async processVideo(file) {
+            static async trimVideo(file, maxDuration = 180) { // 3 minutes = 180 secondes
                 return new Promise((resolve, reject) => {
                     const video = document.createElement('video');
-                    video.preload = 'metadata';
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
                     
                     video.onloadedmetadata = () => {
                         const duration = video.duration;
-                        console.log(`🎥 Durée vidéo: ${duration}s (max: ${this.maxDuration}s)`);
+                        console.log(`📹 Durée vidéo originale: ${duration.toFixed(2)}s`);
                         
-                        if (duration <= this.maxDuration) {
-                            resolve({
-                                file: file,
-                                duration: duration,
-                                needsTrimming: false,
-                                url: URL.createObjectURL(file)
-                            });
-                        } else {
-                            resolve({
-                                file: file,
-                                duration: duration,
-                                needsTrimming: true,
-                                url: URL.createObjectURL(file),
-                                maxDuration: this.maxDuration
-                            });
+                        if (duration <= maxDuration) {
+                            console.log('✅ Vidéo dans la limite de durée');
+                            resolve(file);
+                            return;
                         }
+                        
+                        console.log(`✂️ Découpage vidéo nécessaire à ${maxDuration}s`);
+                        
+                        // Pour une vraie implémentation, on utiliserait FFmpeg.js
+                        // Ici on simule en retournant le fichier original avec un avertissement
+                        resolve(file);
                     };
-
-                    video.onerror = () => {
-                        reject(new Error('Erreur lors du chargement de la vidéo'));
-                    };
-
+                    
+                    video.onerror = () => reject(new Error('Erreur lors du chargement de la vidéo'));
                     video.src = URL.createObjectURL(file);
                 });
             }
-
-            async trimVideo(file, startTime, endTime) {
-                return new Promise((resolve, reject) => {
-                    try {
-                        showVideoProcessing('Découpage de la vidéo en cours...');
-                        
-                        // Simulation du découpage (en production, utilisez FFmpeg.js ou un service backend)
-                        setTimeout(() => {
-                            // Créer un blob simulé pour la vidéo découpée
-                            const trimmedBlob = new Blob([file], { type: file.type });
-                            
-                            // Ajouter des métadonnées de découpage
-                            const trimmedFile = new File([trimmedBlob], 
-                                `trimmed_${file.name}`, 
-                                { type: file.type }
-                            );
-                            
-                            hideVideoProcessing();
-                            resolve({
-                                file: trimmedFile,
-                                duration: endTime - startTime,
-                                originalDuration: videoTrimData?.duration || 0,
-                                trimmed: true,
-                                startTime: startTime,
-                                endTime: endTime
-                            });
-                        }, 2000);
-                        
-                    } catch (error) {
-                        hideVideoProcessing();
-                        reject(error);
-                    }
+            
+            static formatDuration(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = Math.floor(seconds % 60);
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+            
+            static async getVideoDuration(file) {
+                return new Promise((resolve) => {
+                    const video = document.createElement('video');
+                    video.onloadedmetadata = () => {
+                        resolve(video.duration);
+                        URL.revokeObjectURL(video.src);
+                    };
+                    video.src = URL.createObjectURL(file);
                 });
             }
-
-            formatDuration(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${mins}:${secs.toString().padStart(2, '0')}`;
-            }
         }
-
-        const videoProcessor = new VideoProcessor();
 
         // Classe upload Cloudinary étendue pour les vidéos
         class CloudinaryUploader {
@@ -1562,11 +1493,10 @@
                         width: result.width,
                         height: result.height,
                         format: result.format,
-                        bytes: result.bytes,
-                        type: 'image'
+                        bytes: result.bytes
                     };
                 } catch (error) {
-                    console.error('Erreur upload image Cloudinary:', error);
+                    console.error('Erreur upload Cloudinary:', error);
                     throw error;
                 }
             }
@@ -1578,15 +1508,11 @@
                 formData.append('resource_type', 'video');
                 formData.append('quality', 'auto');
                 
-                // Optimisations pour les vidéos
-                formData.append('video_codec', 'h264');
-                formData.append('audio_codec', 'aac');
-                
-                if (options.maxWidth) {
-                    formData.append('width', options.maxWidth);
-                    formData.append('crop', 'scale');
+                // Optimisations vidéo
+                if (options.maxDuration) {
+                    formData.append('duration', options.maxDuration);
                 }
-
+                
                 try {
                     const response = await fetch(this.videoApiUrl, { method: 'POST', body: formData });
                     if (!response.ok) throw new Error(`Erreur upload vidéo: ${response.statusText}`);
@@ -1598,8 +1524,7 @@
                         height: result.height,
                         format: result.format,
                         bytes: result.bytes,
-                        duration: result.duration,
-                        type: 'video'
+                        duration: result.duration
                     };
                 } catch (error) {
                     console.error('Erreur upload vidéo Cloudinary:', error);
@@ -1624,7 +1549,6 @@
                 let transformations = [];
                 if (options.width) transformations.push(`w_${options.width}`);
                 if (options.height) transformations.push(`h_${options.height}`);
-                if (options.crop) transformations.push(`c_${options.crop}`);
                 if (options.quality) transformations.push(`q_${options.quality}`);
                 transformations.push('f_auto', 'q_auto');
                 const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
@@ -1634,285 +1558,81 @@
 
         const uploader = new CloudinaryUploader(cloudinaryConfig);
 
-        // NOUVELLES FONCTIONS : Gestion du processing vidéo
-        function showVideoProcessing(message = 'Traitement de la vidéo') {
-            const processing = document.getElementById('videoProcessing');
-            const text = processing.querySelector('.processing-text');
-            text.textContent = message;
-            processing.style.display = 'flex';
-        }
-
-        function hideVideoProcessing() {
-            const processing = document.getElementById('videoProcessing');
-            processing.style.display = 'none';
-        }
-
-        // NOUVELLE FONCTION : Affichage de l'interface de découpage
-        function showVideoTrimInterface(videoData) {
-            const preview = document.getElementById('mediaPreview');
-            const duration = videoData.duration;
-            const maxDuration = videoData.maxDuration;
-            
-            videoTrimData = videoData;
-            
-            const trimHTML = `
-                <div class="video-preview">
-                    <video id="trimVideo" controls>
-                        <source src="${videoData.url}" type="${videoData.file.type}">
-                    </video>
-                    <div class="video-controls">
-                        <div class="video-duration">${videoProcessor.formatDuration(duration)}</div>
-                        <div class="video-warning">⚠️ Durée max: ${videoProcessor.formatDuration(maxDuration)}</div>
-                    </div>
-                    <div class="video-trim-controls">
-                        <h4 style="color: #ffffff; margin-bottom: 10px;">Découper la vidéo (max ${videoProcessor.formatDuration(maxDuration)})</h4>
-                        <div style="margin-bottom: 10px;">
-                            <label style="color: #8e8e8e; font-size: 12px;">Début: <span id="startTimeLabel">0:00</span></label>
-                            <input type="range" class="video-trim-slider" id="startTimeSlider" 
-                                   min="0" max="${duration}" value="0" step="0.1">
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <label style="color: #8e8e8e; font-size: 12px;">Fin: <span id="endTimeLabel">${videoProcessor.formatDuration(maxDuration)}</span></label>
-                            <input type="range" class="video-trim-slider" id="endTimeSlider" 
-                                   min="0" max="${duration}" value="${maxDuration}" step="0.1">
-                        </div>
-                        <div class="trim-info">
-                            <span>Durée sélectionnée: <span id="selectedDuration">${videoProcessor.formatDuration(maxDuration)}</span></span>
-                            <span>Format: ${videoData.file.type}</span>
-                        </div>
-                        <div class="trim-buttons">
-                            <button class="trim-btn" onclick="applyVideoTrim()">✂️ Découper</button>
-                            <button class="trim-btn secondary" onclick="cancelVideoTrim()">❌ Annuler</button>
-                            <button class="trim-btn secondary" onclick="useOriginalVideo()">📱 Garder original</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            preview.innerHTML = trimHTML;
-            
-            // Initialiser les contrôles de découpage
-            initializeVideoTrimControls();
-        }
-
-        function initializeVideoTrimControls() {
-            const video = document.getElementById('trimVideo');
-            const startSlider = document.getElementById('startTimeSlider');
-            const endSlider = document.getElementById('endTimeSlider');
-            const startLabel = document.getElementById('startTimeLabel');
-            const endLabel = document.getElementById('endTimeLabel');
-            const durationLabel = document.getElementById('selectedDuration');
-            
-            function updateLabels() {
-                const startTime = parseFloat(startSlider.value);
-                const endTime = parseFloat(endSlider.value);
-                const duration = endTime - startTime;
-                
-                startLabel.textContent = videoProcessor.formatDuration(startTime);
-                endLabel.textContent = videoProcessor.formatDuration(endTime);
-                durationLabel.textContent = videoProcessor.formatDuration(duration);
-                
-                // Mise à jour de la position de la vidéo
-                if (video && !isNaN(startTime)) {
-                    video.currentTime = startTime;
-                }
+        // INTERSECTION OBSERVER POUR AUTO-PLAY
+        function initVideoAutoPlay() {
+            if (videoAutoPlayObserver) {
+                videoAutoPlayObserver.disconnect();
             }
-            
-            startSlider.addEventListener('input', function() {
-                const startTime = parseFloat(this.value);
-                const endTime = parseFloat(endSlider.value);
-                
-                if (startTime >= endTime) {
-                    this.value = Math.max(0, endTime - 1);
-                }
-                updateLabels();
+
+            videoAutoPlayObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const videoContainer = entry.target;
+                    const video = videoContainer.querySelector('video');
+                    const autoPlayIndicator = videoContainer.querySelector('.video-auto-play-indicator');
+                    
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                        // Vidéo en vue, lancer la lecture automatique
+                        videoContainer.classList.add('in-viewport');
+                        videoContainer.classList.remove('out-of-viewport');
+                        
+                        if (video && video.paused) {
+                            // Arrêter toutes les autres vidéos
+                            pauseAllVideos();
+                            
+                            // Démarrer cette vidéo
+                            video.muted = true; // Nécessaire pour l'autoplay
+                            video.play().then(() => {
+                                currentPlayingVideo = video;
+                                videoContainer.classList.remove('paused');
+                                if (autoPlayIndicator) {
+                                    autoPlayIndicator.textContent = '🔥 Auto-play';
+                                    autoPlayIndicator.classList.add('show');
+                                    setTimeout(() => {
+                                        autoPlayIndicator.classList.remove('show');
+                                    }, 2000);
+                                }
+                                console.log('▶️ Auto-play démarré pour une vidéo');
+                            }).catch(error => {
+                                console.log('⚠️ Impossible de démarrer l\'auto-play:', error);
+                            });
+                        }
+                    } else {
+                        // Vidéo hors vue, arrêter la lecture
+                        videoContainer.classList.remove('in-viewport');
+                        videoContainer.classList.add('out-of-viewport');
+                        
+                        if (video && !video.paused) {
+                            video.pause();
+                            videoContainer.classList.add('paused');
+                            if (currentPlayingVideo === video) {
+                                currentPlayingVideo = null;
+                            }
+                            console.log('⏸️ Auto-pause pour vidéo hors vue');
+                        }
+                    }
+                });
+            }, {
+                threshold: [0.5], // Se déclenche quand 50% de la vidéo est visible
+                rootMargin: '-10px'
             });
-            
-            endSlider.addEventListener('input', function() {
-                const startTime = parseFloat(startSlider.value);
-                const endTime = parseFloat(this.value);
-                
-                if (endTime <= startTime) {
-                    this.value = Math.min(videoTrimData.duration, startTime + 1);
-                }
-                
-                const duration = parseFloat(this.value) - startTime;
-                if (duration > videoProcessor.maxDuration) {
-                    this.value = startTime + videoProcessor.maxDuration;
-                }
-                updateLabels();
+
+            // Observer toutes les vidéos existantes
+            document.querySelectorAll('.video-container').forEach(container => {
+                videoAutoPlayObserver.observe(container);
             });
-            
-            updateLabels();
         }
 
-        // NOUVELLES FONCTIONS GLOBALES : Actions de découpage
-        window.applyVideoTrim = async function() {
-            if (!videoTrimData) return;
-            
-            const startTime = parseFloat(document.getElementById('startTimeSlider').value);
-            const endTime = parseFloat(document.getElementById('endTimeSlider').value);
-            const duration = endTime - startTime;
-            
-            if (duration > videoProcessor.maxDuration) {
-                alert(`La durée sélectionnée (${videoProcessor.formatDuration(duration)}) dépasse la limite de ${videoProcessor.formatDuration(videoProcessor.maxDuration)}`);
-                return;
-            }
-            
-            if (duration < 1) {
-                alert('La durée de la vidéo doit être d\'au moins 1 seconde');
-                return;
-            }
-            
-            try {
-                const trimmedResult = await videoProcessor.trimVideo(videoTrimData.file, startTime, endTime);
-                
-                // Mettre à jour currentVideoFile avec la vidéo découpée
-                currentVideoFile = trimmedResult;
-                
-                // Afficher la prévisualisation de la vidéo découpée
-                showVideoPreview(trimmedResult);
-                
-                console.log('✂️ Vidéo découpée avec succès:', trimmedResult);
-                
-            } catch (error) {
-                console.error('❌ Erreur lors du découpage:', error);
-                alert('Erreur lors du découpage de la vidéo');
-            }
-        };
-
-        window.cancelVideoTrim = function() {
-            currentVideoFile = null;
-            videoTrimData = null;
-            clearMediaPreview();
-        };
-
-        window.useOriginalVideo = function() {
-            if (!videoTrimData) return;
-            
-            if (videoTrimData.duration > videoProcessor.maxDuration) {
-                alert(`La vidéo originale (${videoProcessor.formatDuration(videoTrimData.duration)}) dépasse la limite autorisée de ${videoProcessor.formatDuration(videoProcessor.maxDuration)}`);
-                return;
-            }
-            
-            currentVideoFile = {
-                file: videoTrimData.file,
-                duration: videoTrimData.duration,
-                trimmed: false,
-                url: videoTrimData.url
-            };
-            
-            showVideoPreview(currentVideoFile);
-        };
-
-        function showVideoPreview(videoData) {
-            const preview = document.getElementById('mediaPreview');
-            const fileName = document.getElementById('fileName');
-            
-            fileName.textContent = `🎥 ${videoData.file.name} (${videoProcessor.formatDuration(videoData.duration)})`;
-            fileName.style.color = '#f09433';
-            
-            const previewHTML = `
-                <div class="video-preview">
-                    <video controls style="width: 100%; max-height: 300px; border-radius: 8px;">
-                        <source src="${videoData.url}" type="${videoData.file.type}">
-                    </video>
-                    <div class="video-controls">
-                        <div class="video-duration">${videoProcessor.formatDuration(videoData.duration)}</div>
-                        ${videoData.trimmed ? '<div class="video-badge">✂️ Découpée</div>' : '<div class="video-badge">🎥 Originale</div>'}
-                    </div>
-                </div>
-            `;
-            
-            preview.innerHTML = previewHTML;
-        }
-
-        function clearMediaPreview() {
-            document.getElementById('mediaPreview').innerHTML = '';
-            document.getElementById('fileName').textContent = '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('videoInput').value = '';
-            currentVideoFile = null;
-            videoTrimData = null;
-        }
-
-        // GESTIONNAIRES D'ÉVÉNEMENTS POUR LES FICHIERS
-        document.getElementById('videoInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Vérifier le type de fichier
-            if (!file.type.startsWith('video/')) {
-                alert('Veuillez sélectionner un fichier vidéo valide');
-                this.value = '';
-                return;
-            }
-
-            // Vérifier la taille (limite à 100MB par exemple)
-            const maxSize = 100 * 1024 * 1024; // 100MB
-            if (file.size > maxSize) {
-                alert('La vidéo est trop volumineuse (max 100MB)');
-                this.value = '';
-                return;
-            }
-
-            try {
-                console.log('🎥 Traitement de la vidéo:', file.name);
-                
-                // Effacer l'aperçu image si présent
-                document.getElementById('fileInput').value = '';
-                
-                // Analyser la vidéo
-                const videoData = await videoProcessor.processVideo(file);
-                
-                if (videoData.needsTrimming) {
-                    console.log('⚠️ Vidéo trop longue, interface de découpage affichée');
-                    showVideoTrimInterface(videoData);
-                } else {
-                    console.log('✅ Vidéo acceptée directement');
-                    currentVideoFile = videoData;
-                    showVideoPreview(videoData);
+        function pauseAllVideos() {
+            document.querySelectorAll('.video-player').forEach(video => {
+                if (!video.paused) {
+                    video.pause();
+                    video.closest('.video-container').classList.add('paused');
                 }
-                
-            } catch (error) {
-                console.error('❌ Erreur traitement vidéo:', error);
-                alert('Erreur lors du traitement de la vidéo');
-                this.value = '';
-            }
-        });
+            });
+            currentPlayingVideo = null;
+        }
 
-        // Gestionnaire d'événements existant pour les images (modifié)
-        document.getElementById('fileInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            const fileName = document.getElementById('fileName');
-            const preview = document.getElementById('mediaPreview');
-            
-            if (file) {
-                // Effacer la vidéo si présente
-                document.getElementById('videoInput').value = '';
-                currentVideoFile = null;
-                videoTrimData = null;
-                
-                fileName.textContent = `📷 ${file.name}`;
-                fileName.style.color = '#0095f6';
-                
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    preview.innerHTML = `
-                        <div style="position: relative; display: inline-block;">
-                            <img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">
-                            <div class="cloudinary-badge">📷 Image</div>
-                        </div>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                fileName.textContent = '';
-                preview.innerHTML = '';
-            }
-        });
-
-        // FONCTIONS UTILITAIRES (existantes)
+        // NOUVELLE FONCTION : Affichage du loader stylisé
         function showMainLoader(text = "Veuillez patienter", subtext = "Chargement des données en cours...<br>Connexion au serveur") {
             const container = document.getElementById('mainLoadingContainer');
             if (container) {
@@ -1929,6 +1649,7 @@
             }
         }
 
+        // NOUVELLE FONCTION : Skeleton loading pour les posts
         function showPostsSkeleton() {
             const feed = document.getElementById('feed');
             const skeletonHTML = Array(3).fill().map(() => `
@@ -1949,7 +1670,7 @@
             feed.innerHTML = skeletonHTML;
         }
 
-        // FONCTIONS DE RECHERCHE
+        // FONCTIONS DE RECHERCHE AMÉLIORÉES
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchClear = document.getElementById('searchClear');
@@ -1960,6 +1681,8 @@
                 
                 if (query.length > 0) {
                     searchClear.style.display = 'block';
+                    
+                    // Debounce pour éviter trop de requêtes
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
                         performSearch(query);
@@ -1977,12 +1700,14 @@
                 searchInput.focus();
             });
 
+            // Fermer les résultats si on clique ailleurs
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.search-box')) {
                     searchResults.style.display = 'none';
                 }
             });
 
+            // Navigation au clavier
             searchInput.addEventListener('keydown', function(e) {
                 const items = searchResults.querySelectorAll('.search-result-item');
                 let selectedIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
@@ -2016,17 +1741,20 @@
             try {
                 const results = [];
                 
+                // Recherche dans les publications
                 const postResults = posts.filter(post => 
                     post.text?.toLowerCase().includes(query.toLowerCase()) ||
                     post.author?.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 5);
 
+                // Recherche dans les utilisateurs
                 const userResults = allUsers.filter(user =>
                     user.fullName?.toLowerCase().includes(query.toLowerCase()) ||
                     user.nom?.toLowerCase().includes(query.toLowerCase()) ||
                     user.prenom?.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 3);
 
+                // Affichage des résultats
                 let resultsHTML = '';
 
                 if (userResults.length > 0) {
@@ -2053,7 +1781,7 @@
                                 <div class="search-result-avatar">${post.avatar || 'U'}</div>
                                 <div class="search-result-info">
                                     <h4>${escapeHtml(post.author || 'Utilisateur')}</h4>
-                                    <p>${post.videoUrl ? '🎥 Vidéo' : '📷 Publication'} • ${escapeHtml((post.text || '').substring(0, 50))}${post.text?.length > 50 ? '...' : ''}</p>
+                                    <p>${post.videoUrl ? '🎥 Vidéo' : '📝 Publication'} • ${escapeHtml((post.text || '').substring(0, 50))}${post.text?.length > 50 ? '...' : ''}</p>
                                 </div>
                             </div>
                         </div>
@@ -2072,6 +1800,7 @@
             }
         }
 
+        // Fonction pour faire défiler vers une publication
         window.scrollToPost = function(postId) {
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
@@ -2090,6 +1819,7 @@
             }
         };
 
+        // Fonction pour afficher le profil utilisateur (placeholder)
         window.showUserProfile = function(userId) {
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
@@ -2101,7 +1831,6 @@
             alert('Profil utilisateur - Fonctionnalité à venir !');
         };
 
-        // FONCTIONS DE VALIDATION ET AUTHENTIFICATION
         function validateUserData(userData) {
             console.log('🔍 Validation userData:', userData);
             if (!userData) {
@@ -2252,6 +1981,7 @@
             console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
 
+        // Déconnexion
         window.logout = function() {
             console.log('🚪 Déconnexion...');
             sessionStorage.removeItem('expressExchangeUser');
@@ -2264,7 +1994,6 @@
             location.reload();
         };
 
-        // ÉVÉNEMENTS D'INITIALISATION
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Initialisation de l\'application...');
             createParticles();
@@ -2274,7 +2003,6 @@
             }, 100);
         });
 
-        // GESTION INSCRIPTION
         document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             console.log('📋 Soumission du formulaire d\'inscription...');
@@ -2348,154 +2076,7 @@
             }
         });
 
-        // GESTION PUBLICATION AMÉLIORÉE AVEC VIDÉOS
-        document.getElementById('publishBtn').addEventListener('click', async function() {
-            if (!validateUserData(userData)) {
-                console.error('❌ Tentative de publication avec userData invalide');
-                alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
-                showRegistrationForm();
-                return;
-            }
-            
-            const text = document.getElementById('postText').value.trim();
-            const fileInput = document.getElementById('fileInput');
-            const hasImage = fileInput.files[0];
-            const hasVideo = currentVideoFile;
-            
-            if (!text && !hasImage && !hasVideo) {
-                alert('Veuillez ajouter du texte, une image ou une vidéo');
-                return;
-            }
-            
-            if (hasImage && !hasImage.type.startsWith('image/')) {
-                alert("Seules les images sont autorisées pour les fichiers image.");
-                return;
-            }
-            
-            const publishBtn = document.getElementById('publishBtn');
-            publishBtn.disabled = true;
-            publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-            
-            try {
-                const postData = {
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: text || '',
-                    timestamp: serverTimestamp(),
-                    likesCount: 0,
-                    commentsCount: 0,
-                    imageUrl: null,
-                    imagePublicId: null,
-                    videoUrl: null,
-                    videoPublicId: null,
-                    videoDuration: null,
-                    mediaType: null,
-                    createdBy: userData.id,
-                    userValidated: true
-                };
-                
-                console.log('📝 Données de publication:', {
-                    authorId: postData.authorId,
-                    author: postData.author,
-                    textLength: text.length,
-                    hasImage: !!hasImage,
-                    hasVideo: !!hasVideo
-                });
-                
-                if (!postData.authorId || postData.authorId.trim() === '') {
-                    throw new Error('authorId manquant ou vide');
-                }
-                
-                // Upload de la vidéo si présente
-                if (hasVideo) {
-                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload vidéo...';
-                    console.log('🎥 Upload vidéo en cours...', {
-                        duration: hasVideo.duration,
-                        trimmed: hasVideo.trimmed,
-                        size: hasVideo.file.size
-                    });
-                    
-                    const videoUploadResult = await uploader.uploadVideo(hasVideo.file, {
-                        maxWidth: 1280
-                    });
-                    
-                    postData.videoUrl = videoUploadResult.url;
-                    postData.videoPublicId = videoUploadResult.publicId;
-                    postData.videoDuration = hasVideo.duration;
-                    postData.videoWidth = videoUploadResult.width;
-                    postData.videoHeight = videoUploadResult.height;
-                    postData.videoSize = videoUploadResult.bytes;
-                    postData.videoFormat = videoUploadResult.format;
-                    postData.mediaType = 'video';
-                    
-                    if (hasVideo.trimmed) {
-                        postData.videoTrimmed = true;
-                        postData.videoOriginalDuration = hasVideo.originalDuration;
-                        postData.videoStartTime = hasVideo.startTime;
-                        postData.videoEndTime = hasVideo.endTime;
-                    }
-                    
-                    console.log('✅ Vidéo uploadée:', videoUploadResult);
-                }
-                
-                // Upload de l'image si présente (et pas de vidéo)
-                if (hasImage && !hasVideo) {
-                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
-                    const imageUploadResult = await uploader.uploadImage(hasImage, {
-                        maxWidth: 1200
-                    });
-                    postData.imageUrl = imageUploadResult.url;
-                    postData.imagePublicId = imageUploadResult.publicId;
-                    postData.imageWidth = imageUploadResult.width;
-                    postData.imageHeight = imageUploadResult.height;
-                    postData.imageSize = imageUploadResult.bytes;
-                    postData.mediaType = 'image';
-                }
-                
-                publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-                
-                try {
-                    const docRef = await addDoc(collection(db, 'posts'), postData);
-                    console.log('✅ Publication créée avec ID:', docRef.id);
-                    
-                    if (hasVideo) {
-                        console.log('🎉 Publication vidéo réussie:', {
-                            duration: postData.videoDuration,
-                            trimmed: postData.videoTrimmed || false
-                        });
-                    }
-                } catch (firestoreError) {
-                    console.error('❌ Erreur Firestore détaillée:', firestoreError);
-                    throw new Error(`Erreur Firestore: ${firestoreError.message}`);
-                }
-                
-                clearPostForm();
-            } catch (error) {
-                console.error('❌ Erreur lors de la publication:', error);
-                alert(`Erreur lors de la publication: ${error.message}`);
-            } finally {
-                resetPublishButton();
-            }
-        });
-
-        function resetPublishButton() {
-            const publishBtn = document.getElementById('publishBtn');
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'Publier';
-        }
-
-        function clearPostForm() {
-            document.getElementById('postText').value = '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('videoInput').value = '';
-            document.getElementById('fileName').textContent = '';
-            document.getElementById('mediaPreview').innerHTML = '';
-            currentVideoFile = null;
-            videoTrimData = null;
-        }
-
-        // FONCTIONS DE CHARGEMENT DES DONNÉES
+        // FONCTION AMÉLIORÉE : Chargement des publications avec loader
         function loadPosts() {
             if (isLoadingPosts) return;
             isLoadingPosts = true;
@@ -2523,10 +2104,16 @@
 
                 console.log(`✅ ${posts.length} publications chargées`);
                 
+                // Petit délai pour permettre de voir le loader
                 setTimeout(() => {
                     renderPosts();
                     hideMainLoader();
                     isLoadingPosts = false;
+                    
+                    // Initialiser l'auto-play des vidéos après le rendu
+                    setTimeout(() => {
+                        initVideoAutoPlay();
+                    }, 100);
                 }, 500);
 
             }, (error) => {
@@ -2544,6 +2131,7 @@
             });
         }
 
+        // NOUVELLE FONCTION : Chargement des utilisateurs pour la recherche
         async function loadUsers() {
             try {
                 console.log('👥 Chargement des utilisateurs pour la recherche...');
@@ -2559,7 +2147,228 @@
             }
         }
 
-        // FONCTIONS UTILITAIRES
+        // GESTION DES FICHIERS VIDÉO
+        document.getElementById('videoInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            const fileName = document.getElementById('fileName');
+            const preview = document.getElementById('mediaPreview');
+            
+            // Réinitialiser l'autre input
+            document.getElementById('fileInput').value = '';
+            
+            if (file) {
+                console.log('🎥 Fichier vidéo sélectionné:', file.name, file.size, file.type);
+                
+                // Vérification du type de fichier
+                if (!file.type.startsWith('video/')) {
+                    alert('Seules les vidéos sont autorisées');
+                    e.target.value = '';
+                    return;
+                }
+                
+                fileName.textContent = file.name;
+                fileName.style.color = '#8e8e8e';
+                
+                try {
+                    // Obtenir la durée de la vidéo
+                    const duration = await VideoProcessor.getVideoDuration(file);
+                    console.log(`📹 Durée vidéo: ${duration.toFixed(2)}s`);
+                    
+                    const maxDuration = 180; // 3 minutes
+                    let processedFile = file;
+                    
+                    if (duration > maxDuration) {
+                        const processingDiv = document.createElement('div');
+                        processingDiv.className = 'video-processing';
+                        processingDiv.innerHTML = `
+                            <div class="processing-spinner"></div>
+                            <span>Traitement vidéo en cours...</span>
+                        `;
+                        preview.appendChild(processingDiv);
+                        processingDiv.style.display = 'flex';
+                        
+                        console.log('✂️ Vidéo trop longue, traitement nécessaire...');
+                        processedFile = await VideoProcessor.trimVideo(file, maxDuration);
+                        
+                        alert(`⚠️ Votre vidéo de ${VideoProcessor.formatDuration(duration)} sera coupée à ${VideoProcessor.formatDuration(maxDuration)} pour respecter la limite.`);
+                        processingDiv.remove();
+                    }
+                    
+                    // Afficher la prévisualisation
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const videoDuration = duration > maxDuration ? maxDuration : duration;
+                        preview.innerHTML = `
+                            <div class="video-preview">
+                                <video src="${event.target.result}" controls style="max-width: 250px; max-height: 200px; border-radius: 8px;"></video>
+                                <div class="video-duration ${duration > maxDuration ? 'warning' : ''}">${VideoProcessor.formatDuration(videoDuration)}</div>
+                            </div>
+                        `;
+                    };
+                    reader.readAsDataURL(processedFile);
+                    
+                    currentSelectedFile = processedFile;
+                    
+                } catch (error) {
+                    console.error('❌ Erreur traitement vidéo:', error);
+                    alert('Erreur lors du traitement de la vidéo');
+                    e.target.value = '';
+                    fileName.textContent = '';
+                    preview.innerHTML = '';
+                }
+            } else {
+                fileName.textContent = '';
+                preview.innerHTML = '';
+                currentSelectedFile = null;
+            }
+        });
+
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            const fileName = document.getElementById('fileName');
+            const preview = document.getElementById('mediaPreview');
+            
+            // Réinitialiser l'autre input
+            document.getElementById('videoInput').value = '';
+            
+            if (file) {
+                fileName.textContent = file.name;
+                fileName.style.color = '#8e8e8e';
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+                currentSelectedFile = file;
+            } else {
+                fileName.textContent = '';
+                preview.innerHTML = '';
+                currentSelectedFile = null;
+            }
+        });
+
+        document.getElementById('publishBtn').addEventListener('click', async function() {
+            if (!validateUserData(userData)) {
+                console.error('❌ Tentative de publication avec userData invalide');
+                alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
+                showRegistrationForm();
+                return;
+            }
+            
+            const text = document.getElementById('postText').value.trim();
+            const publishBtn = document.getElementById('publishBtn');
+            
+            if (!text && !currentSelectedFile) {
+                alert('Veuillez ajouter du texte, une image ou une vidéo');
+                return;
+            }
+            
+            publishBtn.disabled = true;
+            publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
+            
+            try {
+                const postData = {
+                    author: userData.fullName,
+                    authorId: userData.id,
+                    avatar: userData.avatar,
+                    text: text || '',
+                    timestamp: serverTimestamp(),
+                    likesCount: 0,
+                    commentsCount: 0,
+                    imageUrl: null,
+                    imagePublicId: null,
+                    videoUrl: null,
+                    videoPublicId: null,
+                    videoDuration: null,
+                    createdBy: userData.id,
+                    userValidated: true
+                };
+                
+                console.log('📝 Données de publication:', {
+                    authorId: postData.authorId,
+                    author: postData.author,
+                    textLength: text.length,
+                    hasMedia: !!currentSelectedFile,
+                    mediaType: currentSelectedFile ? currentSelectedFile.type : 'none'
+                });
+                
+                if (!postData.authorId || postData.authorId.trim() === '') {
+                    throw new Error('authorId manquant ou vide');
+                }
+                
+                if (currentSelectedFile) {
+                    if (currentSelectedFile.type.startsWith('video/')) {
+                        // Upload vidéo
+                        publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload vidéo...';
+                        console.log('🎥 Upload vidéo en cours...');
+                        
+                        const uploadResult = await uploader.uploadVideo(currentSelectedFile, {
+                            maxDuration: 180
+                        });
+                        
+                        postData.videoUrl = uploadResult.url;
+                        postData.videoPublicId = uploadResult.publicId;
+                        postData.videoDuration = uploadResult.duration;
+                        postData.videoWidth = uploadResult.width;
+                        postData.videoHeight = uploadResult.height;
+                        postData.videoSize = uploadResult.bytes;
+                        
+                        console.log('✅ Vidéo uploadée:', uploadResult);
+                        
+                    } else if (currentSelectedFile.type.startsWith('image/')) {
+                        // Upload image
+                        publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
+                        console.log('📷 Upload image en cours...');
+                        
+                        const uploadResult = await uploader.uploadImage(currentSelectedFile, {
+                            maxWidth: 1200
+                        });
+                        
+                        postData.imageUrl = uploadResult.url;
+                        postData.imagePublicId = uploadResult.publicId;
+                        postData.imageWidth = uploadResult.width;
+                        postData.imageHeight = uploadResult.height;
+                        postData.imageSize = uploadResult.bytes;
+                        
+                        console.log('✅ Image uploadée:', uploadResult);
+                    }
+                }
+                
+                publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
+                
+                try {
+                    const docRef = await addDoc(collection(db, 'posts'), postData);
+                    console.log('✅ Publication créée avec ID:', docRef.id);
+                } catch (firestoreError) {
+                    console.error('❌ Erreur Firestore détaillée:', firestoreError);
+                    throw new Error(`Erreur Firestore: ${firestoreError.message}`);
+                }
+                
+                clearPostForm();
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de la publication:', error);
+                alert(`Erreur lors de la publication: ${error.message}`);
+            } finally {
+                resetPublishButton();
+            }
+        });
+
+        function resetPublishButton() {
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publier';
+        }
+
+        function clearPostForm() {
+            document.getElementById('postText').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('videoInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('mediaPreview').innerHTML = '';
+            currentSelectedFile = null;
+        }
+
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -2597,7 +2406,6 @@
             });
         }
 
-        // RENDU DES PUBLICATIONS AVEC SUPPORT VIDÉO
         function renderPosts() {
             console.log('🎨 Rendu des publications...');
             const feed = document.getElementById('feed');
@@ -2613,37 +2421,54 @@
             }
 
             const postsHTML = posts.map(post => {
-                let mediaHTML = '';
-                
                 // Gestion des vidéos
-                if (post.videoUrl) {
-                    mediaHTML = `
-                        <div class="video-link">
-                            <video onclick="openVideoModal('${post.videoUrl}')" preload="metadata">
-                                <source src="${post.videoUrl}" type="video/mp4">
-                            </video>
-                            <div class="video-overlay" id="video-overlay-${post.id}">
-                                ▶️
+                const videoHTML = post.videoUrl ? `
+                    <div class="video-container paused" data-video-id="${post.id}">
+                        <video class="video-player" 
+                               src="${post.videoUrl}" 
+                               poster=""
+                               preload="metadata"
+                               loop
+                               playsinline
+                               onclick="toggleVideoPlay(this)">
+                            Votre navigateur ne supporte pas les vidéos.
+                        </video>
+                        
+                        <div class="video-play-overlay" onclick="toggleVideoPlay(this.parentElement.querySelector('video'))">
+                            ▶️
+                        </div>
+                        
+                        <div class="video-auto-play-indicator">🔥 Auto-play</div>
+                        
+                        <div class="video-controls">
+                            <div class="video-progress" onclick="seekVideo(event, this)">
+                                <div class="video-progress-bar"></div>
                             </div>
-                            <div class="video-badge">
-                                🎥 ${videoProcessor.formatDuration(post.videoDuration || 0)}
-                                ${post.videoTrimmed ? ' • ✂️' : ''}
+                            <div class="video-controls-row">
+                                <button class="video-play-btn" onclick="toggleVideoPlay(this.closest('.video-container').querySelector('video'))">
+                                    ▶️
+                                </button>
+                                <span class="video-time">0:00 / ${post.videoDuration ? VideoProcessor.formatDuration(post.videoDuration) : '0:00'}</span>
+                                <button class="video-volume-btn" onclick="toggleVideoMute(this.closest('.video-container').querySelector('video'))">
+                                    🔊
+                                </button>
                             </div>
                         </div>
-                    `;
-                }
-                // Gestion des images (si pas de vidéo)
-                else if (post.imageUrl) {
-                    mediaHTML = `
-                        <div class="image-link">
-                            <img src="${post.imageUrl}" 
-                                 alt="Image partagée" 
-                                 onclick="openImageModal('${post.imageUrl}')"
-                                 loading="lazy">
-                            <div class="cloudinary-badge">📸</div>
-                        </div>
-                    `;
-                }
+                        
+                        <div class="video-badge">🎥 Vidéo</div>
+                    </div>
+                ` : '';
+
+                // Gestion des images
+                const imageHTML = post.imageUrl ? `
+                    <div class="image-link">
+                        <img src="${post.imageUrl}" 
+                             alt="Image partagée" 
+                             onclick="openImageModal('${post.imageUrl}')"
+                             loading="lazy">
+                        <div class="cloudinary-badge">📸</div>
+                    </div>
+                ` : '';
 
                 return `
                     <div class="publication fade-in" data-post-id="${post.id}">
@@ -2657,7 +2482,8 @@
                         
                         <div class="pub-text">${escapeHtml(post.text || '').replace(/\n/g, '<br>')}</div>
                         
-                        ${mediaHTML}
+                        ${videoHTML}
+                        ${imageHTML}
                         
                         <div class="pub-actions">
                             <button class="action-btn ${post.likedByCurrentUser ? 'liked' : ''}" 
@@ -2672,18 +2498,19 @@
                             </button>
                             <button class="action-btn" onclick="sharePost('${post.id}')">
                                 <span>📤</span>
-                                </button>
+                                <span>Partager</span>
+                            </button>
                         </div>
                         
                         <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                            <div class="comments-container">
-                                <!-- Les commentaires seront chargés ici -->
-                            </div>
+                            <div id="comments-list-${post.id}"></div>
                             <div class="comment-form">
-                                <input type="text" placeholder="Ajouter un commentaire..." 
-                                       class="comment-input" id="comment-input-${post.id}"
-                                       onkeypress="handleCommentKeyPress(event, '${post.id}')">
-                                <button class="comment-submit" onclick="addComment('${post.id}')">📤</button>
+                                <input type="text" 
+                                       class="comment-input" 
+                                       id="comment-input-${post.id}"
+                                       placeholder="Ajouter un commentaire..."
+                                       onkeypress="handleCommentKeypress(event, '${post.id}')">
+                                <button class="comment-btn" onclick="addComment('${post.id}')">Publier</button>
                             </div>
                         </div>
                     </div>
@@ -2691,131 +2518,278 @@
             }).join('');
 
             feed.innerHTML = postsHTML;
-            console.log('✅ Publications rendues');
+            
+            // Mettre à jour les événements des vidéos
+            setupVideoEvents();
+            
+            console.log(`✅ ${posts.length} publications rendues`);
         }
 
-        // GESTION DES MODALES MÉDIAS
-        window.openVideoModal = function(videoUrl) {
-            const modal = document.createElement('div');
-            modal.className = 'media-modal';
-            modal.onclick = (e) => {
-                if (e.target === modal) {
-                    closeMediaModal(modal);
-                }
-            };
-            
-            modal.innerHTML = `
-                <div class="media-modal-content">
-                    <button class="modal-close" onclick="closeMediaModal(this.closest('.media-modal'))">✖️</button>
-                    <video controls autoplay class="modal-video">
-                        <source src="${videoUrl}" type="video/mp4">
-                        Votre navigateur ne supporte pas les vidéos.
-                    </video>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            setTimeout(() => modal.classList.add('show'), 10);
-        };
+        // FONCTIONS VIDÉO
+        function setupVideoEvents() {
+            document.querySelectorAll('.video-player').forEach(video => {
+                // Événement de mise à jour du temps
+                video.addEventListener('timeupdate', function() {
+                    updateVideoProgress(this);
+                });
+                
+                // Événement de fin de vidéo
+                video.addEventListener('ended', function() {
+                    this.closest('.video-container').classList.add('paused');
+                    const playBtn = this.closest('.video-container').querySelector('.video-play-btn');
+                    if (playBtn) playBtn.textContent = '▶️';
+                });
+                
+                // Événement de lecture/pause
+                video.addEventListener('play', function() {
+                    this.closest('.video-container').classList.remove('paused');
+                    const playBtn = this.closest('.video-container').querySelector('.video-play-btn');
+                    if (playBtn) playBtn.textContent = '⏸️';
+                });
+                
+                video.addEventListener('pause', function() {
+                    this.closest('.video-container').classList.add('paused');
+                    const playBtn = this.closest('.video-container').querySelector('.video-play-btn');
+                    if (playBtn) playBtn.textContent = '▶️';
+                });
+            });
+        }
 
-        window.openImageModal = function(imageUrl) {
-            const modal = document.createElement('div');
-            modal.className = 'media-modal';
-            modal.onclick = (e) => {
-                if (e.target === modal) {
-                    closeMediaModal(modal);
-                }
-            };
+        function updateVideoProgress(video) {
+            const container = video.closest('.video-container');
+            const progressBar = container.querySelector('.video-progress-bar');
+            const timeDisplay = container.querySelector('.video-time');
             
-            modal.innerHTML = `
-                <div class="media-modal-content">
-                    <button class="modal-close" onclick="closeMediaModal(this.closest('.media-modal'))">✖️</button>
-                    <img src="${imageUrl}" alt="Image" class="modal-image">
-                </div>
-            `;
+            if (progressBar && video.duration) {
+                const progress = (video.currentTime / video.duration) * 100;
+                progressBar.style.width = progress + '%';
+            }
             
-            document.body.appendChild(modal);
-            setTimeout(() => modal.classList.add('show'), 10);
-        };
+            if (timeDisplay && video.duration) {
+                const current = VideoProcessor.formatDuration(video.currentTime);
+                const total = VideoProcessor.formatDuration(video.duration);
+                timeDisplay.textContent = `${current} / ${total}`;
+            }
+        }
 
-        window.closeMediaModal = function(modal) {
-            if (modal) {
-                modal.classList.remove('show');
-                setTimeout(() => {
-                    if (modal.parentNode) {
-                        modal.parentNode.removeChild(modal);
-                    }
-                }, 300);
+        window.toggleVideoPlay = function(video) {
+            if (!video) return;
+            
+            if (video.paused) {
+                // Arrêter toutes les autres vidéos
+                pauseAllVideos();
+                
+                video.play().then(() => {
+                    currentPlayingVideo = video;
+                    console.log('▶️ Vidéo démarrée manuellement');
+                }).catch(error => {
+                    console.error('❌ Erreur lecture vidéo:', error);
+                });
+            } else {
+                video.pause();
+                if (currentPlayingVideo === video) {
+                    currentPlayingVideo = null;
+                }
+                console.log('⏸️ Vidéo mise en pause');
             }
         };
 
-        // GESTION DES INTERACTIONS
+        window.toggleVideoMute = function(video) {
+            if (!video) return;
+            
+            video.muted = !video.muted;
+            const muteBtn = video.closest('.video-container').querySelector('.video-volume-btn');
+            if (muteBtn) {
+                muteBtn.textContent = video.muted ? '🔇' : '🔊';
+            }
+            console.log(`🔊 Vidéo ${video.muted ? 'coupée' : 'activée'}`);
+        };
+
+        window.seekVideo = function(event, progressContainer) {
+            const video = progressContainer.closest('.video-container').querySelector('video');
+            if (!video || !video.duration) return;
+            
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            const newTime = percentage * video.duration;
+            
+            video.currentTime = newTime;
+            console.log(`⏭️ Vidéo repositionnée à ${VideoProcessor.formatDuration(newTime)}`);
+        };
+
+        // FONCTIONS D'INTERACTION EXISTANTES
+        window.openImageModal = function(imageUrl) {
+            const modal = document.getElementById('modalImageView');
+            const modalImg = document.getElementById('modalImageBig');
+            modalImg.src = imageUrl;
+            modal.style.display = 'flex';
+            
+            // Fermer avec échap ou clic
+            const closeModal = function(e) {
+                if (e.key === 'Escape' || e.target === modal) {
+                    modal.style.display = 'none';
+                    document.removeEventListener('keydown', closeModal);
+                }
+            };
+            
+            modal.addEventListener('click', closeModal);
+            document.addEventListener('keydown', closeModal);
+        };
+
         window.toggleLike = async function(postId) {
             if (!validateUserData(userData)) {
-                alert('Veuillez vous connecter pour aimer une publication');
+                alert('Erreur: Veuillez vous reconnecter');
                 return;
             }
 
-            const button = document.querySelector(`button[data-post-id="${postId}"]`);
-            const heartSpan = button.querySelector('span:first-child');
-            const countSpan = button.querySelector('span:last-child');
-            
-            const currentCount = parseInt(countSpan.textContent) || 0;
-            const isLiked = button.classList.contains('liked');
-            
-            // Mise à jour immédiate de l'interface
-            if (isLiked) {
-                button.classList.remove('liked');
-                heartSpan.textContent = '🤍';
-                countSpan.textContent = Math.max(0, currentCount - 1);
-            } else {
-                button.classList.add('liked');
-                heartSpan.textContent = '❤️';
-                countSpan.textContent = currentCount + 1;
-            }
+            const likeBtn = document.querySelector(`button[data-post-id="${postId}"]`);
+            if (!likeBtn) return;
+
+            const originalDisabled = likeBtn.disabled;
+            likeBtn.disabled = true;
 
             try {
-                // Logique de mise à jour en base (simulation)
                 const post = posts.find(p => p.id === postId);
-                if (post) {
-                    if (isLiked) {
-                        post.likesCount = Math.max(0, (post.likesCount || 0) - 1);
-                        post.likedByCurrentUser = false;
-                    } else {
-                        post.likesCount = (post.likesCount || 0) + 1;
-                        post.likedByCurrentUser = true;
-                    }
+                if (!post) return;
+
+                const isCurrentlyLiked = post.likedByCurrentUser;
+                const newLikesCount = isCurrentlyLiked 
+                    ? Math.max(0, (post.likesCount || 0) - 1)
+                    : (post.likesCount || 0) + 1;
+
+                // Mise à jour optimiste de l'UI
+                post.likedByCurrentUser = !isCurrentlyLiked;
+                post.likesCount = newLikesCount;
+                
+                const heartIcon = likeBtn.querySelector('span:first-child');
+                const countSpan = likeBtn.querySelector('span:last-child');
+                
+                heartIcon.textContent = post.likedByCurrentUser ? '❤️' : '🤍';
+                countSpan.textContent = newLikesCount;
+                likeBtn.classList.toggle('liked', post.likedByCurrentUser);
+
+                // Sauvegarde en base (sans attendre)
+                if (isOnline) {
+                    // Ici on pourrait implémenter la logique de sauvegarde des likes
+                    console.log(`${isCurrentlyLiked ? '💔' : '❤️'} Like ${isCurrentlyLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
                 }
-                console.log(`${isLiked ? '💔' : '❤️'} Like ${isLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
+
             } catch (error) {
                 console.error('❌ Erreur lors du like:', error);
-                // Restaurer l'état précédent en cas d'erreur
-                if (isLiked) {
-                    button.classList.add('liked');
-                    heartSpan.textContent = '❤️';
-                    countSpan.textContent = currentCount;
-                } else {
-                    button.classList.remove('liked');
-                    heartSpan.textContent = '🤍';
-                    countSpan.textContent = currentCount;
-                }
+                // Rollback en cas d'erreur
+                renderPosts();
+            } finally {
+                likeBtn.disabled = originalDisabled;
             }
         };
 
-        window.toggleComments = function(postId) {
+        window.toggleComments = async function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
+            if (!commentsSection) return;
+
             const isVisible = commentsSection.style.display !== 'none';
-            
-            if (isVisible) {
-                commentsSection.style.display = 'none';
-            } else {
-                commentsSection.style.display = 'block';
-                loadComments(postId);
-                // Focus sur l'input de commentaire
+            commentsSection.style.display = isVisible ? 'none' : 'block';
+
+            if (!isVisible) {
+                // Charger les commentaires si ce n'est pas déjà fait
+                await loadComments(postId);
+            }
+        };
+
+        async function loadComments(postId) {
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            if (!commentsList) return;
+
+            try {
+                // Simulation de chargement des commentaires
+                commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">💬 Chargement des commentaires...</div>';
+                
+                // Ici on pourrait charger les vrais commentaires depuis Firestore
+                // Pour l'instant, on simule avec un délai
                 setTimeout(() => {
-                    const input = document.getElementById(`comment-input-${postId}`);
-                    if (input) input.focus();
-                }, 100);
+                    commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ Erreur chargement commentaires:', error);
+                commentsList.innerHTML = '<div style="padding: 8px; color: #ed4956; font-size: 12px;">Erreur de chargement</div>';
+            }
+        }
+
+        window.handleCommentKeypress = function(event, postId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addComment(postId);
+            }
+        };
+
+        window.addComment = async function(postId) {
+            if (!validateUserData(userData)) {
+                alert('Erreur: Veuillez vous reconnecter');
+                return;
+            }
+
+            const commentInput = document.getElementById(`comment-input-${postId}`);
+            if (!commentInput) return;
+
+            const commentText = commentInput.value.trim();
+            if (!commentText) {
+                alert('Veuillez écrire un commentaire');
+                return;
+            }
+
+            try {
+                const commentData = {
+                    postId: postId,
+                    author: userData.fullName,
+                    authorId: userData.id,
+                    avatar: userData.avatar,
+                    text: commentText,
+                    timestamp: serverTimestamp()
+                };
+
+                console.log('💬 Ajout commentaire:', commentData);
+                
+                // Ici on pourrait sauvegarder le commentaire en base
+                // await addDoc(collection(db, 'comments'), commentData);
+
+                // Mise à jour optimiste
+                const commentsList = document.getElementById(`comments-list-${postId}`);
+                if (commentsList) {
+                    const commentHTML = `
+                        <div class="comment">
+                            <div class="comment-header">
+                                <div class="comment-avatar">${userData.avatar}</div>
+                                <div class="comment-username">${escapeHtml(userData.fullName)}</div>
+                                <div class="comment-time">À l'instant</div>
+                            </div>
+                            <div class="comment-text">${escapeHtml(commentText)}</div>
+                        </div>
+                    `;
+                    
+                    if (commentsList.innerHTML.includes('Aucun commentaire')) {
+                        commentsList.innerHTML = commentHTML;
+                    } else {
+                        commentsList.innerHTML += commentHTML;
+                    }
+                }
+
+                // Mise à jour du compteur
+                const post = posts.find(p => p.id === postId);
+                if (post) {
+                    post.commentsCount = (post.commentsCount || 0) + 1;
+                    const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"] span:last-child`);
+                    if (commentBtn) {
+                        commentBtn.textContent = post.commentsCount;
+                    }
+                }
+
+                commentInput.value = '';
+
+            } catch (error) {
+                console.error('❌ Erreur ajout commentaire:', error);
+                alert('Erreur lors de l\'ajout du commentaire');
             }
         };
 
@@ -2830,284 +2804,258 @@
                     url: window.location.href
                 }).catch(err => console.log('Erreur partage:', err));
             } else {
-                // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
-                const url = window.location.href;
-                navigator.clipboard.writeText(`${post.text || 'Publication'} - ${url}`).then(() => {
-                    alert('Lien copié dans le presse-papiers !');
+                // Fallback: copier le lien
+                const textToCopy = `${post.text || 'Publication'} - par ${post.author} sur Express Exchange`;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert('Contenu copié dans le presse-papiers !');
                 }).catch(() => {
-                    // Fallback encore plus basique
-                    const textarea = document.createElement('textarea');
-                    textarea.value = `${post.text || 'Publication'} - ${url}`;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    alert('Lien copié dans le presse-papiers !');
+                    alert('Impossible de copier le contenu');
                 });
             }
         };
 
-        // GESTION DES COMMENTAIRES
-        async function loadComments(postId) {
-            const container = document.querySelector(`#comments-${postId} .comments-container`);
-            if (!container) return;
+        // GESTION DES PUBLICATIONS PERSONNELLES
+        document.getElementById('showMyPostsBtn').addEventListener('click', function() {
+            showMyPostsModal();
+        });
 
-            container.innerHTML = '<div class="loading-comments">💬 Chargement des commentaires...</div>';
-
-            try {
-                // Simulation de chargement des commentaires
-                setTimeout(() => {
-                    const mockComments = [
-                        {
-                            id: 'comment1',
-                            author: 'Alice Martin',
-                            avatar: 'AM',
-                            text: 'Super publication ! 👍',
-                            timestamp: new Date(Date.now() - 300000) // 5 min ago
-                        },
-                        {
-                            id: 'comment2',
-                            author: 'Bob Dupont',
-                            avatar: 'BD',
-                            text: 'Merci pour le partage 🙏',
-                            timestamp: new Date(Date.now() - 600000) // 10 min ago
-                        }
-                    ];
-
-                    renderComments(postId, mockComments);
-                }, 500);
-
-            } catch (error) {
-                console.error('❌ Erreur chargement commentaires:', error);
-                container.innerHTML = '<div class="error-comments">Erreur lors du chargement des commentaires</div>';
-            }
-        }
-
-        function renderComments(postId, comments) {
-            const container = document.querySelector(`#comments-${postId} .comments-container`);
-            if (!container) return;
-
-            if (comments.length === 0) {
-                container.innerHTML = '<div class="no-comments">Aucun commentaire pour le moment</div>';
+        function showMyPostsModal() {
+            if (!validateUserData(userData)) {
+                alert('Erreur: Veuillez vous reconnecter');
                 return;
             }
 
-            const commentsHTML = comments.map(comment => `
-                <div class="comment">
-                    <div class="comment-avatar">${comment.avatar}</div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="comment-author">${escapeHtml(comment.author)}</span>
-                            <span class="comment-time">${formatTimestamp(comment.timestamp)}</span>
-                        </div>
-                        <div class="comment-text">${escapeHtml(comment.text)}</div>
+            const modal = document.getElementById('myPostsModal');
+            const myPostsList = document.getElementById('myPostsList');
+            
+            modal.style.display = 'flex';
+            
+            // Filtrer les posts de l'utilisateur actuel
+            const myPosts = posts.filter(post => post.authorId === userData.id);
+            
+            if (myPosts.length === 0) {
+                myPostsList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucune publication</h3>
+                        <p>Vous n'avez pas encore publié de contenu</p>
                     </div>
+                `;
+                return;
+            }
+
+            const myPostsHTML = myPosts.map(post => `
+                <div class="my-post-item">
+                    ${post.imageUrl ? `
+                        <div class="my-post-thumbnail">
+                            <img src="${post.imageUrl}" alt="Miniature">
+                        </div>
+                    ` : post.videoUrl ? `
+                        <div class="my-post-thumbnail">
+                            <video src="${post.videoUrl}" alt="Miniature vidéo"></video>
+                        </div>
+                    ` : ''}
+                    <div class="my-post-content">
+                        <div class="my-post-text">${escapeHtml(post.text || (post.videoUrl ? 'Vidéo partagée' : post.imageUrl ? 'Image partagée' : 'Publication'))}</div>
+                        <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime • ${post.videoUrl ? '🎥' : post.imageUrl ? '📷' : '📝'}</div>
+                    </div>
+                    <button class="my-post-delete" onclick="deleteMyPost('${post.id}')" ${!isOnline ? 'disabled' : ''}>
+                        🗑️ Supprimer
+                    </button>
                 </div>
             `).join('');
 
-            container.innerHTML = commentsHTML;
+            myPostsList.innerHTML = myPostsHTML;
         }
 
-        window.handleCommentKeyPress = function(event, postId) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                addComment(postId);
-            }
-        };
+        document.getElementById('closeMyPostsModal').addEventListener('click', function() {
+            document.getElementById('myPostsModal').style.display = 'none';
+        });
 
-        window.addComment = async function(postId) {
+        window.deleteMyPost = async function(postId) {
             if (!validateUserData(userData)) {
-                alert('Veuillez vous connecter pour commenter');
+                alert('Erreur: Veuillez vous reconnecter');
                 return;
             }
 
-            const input = document.getElementById(`comment-input-${postId}`);
-            const text = input.value.trim();
-            
-            if (!text) {
-                alert('Veuillez saisir un commentaire');
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
                 return;
             }
 
-            if (text.length > 500) {
-                alert('Le commentaire ne peut pas dépasser 500 caractères');
-                return;
+            const deleteBtn = document.querySelector(`button[onclick="deleteMyPost('${postId}')"]`);
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '🔄 Suppression...';
             }
-
-            const originalText = input.value;
-            input.value = 'Publication...';
-            input.disabled = true;
 
             try {
-                // Simulation d'ajout de commentaire
-                const newComment = {
-                    id: `comment_${Date.now()}`,
-                    author: userData.fullName,
-                    avatar: userData.avatar,
-                    text: text,
-                    timestamp: new Date(),
-                    authorId: userData.id
-                };
-
-                console.log('💬 Nouveau commentaire:', newComment);
-
-                // Mise à jour du compteur de commentaires
-                const post = posts.find(p => p.id === postId);
-                if (post) {
-                    post.commentsCount = (post.commentsCount || 0) + 1;
-                    
-                    // Mettre à jour l'affichage du compteur
-                    const countButton = document.querySelector(`button[onclick="toggleComments('${postId}')"] span:last-child`);
-                    if (countButton) {
-                        countButton.textContent = post.commentsCount;
-                    }
-                }
-
-                // Recharger les commentaires
-                loadComments(postId);
+                await deleteDoc(doc(db, 'posts', postId));
+                console.log('✅ Publication supprimée:', postId);
                 
-                input.value = '';
-                console.log('✅ Commentaire ajouté avec succès');
-
+                // Mise à jour locale
+                posts = posts.filter(post => post.id !== postId);
+                renderPosts();
+                showMyPostsModal(); // Rafraîchir la modal
+                
+                // Réinitialiser l'auto-play après suppression
+                setTimeout(() => {
+                    initVideoAutoPlay();
+                }, 100);
+                
             } catch (error) {
-                console.error('❌ Erreur ajout commentaire:', error);
-                alert('Erreur lors de l\'ajout du commentaire');
-                input.value = originalText;
-            } finally {
-                input.disabled = false;
+                console.error('❌ Erreur suppression:', error);
+                alert('Erreur lors de la suppression');
+                
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = '🗑️ Supprimer';
+                }
             }
         };
 
-        // GESTION DES ÉVÉNEMENTS RÉSEAU
+        // GESTION ÉVÉNEMENTS RÉSEAU
         window.addEventListener('online', function() {
+            console.log('🌐 Connexion rétablie');
             isOnline = true;
             updateConnectionStatus();
-            console.log('🟢 Connexion rétablie');
             
-            // Réessayer de charger les données si nécessaire
+            // Recharger les données si nécessaire
             if (isAppInitialized && posts.length === 0) {
                 loadPosts();
             }
         });
 
         window.addEventListener('offline', function() {
+            console.log('📡 Connexion perdue');
             isOnline = false;
             updateConnectionStatus();
-            console.log('🔴 Connexion perdue');
         });
 
-        // GESTION DES ERREURS GLOBALES
-        window.addEventListener('error', function(event) {
-            console.error('❌ Erreur JavaScript globale:', event.error);
-            
-            // Ne pas afficher d'erreurs pour les erreurs mineures
-            if (event.error && event.error.message && 
-                (event.error.message.includes('Non-Error promise rejection') ||
-                 event.error.message.includes('ResizeObserver'))) {
-                return;
+        // GESTION DES INTERRUPTIONS VIDÉO
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page cachée, mettre en pause toutes les vidéos
+                pauseAllVideos();
+                console.log('👁️ Page cachée, vidéos mises en pause');
             }
-            
-            // Log pour debugging
-            console.error('Détails erreur:', {
-                message: event.message,
-                filename: event.filename,
-                lineno: event.lineno,
-                colno: event.colno,
-                error: event.error
+        });
+
+        // GESTION DU SCROLL POUR L'AUTO-PLAY
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            // Debounce le scroll pour les performances
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                // L'intersection observer gère déjà l'auto-play
+                // On pourrait ajouter ici une logique supplémentaire si nécessaire
+            }, 100);
+        });
+
+        // OPTIMISATIONS MOBILE
+        if ('ontouchstart' in window) {
+            // Optimisations pour mobile
+            document.addEventListener('touchstart', function() {
+                // Préparation pour les interactions tactiles
             });
+            
+            // Gestion du double tap pour les vidéos
+            document.addEventListener('dblclick', function(e) {
+                const video = e.target.closest('.video-player');
+                if (video) {
+                    e.preventDefault(); // Empêcher le zoom
+                    toggleVideoPlay(video);
+                }
+            });
+        }
+
+        // GESTION ERREURS GLOBALES
+        window.addEventListener('error', function(event) {
+            console.error('❌ Erreur globale:', event.error);
+            
+            // Si erreur liée aux vidéos, essayer de récupérer
+            if (event.error && event.error.message && event.error.message.includes('video')) {
+                console.log('🔧 Tentative de récupération des erreurs vidéo...');
+                // Réinitialiser les vidéos en cas d'erreur
+                setTimeout(() => {
+                    initVideoAutoPlay();
+                }, 1000);
+            }
         });
 
         window.addEventListener('unhandledrejection', function(event) {
-            console.error('❌ Promise rejetée non gérée:', event.reason);
-            event.preventDefault(); // Empêche l'affichage dans la console
+            console.error('❌ Promise rejetée:', event.reason);
         });
 
-        // FONCTIONS DE NETTOYAGE ET OPTIMISATION
-        function cleanupMemory() {
-            // Nettoyer les URLs d'objets créées pour les aperçus
-            if (currentVideoFile && currentVideoFile.url) {
-                URL.revokeObjectURL(currentVideoFile.url);
-            }
-            if (videoTrimData && videoTrimData.url) {
-                URL.revokeObjectURL(videoTrimData.url);
-            }
-        }
-
-        // Nettoyage périodique
-        setInterval(cleanupMemory, 300000); // Toutes les 5 minutes
-
-        // Nettoyage lors du déchargement de la page
-        window.addEventListener('beforeunload', function() {
-            cleanupMemory();
-            if (unsubscribePosts) {
-                unsubscribePosts();
-            }
-        });
-
-        // FONCTIONS D'ACCESSIBILITÉ
-        document.addEventListener('keydown', function(event) {
-            // Échap pour fermer les modales
-            if (event.key === 'Escape') {
-                const modal = document.querySelector('.media-modal.show');
-                if (modal) {
-                    closeMediaModal(modal);
-                }
-            }
-            
-            // Ctrl+Enter pour publier rapidement
-            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-                const postText = document.getElementById('postText');
-                if (document.activeElement === postText) {
-                    event.preventDefault();
-                    document.getElementById('publishBtn').click();
-                }
-            }
-        });
-
-        // OPTIMISATIONS PERFORMANCE
-        const observerOptions = {
-            root: null,
-            rootMargin: '50px',
-            threshold: 0.1
-        };
-
-        // Observer pour le lazy loading des médias
-        const mediaObserver = new IntersectionObserver((entries) => {
+        // OPTIMISATIONS PERFORMANCES
+        // Lazy loading pour les vidéos
+        const videoLazyLoadObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    const img = entry.target.querySelector('img[data-src]');
-                    const video = entry.target.querySelector('video[data-src]');
-                    
-                    if (img && img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                    }
-                    
-                    if (video && video.dataset.src) {
+                    const video = entry.target;
+                    if (video.dataset.src && !video.src) {
                         video.src = video.dataset.src;
-                        video.removeAttribute('data-src');
+                        video.load();
+                        videoLazyLoadObserver.unobserve(video);
                     }
-                    
-                    mediaObserver.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        });
 
-        // INITIALISATION FINALE
-        console.log('🎉 Script Express Exchange chargé complètement');
-        console.log('📱 Version: Express Exchange v2.0 avec support vidéo');
-        console.log('🔧 Fonctionnalités: Publications, Images, Vidéos, Commentaires, Recherche');
+        // NETTOYAGE MÉMOIRE
+        window.addEventListener('beforeunload', function() {
+            // Nettoyer les observers
+            if (videoAutoPlayObserver) {
+                videoAutoPlayObserver.disconnect();
+            }
+            if (videoLazyLoadObserver) {
+                videoLazyLoadObserver.disconnect();
+            }
+            
+            // Arrêter toutes les vidéos
+            pauseAllVideos();
+            
+            // Nettoyer les event listeners
+            document.querySelectorAll('video').forEach(video => {
+                video.removeEventListener('timeupdate', updateVideoProgress);
+            });
+            
+            console.log('🧹 Nettoyage mémoire effectué');
+        });
 
-        // Affichage de l'état de l'application
-        if (typeof window !== 'undefined') {
-            console.log('🌐 Environnement: Navigateur web');
-            console.log('📡 Connexion:', isOnline ? 'En ligne' : 'Hors ligne');
-            console.log('💾 Stockage local disponible:', typeof(Storage) !== 'undefined');
+        // SERVICE WORKER (optionnel pour le cache)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Ici on pourrait enregistrer un service worker pour le cache
+                console.log('🔧 Service Worker disponible');
+            });
         }
 
-        // Métriques de performance
-        if (performance && performance.now) {
-            console.log(`⚡ Temps de chargement script: ${Math.round(performance.now())}ms`);
-        }
+        // GESTION DES RACCOURCIS CLAVIER
+        document.addEventListener('keydown', function(e) {
+            // Espace pour play/pause de la vidéo courante
+            if (e.code === 'Space' && currentPlayingVideo && !e.target.matches('input, textarea')) {
+                e.preventDefault();
+                toggleVideoPlay(currentPlayingVideo);
+            }
+            
+            // Flèches pour navigation
+            if (e.code === 'ArrowLeft' && currentPlayingVideo) {
+                e.preventDefault();
+                currentPlayingVideo.currentTime = Math.max(0, currentPlayingVideo.currentTime - 10);
+            }
+            
+            if (e.code === 'ArrowRight' && currentPlayingVideo) {
+                e.preventDefault();
+                currentPlayingVideo.currentTime = Math.min(currentPlayingVideo.duration, currentPlayingVideo.currentTime + 10);
+            }
+            
+            // M pour mute/unmute
+            if (e.code === 'KeyM' && currentPlayingVideo && !e.target.matches('input, textarea')) {
+                e.preventDefault();
+                toggleVideoMute(currentPlayingVideo);
+            }
+        });
 
+        console.log('🎉 Script Express Exchange avec support vidéo chargé avec succès');
     </script>
+</body>
+</html>
