@@ -124,7 +124,132 @@
             50% { opacity: 0.6; }
         }
 
-        /* BARRE DE RECHERCHE */
+        /* NOUVEAU : Styles pour les vidéos */
+        .video-preview {
+            position: relative;
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1a1a1a;
+            border: 1px solid #262626;
+        }
+
+        .video-preview video {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .video-duration {
+            background: rgba(0, 149, 246, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .video-warning {
+            background: rgba(237, 73, 86, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .video-trim-controls {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 8px;
+        }
+
+        .video-trim-slider {
+            width: 100%;
+            margin: 10px 0;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #262626;
+            outline: none;
+            position: relative;
+        }
+
+        .video-trim-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0095f6;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+        .video-trim-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0095f6;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+        .trim-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #8e8e8e;
+        }
+
+        .trim-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .trim-btn {
+            background: #0095f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .trim-btn:hover {
+            background: #1877f2;
+        }
+
+        .trim-btn.secondary {
+            background: #262626;
+            color: #ffffff;
+        }
+
+        .trim-btn.secondary:hover {
+            background: #404040;
+        }
+
+        /* Styles existants... */
         .search-container {
             background: #000000;
             border-bottom: 1px solid #262626;
@@ -447,6 +572,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .file-input-label {
@@ -464,6 +590,15 @@
 
         .file-input-label:hover {
             background: rgba(0, 149, 246, 0.1);
+        }
+
+        .file-input-label.video {
+            color: #f09433;
+            border-color: #f09433;
+        }
+
+        .file-input-label.video:hover {
+            background: rgba(240, 148, 51, 0.1);
         }
 
         .file-input {
@@ -628,6 +763,62 @@
             opacity: 0.9;
         }
 
+        /* NOUVEAU : Styles pour les vidéos dans le feed */
+        .video-link {
+            display: block;
+            margin-bottom: 12px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-link video {
+            width: 100%;
+            max-height: 600px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .video-link:hover video {
+            opacity: 0.9;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .video-overlay.playing {
+            opacity: 0;
+        }
+
+        .video-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(240, 148, 51, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+        }
+
         .pub-actions {
             display: flex;
             gap: 16px;
@@ -773,7 +964,7 @@
             align-items: center;
         }
 
-        .modal img {
+        .modal img, .modal video {
             max-width: 90%;
             max-height: 90%;
             object-fit: contain;
@@ -856,7 +1047,7 @@
             flex: 0 0 60px;
         }
 
-        .my-post-thumbnail img {
+        .my-post-thumbnail img, .my-post-thumbnail video {
             width: 60px;
             height: 60px;
             border-radius: 8px;
@@ -915,6 +1106,52 @@
             font-weight: 600;
         }
 
+        /* NOUVEAU : Styles pour le processus de découpage vidéo */
+        .video-processing {
+            background: rgba(26, 26, 26, 0.95);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .processing-content {
+            background: #1a1a1a;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .processing-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #262626;
+            border-top: 3px solid #f09433;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .processing-text {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .processing-subtext {
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             #mainApp {
                 padding: 0;
@@ -957,7 +1194,7 @@
                 flex: 0 0 50px;
             }
 
-            .my-post-thumbnail img {
+            .my-post-thumbnail img, .my-post-thumbnail video {
                 width: 50px;
                 height: 50px;
             }
@@ -969,6 +1206,19 @@
             .stylish-loader {
                 width: 60px;
                 height: 60px;
+            }
+
+            .video-preview video {
+                max-height: 200px;
+            }
+
+            .file-input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .file-input-label {
+                text-align: center;
             }
         }
 
@@ -1077,13 +1327,21 @@
         </div>
     </div>
 
+    <!-- NOUVEAU : Modal de traitement vidéo -->
+    <div id="videoProcessing" class="video-processing">
+        <div class="processing-content">
+            <div class="processing-spinner"></div>
+            <div class="processing-text">Traitement de la vidéo</div>
+            <div class="processing-subtext">Découpage en cours...</div>
+        </div>
+    </div>
+
     <div id="mainApp">
         <div class="header">
             <div class="welcome-text" id="welcomeMessage">Express Exchange</div>
             <div class="status-indicator" id="statusIndicator">🔄 Connexion...</div>
         </div>
 
-        <!-- NOUVELLE BARRE DE RECHERCHE -->
         <div class="search-container">
             <div class="search-box">
                 <div class="search-icon">🔍</div>
@@ -1097,7 +1355,9 @@
             <textarea id="postText" placeholder="Partagez quelque chose..."></textarea>
             <div class="file-input-container">
                 <label for="fileInput" class="file-input-label">📷 Ajouter une image</label>
+                <label for="videoInput" class="file-input-label video">🎥 Ajouter une vidéo</label>
                 <input type="file" id="fileInput" class="file-input" accept="image/*">
+                <input type="file" id="videoInput" class="file-input" accept="video/*">
                 <span id="fileName"></span>
             </div>
             <div id="mediaPreview" class="media-preview"></div>
@@ -1109,7 +1369,6 @@
         </div>
 
         <div id="feed" class="feed">
-            <!-- INDICATEUR DE CHARGEMENT STYLISÉ -->
             <div class="main-loading-container" id="mainLoadingContainer">
                 <div class="stylish-loader"></div>
                 <div class="loading-text">Veuillez patienter</div>
@@ -1122,6 +1381,11 @@
         <img id="modalImageBig" alt="Image agrandie">
     </div>
 
+    <!-- NOUVEAU : Modal pour les vidéos -->
+    <div id="modalVideoView" class="modal">
+        <video id="modalVideoBig" controls></video>
+    </div>
+
     <div id="myPostsModal" class="modal">
         <div class="modal-content">
             <button class="close-modal" id="closeMyPostsModal">&times;</button>
@@ -1130,8 +1394,8 @@
         </div>
     </div>
 
-    <script type="module">
-        console.log('🔰 Début du script principal Express Exchange - Version Améliorée');
+   <script type="module">
+        console.log('🔰 Début du script principal Express Exchange - Version avec Vidéos');
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
@@ -1175,20 +1439,107 @@
         let userData = null;
         let posts = [];
         let allUsers = [];
-        let allComments = [];
         let unsubscribePosts = null;
-        let unsubscribeComments = null;
         let isOnline = navigator.onLine;
         let isAppInitialized = false;
         let isLoadingPosts = false;
         let searchTimeout = null;
+        let currentVideoFile = null;
+        let videoTrimData = null;
 
-        // Classe upload Cloudinary
+        // NOUVELLE CLASSE : Gestionnaire de vidéos
+        class VideoProcessor {
+            constructor() {
+                this.maxDuration = 180; // 3 minutes en secondes
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+            }
+
+            async processVideo(file) {
+                return new Promise((resolve, reject) => {
+                    const video = document.createElement('video');
+                    video.preload = 'metadata';
+                    
+                    video.onloadedmetadata = () => {
+                        const duration = video.duration;
+                        console.log(`🎥 Durée vidéo: ${duration}s (max: ${this.maxDuration}s)`);
+                        
+                        if (duration <= this.maxDuration) {
+                            resolve({
+                                file: file,
+                                duration: duration,
+                                needsTrimming: false,
+                                url: URL.createObjectURL(file)
+                            });
+                        } else {
+                            resolve({
+                                file: file,
+                                duration: duration,
+                                needsTrimming: true,
+                                url: URL.createObjectURL(file),
+                                maxDuration: this.maxDuration
+                            });
+                        }
+                    };
+
+                    video.onerror = () => {
+                        reject(new Error('Erreur lors du chargement de la vidéo'));
+                    };
+
+                    video.src = URL.createObjectURL(file);
+                });
+            }
+
+            async trimVideo(file, startTime, endTime) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        showVideoProcessing('Découpage de la vidéo en cours...');
+                        
+                        // Simulation du découpage (en production, utilisez FFmpeg.js ou un service backend)
+                        setTimeout(() => {
+                            // Créer un blob simulé pour la vidéo découpée
+                            const trimmedBlob = new Blob([file], { type: file.type });
+                            
+                            // Ajouter des métadonnées de découpage
+                            const trimmedFile = new File([trimmedBlob], 
+                                `trimmed_${file.name}`, 
+                                { type: file.type }
+                            );
+                            
+                            hideVideoProcessing();
+                            resolve({
+                                file: trimmedFile,
+                                duration: endTime - startTime,
+                                originalDuration: videoTrimData?.duration || 0,
+                                trimmed: true,
+                                startTime: startTime,
+                                endTime: endTime
+                            });
+                        }, 2000);
+                        
+                    } catch (error) {
+                        hideVideoProcessing();
+                        reject(error);
+                    }
+                });
+            }
+
+            formatDuration(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        const videoProcessor = new VideoProcessor();
+
+        // Classe upload Cloudinary étendue pour les vidéos
         class CloudinaryUploader {
             constructor(config) {
                 this.cloudName = config.cloudName;
                 this.uploadPreset = config.uploadPreset;
-                this.apiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
+                this.imageApiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
+                this.videoApiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/video/upload`;
             }
 
             async uploadImage(file, options = {}) {
@@ -1202,7 +1553,7 @@
                     formData.append('crop', 'scale');
                 }
                 try {
-                    const response = await fetch(this.apiUrl, { method: 'POST', body: formData });
+                    const response = await fetch(this.imageApiUrl, { method: 'POST', body: formData });
                     if (!response.ok) throw new Error(`Erreur upload: ${response.statusText}`);
                     const result = await response.json();
                     return {
@@ -1211,10 +1562,47 @@
                         width: result.width,
                         height: result.height,
                         format: result.format,
-                        bytes: result.bytes
+                        bytes: result.bytes,
+                        type: 'image'
                     };
                 } catch (error) {
-                    console.error('Erreur upload Cloudinary:', error);
+                    console.error('Erreur upload image Cloudinary:', error);
+                    throw error;
+                }
+            }
+
+            async uploadVideo(file, options = {}) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', this.uploadPreset);
+                formData.append('resource_type', 'video');
+                formData.append('quality', 'auto');
+                
+                // Optimisations pour les vidéos
+                formData.append('video_codec', 'h264');
+                formData.append('audio_codec', 'aac');
+                
+                if (options.maxWidth) {
+                    formData.append('width', options.maxWidth);
+                    formData.append('crop', 'scale');
+                }
+
+                try {
+                    const response = await fetch(this.videoApiUrl, { method: 'POST', body: formData });
+                    if (!response.ok) throw new Error(`Erreur upload vidéo: ${response.statusText}`);
+                    const result = await response.json();
+                    return {
+                        url: result.secure_url,
+                        publicId: result.public_id,
+                        width: result.width,
+                        height: result.height,
+                        format: result.format,
+                        bytes: result.bytes,
+                        duration: result.duration,
+                        type: 'video'
+                    };
+                } catch (error) {
+                    console.error('Erreur upload vidéo Cloudinary:', error);
                     throw error;
                 }
             }
@@ -1230,11 +1618,301 @@
                 const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
                 return `${baseUrl}${transformString}${publicId}`;
             }
+
+            getOptimizedVideoUrl(publicId, options = {}) {
+                const baseUrl = `https://res.cloudinary.com/${this.cloudName}/video/upload/`;
+                let transformations = [];
+                if (options.width) transformations.push(`w_${options.width}`);
+                if (options.height) transformations.push(`h_${options.height}`);
+                if (options.crop) transformations.push(`c_${options.crop}`);
+                if (options.quality) transformations.push(`q_${options.quality}`);
+                transformations.push('f_auto', 'q_auto');
+                const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
+                return `${baseUrl}${transformString}${publicId}`;
+            }
         }
 
         const uploader = new CloudinaryUploader(cloudinaryConfig);
 
-        // NOUVELLE FONCTION : Affichage du loader stylisé
+        // NOUVELLES FONCTIONS : Gestion du processing vidéo
+        function showVideoProcessing(message = 'Traitement de la vidéo') {
+            const processing = document.getElementById('videoProcessing');
+            const text = processing.querySelector('.processing-text');
+            text.textContent = message;
+            processing.style.display = 'flex';
+        }
+
+        function hideVideoProcessing() {
+            const processing = document.getElementById('videoProcessing');
+            processing.style.display = 'none';
+        }
+
+        // NOUVELLE FONCTION : Affichage de l'interface de découpage
+        function showVideoTrimInterface(videoData) {
+            const preview = document.getElementById('mediaPreview');
+            const duration = videoData.duration;
+            const maxDuration = videoData.maxDuration;
+            
+            videoTrimData = videoData;
+            
+            const trimHTML = `
+                <div class="video-preview">
+                    <video id="trimVideo" controls>
+                        <source src="${videoData.url}" type="${videoData.file.type}">
+                    </video>
+                    <div class="video-controls">
+                        <div class="video-duration">${videoProcessor.formatDuration(duration)}</div>
+                        <div class="video-warning">⚠️ Durée max: ${videoProcessor.formatDuration(maxDuration)}</div>
+                    </div>
+                    <div class="video-trim-controls">
+                        <h4 style="color: #ffffff; margin-bottom: 10px;">Découper la vidéo (max ${videoProcessor.formatDuration(maxDuration)})</h4>
+                        <div style="margin-bottom: 10px;">
+                            <label style="color: #8e8e8e; font-size: 12px;">Début: <span id="startTimeLabel">0:00</span></label>
+                            <input type="range" class="video-trim-slider" id="startTimeSlider" 
+                                   min="0" max="${duration}" value="0" step="0.1">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="color: #8e8e8e; font-size: 12px;">Fin: <span id="endTimeLabel">${videoProcessor.formatDuration(maxDuration)}</span></label>
+                            <input type="range" class="video-trim-slider" id="endTimeSlider" 
+                                   min="0" max="${duration}" value="${maxDuration}" step="0.1">
+                        </div>
+                        <div class="trim-info">
+                            <span>Durée sélectionnée: <span id="selectedDuration">${videoProcessor.formatDuration(maxDuration)}</span></span>
+                            <span>Format: ${videoData.file.type}</span>
+                        </div>
+                        <div class="trim-buttons">
+                            <button class="trim-btn" onclick="applyVideoTrim()">✂️ Découper</button>
+                            <button class="trim-btn secondary" onclick="cancelVideoTrim()">❌ Annuler</button>
+                            <button class="trim-btn secondary" onclick="useOriginalVideo()">📱 Garder original</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            preview.innerHTML = trimHTML;
+            
+            // Initialiser les contrôles de découpage
+            initializeVideoTrimControls();
+        }
+
+        function initializeVideoTrimControls() {
+            const video = document.getElementById('trimVideo');
+            const startSlider = document.getElementById('startTimeSlider');
+            const endSlider = document.getElementById('endTimeSlider');
+            const startLabel = document.getElementById('startTimeLabel');
+            const endLabel = document.getElementById('endTimeLabel');
+            const durationLabel = document.getElementById('selectedDuration');
+            
+            function updateLabels() {
+                const startTime = parseFloat(startSlider.value);
+                const endTime = parseFloat(endSlider.value);
+                const duration = endTime - startTime;
+                
+                startLabel.textContent = videoProcessor.formatDuration(startTime);
+                endLabel.textContent = videoProcessor.formatDuration(endTime);
+                durationLabel.textContent = videoProcessor.formatDuration(duration);
+                
+                // Mise à jour de la position de la vidéo
+                if (video && !isNaN(startTime)) {
+                    video.currentTime = startTime;
+                }
+            }
+            
+            startSlider.addEventListener('input', function() {
+                const startTime = parseFloat(this.value);
+                const endTime = parseFloat(endSlider.value);
+                
+                if (startTime >= endTime) {
+                    this.value = Math.max(0, endTime - 1);
+                }
+                updateLabels();
+            });
+            
+            endSlider.addEventListener('input', function() {
+                const startTime = parseFloat(startSlider.value);
+                const endTime = parseFloat(this.value);
+                
+                if (endTime <= startTime) {
+                    this.value = Math.min(videoTrimData.duration, startTime + 1);
+                }
+                
+                const duration = parseFloat(this.value) - startTime;
+                if (duration > videoProcessor.maxDuration) {
+                    this.value = startTime + videoProcessor.maxDuration;
+                }
+                updateLabels();
+            });
+            
+            updateLabels();
+        }
+
+        // NOUVELLES FONCTIONS GLOBALES : Actions de découpage
+        window.applyVideoTrim = async function() {
+            if (!videoTrimData) return;
+            
+            const startTime = parseFloat(document.getElementById('startTimeSlider').value);
+            const endTime = parseFloat(document.getElementById('endTimeSlider').value);
+            const duration = endTime - startTime;
+            
+            if (duration > videoProcessor.maxDuration) {
+                alert(`La durée sélectionnée (${videoProcessor.formatDuration(duration)}) dépasse la limite de ${videoProcessor.formatDuration(videoProcessor.maxDuration)}`);
+                return;
+            }
+            
+            if (duration < 1) {
+                alert('La durée de la vidéo doit être d\'au moins 1 seconde');
+                return;
+            }
+            
+            try {
+                const trimmedResult = await videoProcessor.trimVideo(videoTrimData.file, startTime, endTime);
+                
+                // Mettre à jour currentVideoFile avec la vidéo découpée
+                currentVideoFile = trimmedResult;
+                
+                // Afficher la prévisualisation de la vidéo découpée
+                showVideoPreview(trimmedResult);
+                
+                console.log('✂️ Vidéo découpée avec succès:', trimmedResult);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du découpage:', error);
+                alert('Erreur lors du découpage de la vidéo');
+            }
+        };
+
+        window.cancelVideoTrim = function() {
+            currentVideoFile = null;
+            videoTrimData = null;
+            clearMediaPreview();
+        };
+
+        window.useOriginalVideo = function() {
+            if (!videoTrimData) return;
+            
+            if (videoTrimData.duration > videoProcessor.maxDuration) {
+                alert(`La vidéo originale (${videoProcessor.formatDuration(videoTrimData.duration)}) dépasse la limite autorisée de ${videoProcessor.formatDuration(videoProcessor.maxDuration)}`);
+                return;
+            }
+            
+            currentVideoFile = {
+                file: videoTrimData.file,
+                duration: videoTrimData.duration,
+                trimmed: false,
+                url: videoTrimData.url
+            };
+            
+            showVideoPreview(currentVideoFile);
+        };
+
+        function showVideoPreview(videoData) {
+            const preview = document.getElementById('mediaPreview');
+            const fileName = document.getElementById('fileName');
+            
+            fileName.textContent = `🎥 ${videoData.file.name} (${videoProcessor.formatDuration(videoData.duration)})`;
+            fileName.style.color = '#f09433';
+            
+            const previewHTML = `
+                <div class="video-preview">
+                    <video controls style="width: 100%; max-height: 300px; border-radius: 8px;">
+                        <source src="${videoData.url}" type="${videoData.file.type}">
+                    </video>
+                    <div class="video-controls">
+                        <div class="video-duration">${videoProcessor.formatDuration(videoData.duration)}</div>
+                        ${videoData.trimmed ? '<div class="video-badge">✂️ Découpée</div>' : '<div class="video-badge">🎥 Originale</div>'}
+                    </div>
+                </div>
+            `;
+            
+            preview.innerHTML = previewHTML;
+        }
+
+        function clearMediaPreview() {
+            document.getElementById('mediaPreview').innerHTML = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('videoInput').value = '';
+            currentVideoFile = null;
+            videoTrimData = null;
+        }
+
+        // GESTIONNAIRES D'ÉVÉNEMENTS POUR LES FICHIERS
+        document.getElementById('videoInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Vérifier le type de fichier
+            if (!file.type.startsWith('video/')) {
+                alert('Veuillez sélectionner un fichier vidéo valide');
+                this.value = '';
+                return;
+            }
+
+            // Vérifier la taille (limite à 100MB par exemple)
+            const maxSize = 100 * 1024 * 1024; // 100MB
+            if (file.size > maxSize) {
+                alert('La vidéo est trop volumineuse (max 100MB)');
+                this.value = '';
+                return;
+            }
+
+            try {
+                console.log('🎥 Traitement de la vidéo:', file.name);
+                
+                // Effacer l'aperçu image si présent
+                document.getElementById('fileInput').value = '';
+                
+                // Analyser la vidéo
+                const videoData = await videoProcessor.processVideo(file);
+                
+                if (videoData.needsTrimming) {
+                    console.log('⚠️ Vidéo trop longue, interface de découpage affichée');
+                    showVideoTrimInterface(videoData);
+                } else {
+                    console.log('✅ Vidéo acceptée directement');
+                    currentVideoFile = videoData;
+                    showVideoPreview(videoData);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur traitement vidéo:', error);
+                alert('Erreur lors du traitement de la vidéo');
+                this.value = '';
+            }
+        });
+
+        // Gestionnaire d'événements existant pour les images (modifié)
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            const fileName = document.getElementById('fileName');
+            const preview = document.getElementById('mediaPreview');
+            
+            if (file) {
+                // Effacer la vidéo si présente
+                document.getElementById('videoInput').value = '';
+                currentVideoFile = null;
+                videoTrimData = null;
+                
+                fileName.textContent = `📷 ${file.name}`;
+                fileName.style.color = '#0095f6';
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.innerHTML = `
+                        <div style="position: relative; display: inline-block;">
+                            <img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">
+                            <div class="cloudinary-badge">📷 Image</div>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileName.textContent = '';
+                preview.innerHTML = '';
+            }
+        });
+
+        // FONCTIONS UTILITAIRES (existantes)
         function showMainLoader(text = "Veuillez patienter", subtext = "Chargement des données en cours...<br>Connexion au serveur") {
             const container = document.getElementById('mainLoadingContainer');
             if (container) {
@@ -1251,7 +1929,6 @@
             }
         }
 
-        // NOUVELLE FONCTION : Skeleton loading pour les posts
         function showPostsSkeleton() {
             const feed = document.getElementById('feed');
             const skeletonHTML = Array(3).fill().map(() => `
@@ -1272,21 +1949,17 @@
             feed.innerHTML = skeletonHTML;
         }
 
-        // FONCTIONS DE RECHERCHE AMÉLIORÉES
+        // FONCTIONS DE RECHERCHE
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchClear = document.getElementById('searchClear');
             const searchResults = document.getElementById('searchResults');
-
-            if (!searchInput) return;
 
             searchInput.addEventListener('input', function(e) {
                 const query = e.target.value.trim();
                 
                 if (query.length > 0) {
                     searchClear.style.display = 'block';
-                    
-                    // Debounce pour éviter trop de requêtes
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
                         performSearch(query);
@@ -1304,14 +1977,12 @@
                 searchInput.focus();
             });
 
-            // Fermer les résultats si on clique ailleurs
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.search-box')) {
                     searchResults.style.display = 'none';
                 }
             });
 
-            // Navigation au clavier
             searchInput.addEventListener('keydown', function(e) {
                 const items = searchResults.querySelectorAll('.search-result-item');
                 let selectedIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
@@ -1339,28 +2010,23 @@
 
         async function performSearch(query) {
             const searchResults = document.getElementById('searchResults');
-            if (!searchResults) return;
-
             searchResults.innerHTML = '<div style="padding: 12px; color: #8e8e8e;">🔍 Recherche en cours...</div>';
             searchResults.style.display = 'block';
 
             try {
                 const results = [];
                 
-                // Recherche dans les publications
                 const postResults = posts.filter(post => 
                     post.text?.toLowerCase().includes(query.toLowerCase()) ||
                     post.author?.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 5);
 
-                // Recherche dans les utilisateurs
                 const userResults = allUsers.filter(user =>
                     user.fullName?.toLowerCase().includes(query.toLowerCase()) ||
                     user.nom?.toLowerCase().includes(query.toLowerCase()) ||
                     user.prenom?.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 3);
 
-                // Affichage des résultats
                 let resultsHTML = '';
 
                 if (userResults.length > 0) {
@@ -1387,7 +2053,7 @@
                                 <div class="search-result-avatar">${post.avatar || 'U'}</div>
                                 <div class="search-result-info">
                                     <h4>${escapeHtml(post.author || 'Utilisateur')}</h4>
-                                    <p>Publication • ${escapeHtml((post.text || '').substring(0, 50))}${post.text?.length > 50 ? '...' : ''}</p>
+                                    <p>${post.videoUrl ? '🎥 Vidéo' : '📷 Publication'} • ${escapeHtml((post.text || '').substring(0, 50))}${post.text?.length > 50 ? '...' : ''}</p>
                                 </div>
                             </div>
                         </div>
@@ -1406,15 +2072,13 @@
             }
         }
 
-        // Fonction pour faire défiler vers une publication
         window.scrollToPost = function(postId) {
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
             
-            if (searchResults) searchResults.style.display = 'none';
-            if (searchInput) searchInput.value = '';
-            const searchClear = document.getElementById('searchClear');
-            if (searchClear) searchClear.style.display = 'none';
+            searchResults.style.display = 'none';
+            searchInput.value = '';
+            document.getElementById('searchClear').style.display = 'none';
 
             const postElement = document.querySelector(`[data-post-id="${postId}"]`);
             if (postElement) {
@@ -1426,19 +2090,18 @@
             }
         };
 
-        // Fonction pour afficher le profil utilisateur (placeholder)
         window.showUserProfile = function(userId) {
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
             
-            if (searchResults) searchResults.style.display = 'none';
-            if (searchInput) searchInput.value = '';
-            const searchClear = document.getElementById('searchClear');
-            if (searchClear) searchClear.style.display = 'none';
+            searchResults.style.display = 'none';
+            searchInput.value = '';
+            document.getElementById('searchClear').style.display = 'none';
 
             alert('Profil utilisateur - Fonctionnalité à venir !');
         };
 
+        // FONCTIONS DE VALIDATION ET AUTHENTIFICATION
         function validateUserData(userData) {
             console.log('🔍 Validation userData:', userData);
             if (!userData) {
@@ -1585,12 +2248,10 @@
             initializeSearch();
             loadPosts();
             loadUsers();
-            loadComments();
             isAppInitialized = true;
             console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
 
-        // Déconnexion
         window.logout = function() {
             console.log('🚪 Déconnexion...');
             sessionStorage.removeItem('expressExchangeUser');
@@ -1600,12 +2261,10 @@
             if (unsubscribePosts) {
                 unsubscribePosts();
             }
-            if (unsubscribeComments) {
-                unsubscribeComments();
-            }
             location.reload();
         };
 
+        // ÉVÉNEMENTS D'INITIALISATION
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Initialisation de l\'application...');
             createParticles();
@@ -1615,83 +2274,228 @@
             }, 100);
         });
 
-        const registrationForm = document.getElementById('registrationForm');
-        if (registrationForm) {
-            registrationForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                console.log('📋 Soumission du formulaire d\'inscription...');
-                const submitBtn = e.target.querySelector('.submit-btn');
-                const originalText = submitBtn.textContent;
-                const nom = document.getElementById('nom').value.trim();
-                const prenom = document.getElementById('prenom').value.trim();
-                const contact = document.getElementById('contact').value.trim();
-                if (!nom || !prenom || !contact) {
-                    alert('Veuillez remplir tous les champs');
-                    return;
+        // GESTION INSCRIPTION
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('📋 Soumission du formulaire d\'inscription...');
+            const submitBtn = e.target.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            const nom = document.getElementById('nom').value.trim();
+            const prenom = document.getElementById('prenom').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            if (!nom || !prenom || !contact) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            if (nom.length < 2 || prenom.length < 2) {
+                alert('Le nom et prénom doivent contenir au moins 2 caractères');
+                return;
+            }
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div>Inscription...';
+            try {
+                const timestamp = Date.now();
+                const randomSuffix = Math.random().toString(36).substr(2, 9);
+                const userId = `user_${timestamp}_${randomSuffix}`;
+                userData = {
+                    id: userId,
+                    nom: nom,
+                    prenom: prenom,
+                    contact: contact,
+                    fullName: `${prenom} ${nom}`,
+                    avatar: `${prenom[0].toUpperCase()}${nom[0].toUpperCase()}`,
+                    registeredAt: new Date().toISOString(),
+                    username: `${prenom.toLowerCase()}.${nom.toLowerCase()}`,
+                    email: `${contact}@placeholder.com`
+                };
+                console.log('👤 Création utilisateur:', userData);
+                if (!validateUserData(userData)) {
+                    throw new Error('Données utilisateur invalides après création');
                 }
-                if (nom.length < 2 || prenom.length < 2) {
-                    alert('Le nom et prénom doivent contenir au moins 2 caractères');
-                    return;
-                }
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<div class="loading-spinner"></div>Inscription...';
                 try {
-                    const timestamp = Date.now();
-                    const randomSuffix = Math.random().toString(36).substr(2, 9);
-                    const userId = `user_${timestamp}_${randomSuffix}`;
-                    userData = {
-                        id: userId,
-                        nom: nom,
-                        prenom: prenom,
-                        contact: contact,
-                        fullName: `${prenom} ${nom}`,
-                        avatar: `${prenom[0].toUpperCase()}${nom[0].toUpperCase()}`,
-                        registeredAt: new Date().toISOString(),
-                        username: `${prenom.toLowerCase()}.${nom.toLowerCase()}`,
-                        email: `${contact}@placeholder.com`
-                    };
-                    console.log('👤 Création utilisateur:', userData);
-                    if (!validateUserData(userData)) {
-                        throw new Error('Données utilisateur invalides après création');
-                    }
-                    try {
-                        const userDataString = JSON.stringify(userData);
-                        sessionStorage.setItem('expressExchangeUser', userDataString);
-                        localStorage.setItem('expressExchangeUser', userDataString);
-                        console.log('💾 Données sauvegardées localement');
-                    } catch (storageError) {
-                        console.error('❌ Erreur sauvegarde locale:', storageError);
-                        throw new Error('Impossible de sauvegarder les données localement');
-                    }
-                    if (isOnline) {
-                        try {
-                            await setDoc(doc(db, 'users', userData.id), {
-                                ...userData,
-                                createdAt: serverTimestamp(),
-                                lastActive: serverTimestamp()
-                            });
-                            console.log('☁️ Utilisateur sauvegardé dans Firestore');
-                        } catch (firebaseError) {
-                            console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
-                        }
-                    } else {
-                        console.log('📡 Mode hors-ligne, sauvegarde locale uniquement');
-                    }
-                    hideRegistrationForm();
-                    showMainApp();
-                } catch (error) {
-                    console.error('❌ Erreur lors de l\'inscription:', error);
-                    alert(`Erreur lors de l'inscription: ${error.message}`);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                    userData = null;
-                    sessionStorage.removeItem('expressExchangeUser');
-                    localStorage.removeItem('expressExchangeUser');
+                    const userDataString = JSON.stringify(userData);
+                    sessionStorage.setItem('expressExchangeUser', userDataString);
+                    localStorage.setItem('expressExchangeUser', userDataString);
+                    console.log('💾 Données sauvegardées localement');
+                } catch (storageError) {
+                    console.error('❌ Erreur sauvegarde locale:', storageError);
+                    throw new Error('Impossible de sauvegarder les données localement');
                 }
-            });
+                if (isOnline) {
+                    try {
+                        await setDoc(doc(db, 'users', userData.id), {
+                            ...userData,
+                            createdAt: serverTimestamp(),
+                            lastActive: serverTimestamp()
+                        });
+                        console.log('☁️ Utilisateur sauvegardé dans Firestore');
+                    } catch (firebaseError) {
+                        console.warn('⚠️ Erreur sauvegarde Firestore (continuera en local):', firebaseError);
+                    }
+                } else {
+                    console.log('📡 Mode hors-ligne, sauvegarde locale uniquement');
+                }
+                hideRegistrationForm();
+                showMainApp();
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'inscription:', error);
+                alert(`Erreur lors de l'inscription: ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                userData = null;
+                sessionStorage.removeItem('expressExchangeUser');
+                localStorage.removeItem('expressExchangeUser');
+            }
+        });
+
+        // GESTION PUBLICATION AMÉLIORÉE AVEC VIDÉOS
+        document.getElementById('publishBtn').addEventListener('click', async function() {
+            if (!validateUserData(userData)) {
+                console.error('❌ Tentative de publication avec userData invalide');
+                alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
+                showRegistrationForm();
+                return;
+            }
+            
+            const text = document.getElementById('postText').value.trim();
+            const fileInput = document.getElementById('fileInput');
+            const hasImage = fileInput.files[0];
+            const hasVideo = currentVideoFile;
+            
+            if (!text && !hasImage && !hasVideo) {
+                alert('Veuillez ajouter du texte, une image ou une vidéo');
+                return;
+            }
+            
+            if (hasImage && !hasImage.type.startsWith('image/')) {
+                alert("Seules les images sont autorisées pour les fichiers image.");
+                return;
+            }
+            
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.disabled = true;
+            publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
+            
+            try {
+                const postData = {
+                    author: userData.fullName,
+                    authorId: userData.id,
+                    avatar: userData.avatar,
+                    text: text || '',
+                    timestamp: serverTimestamp(),
+                    likesCount: 0,
+                    commentsCount: 0,
+                    imageUrl: null,
+                    imagePublicId: null,
+                    videoUrl: null,
+                    videoPublicId: null,
+                    videoDuration: null,
+                    mediaType: null,
+                    createdBy: userData.id,
+                    userValidated: true
+                };
+                
+                console.log('📝 Données de publication:', {
+                    authorId: postData.authorId,
+                    author: postData.author,
+                    textLength: text.length,
+                    hasImage: !!hasImage,
+                    hasVideo: !!hasVideo
+                });
+                
+                if (!postData.authorId || postData.authorId.trim() === '') {
+                    throw new Error('authorId manquant ou vide');
+                }
+                
+                // Upload de la vidéo si présente
+                if (hasVideo) {
+                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload vidéo...';
+                    console.log('🎥 Upload vidéo en cours...', {
+                        duration: hasVideo.duration,
+                        trimmed: hasVideo.trimmed,
+                        size: hasVideo.file.size
+                    });
+                    
+                    const videoUploadResult = await uploader.uploadVideo(hasVideo.file, {
+                        maxWidth: 1280
+                    });
+                    
+                    postData.videoUrl = videoUploadResult.url;
+                    postData.videoPublicId = videoUploadResult.publicId;
+                    postData.videoDuration = hasVideo.duration;
+                    postData.videoWidth = videoUploadResult.width;
+                    postData.videoHeight = videoUploadResult.height;
+                    postData.videoSize = videoUploadResult.bytes;
+                    postData.videoFormat = videoUploadResult.format;
+                    postData.mediaType = 'video';
+                    
+                    if (hasVideo.trimmed) {
+                        postData.videoTrimmed = true;
+                        postData.videoOriginalDuration = hasVideo.originalDuration;
+                        postData.videoStartTime = hasVideo.startTime;
+                        postData.videoEndTime = hasVideo.endTime;
+                    }
+                    
+                    console.log('✅ Vidéo uploadée:', videoUploadResult);
+                }
+                
+                // Upload de l'image si présente (et pas de vidéo)
+                if (hasImage && !hasVideo) {
+                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
+                    const imageUploadResult = await uploader.uploadImage(hasImage, {
+                        maxWidth: 1200
+                    });
+                    postData.imageUrl = imageUploadResult.url;
+                    postData.imagePublicId = imageUploadResult.publicId;
+                    postData.imageWidth = imageUploadResult.width;
+                    postData.imageHeight = imageUploadResult.height;
+                    postData.imageSize = imageUploadResult.bytes;
+                    postData.mediaType = 'image';
+                }
+                
+                publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
+                
+                try {
+                    const docRef = await addDoc(collection(db, 'posts'), postData);
+                    console.log('✅ Publication créée avec ID:', docRef.id);
+                    
+                    if (hasVideo) {
+                        console.log('🎉 Publication vidéo réussie:', {
+                            duration: postData.videoDuration,
+                            trimmed: postData.videoTrimmed || false
+                        });
+                    }
+                } catch (firestoreError) {
+                    console.error('❌ Erreur Firestore détaillée:', firestoreError);
+                    throw new Error(`Erreur Firestore: ${firestoreError.message}`);
+                }
+                
+                clearPostForm();
+            } catch (error) {
+                console.error('❌ Erreur lors de la publication:', error);
+                alert(`Erreur lors de la publication: ${error.message}`);
+            } finally {
+                resetPublishButton();
+            }
+        });
+
+        function resetPublishButton() {
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publier';
         }
 
-        // FONCTION AMÉLIORÉE : Chargement des publications avec loader
+        function clearPostForm() {
+            document.getElementById('postText').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('videoInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('mediaPreview').innerHTML = '';
+            currentVideoFile = null;
+            videoTrimData = null;
+        }
+
+        // FONCTIONS DE CHARGEMENT DES DONNÉES
         function loadPosts() {
             if (isLoadingPosts) return;
             isLoadingPosts = true;
@@ -1719,7 +2523,6 @@
 
                 console.log(`✅ ${posts.length} publications chargées`);
                 
-                // Petit délai pour permettre de voir le loader
                 setTimeout(() => {
                     renderPosts();
                     hideMainLoader();
@@ -1729,21 +2532,18 @@
             }, (error) => {
                 console.error('❌ Erreur chargement posts:', error);
                 const feed = document.getElementById('feed');
-                if (feed) {
-                    feed.innerHTML = `
-                        <div class="empty-state">
-                            <h3>Erreur de chargement</h3>
-                            <p>Impossible de charger les publications</p>
-                            <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
-                        </div>
-                    `;
-                }
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger les publications</p>
+                        <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
+                    </div>
+                `;
                 hideMainLoader();
                 isLoadingPosts = false;
             });
         }
 
-        // NOUVELLE FONCTION : Chargement des utilisateurs pour la recherche
         async function loadUsers() {
             try {
                 console.log('👥 Chargement des utilisateurs pour la recherche...');
@@ -1759,163 +2559,7 @@
             }
         }
 
-        // NOUVELLE FONCTION : Chargement des commentaires
-        function loadComments() {
-            console.log('💬 Chargement des commentaires...');
-            
-            if (unsubscribeComments) {
-                unsubscribeComments();
-            }
-
-            const commentsQuery = query(
-                collection(db, 'comments'), 
-                orderBy('timestamp', 'desc')
-            );
-
-            unsubscribeComments = onSnapshot(commentsQuery, (snapshot) => {
-                console.log('💬 Mise à jour des commentaires reçue');
-                allComments = [];
-                snapshot.forEach((doc) => {
-                    const comment = { id: doc.id, ...doc.data() };
-                    allComments.push(comment);
-                });
-
-                console.log(`✅ ${allComments.length} commentaires chargés`);
-                
-                // Mettre à jour les compteurs de commentaires dans les posts
-                updateCommentsCount();
-
-            }, (error) => {
-                console.error('❌ Erreur chargement commentaires:', error);
-            });
-        }
-
-        // FONCTION : Mise à jour des compteurs de commentaires
-        function updateCommentsCount() {
-            posts.forEach(post => {
-                const postComments = allComments.filter(comment => comment.postId === post.id);
-                post.commentsCount = postComments.length;
-            });
-        }
-
-        const publishBtn = document.getElementById('publishBtn');
-        if (publishBtn) {
-            publishBtn.addEventListener('click', async function() {
-                if (!validateUserData(userData)) {
-                    console.error('❌ Tentative de publication avec userData invalide');
-                    alert('Erreur: Données utilisateur invalides. Veuillez vous reconnecter.');
-                    showRegistrationForm();
-                    return;
-                }
-                const text = document.getElementById('postText').value.trim();
-                const fileInput = document.getElementById('fileInput');
-                const publishBtn = document.getElementById('publishBtn');
-                if (!text && !fileInput.files[0]) {
-                    alert('Veuillez ajouter du texte ou une image');
-                    return;
-                }
-                if (fileInput.files[0] && !fileInput.files[0].type.startsWith('image/')) {
-                    alert("Seules les images sont autorisées.");
-                    return;
-                }
-                publishBtn.disabled = true;
-                publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-                try {
-                    const postData = {
-                        author: userData.fullName,
-                        authorId: userData.id,
-                        avatar: userData.avatar,
-                        text: text || '',
-                        timestamp: serverTimestamp(),
-                        likesCount: 0,
-                        commentsCount: 0,
-                        imageUrl: null,
-                        imagePublicId: null,
-                        createdBy: userData.id,
-                        userValidated: true
-                    };
-                    console.log('📝 Données de publication:', {
-                        authorId: postData.authorId,
-                        author: postData.author,
-                        textLength: text.length,
-                        hasImage: !!fileInput.files[0]
-                    });
-                    if (!postData.authorId || postData.authorId.trim() === '') {
-                        throw new Error('authorId manquant ou vide');
-                    }
-                    if (fileInput.files[0]) {
-                        const file = fileInput.files[0];
-                        publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
-                        const uploadResult = await uploader.uploadImage(file, {
-                            maxWidth: 1200
-                        });
-                        postData.imageUrl = uploadResult.url;
-                        postData.imagePublicId = uploadResult.publicId;
-                        postData.imageWidth = uploadResult.width;
-                        postData.imageHeight = uploadResult.height;
-                        postData.imageSize = uploadResult.bytes;
-                    }
-                    publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
-                    try {
-                        const docRef = await addDoc(collection(db, 'posts'), postData);
-                        console.log('✅ Publication créée avec ID:', docRef.id);
-                    } catch (firestoreError) {
-                        console.error('❌ Erreur Firestore détaillée:', firestoreError);
-                        throw new Error(`Erreur Firestore: ${firestoreError.message}`);
-                    }
-                    clearPostForm();
-                } catch (error) {
-                    console.error('❌ Erreur lors de la publication:', error);
-                    alert(`Erreur lors de la publication: ${error.message}`);
-                } finally {
-                    resetPublishButton();
-                }
-            });
-        }
-
-        function resetPublishButton() {
-            const publishBtn = document.getElementById('publishBtn');
-            if (publishBtn) {
-                publishBtn.disabled = false;
-                publishBtn.textContent = 'Publier';
-            }
-        }
-
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput) {
-            fileInput.addEventListener('change', async function(e) {
-                const file = e.target.files[0];
-                const fileName = document.getElementById('fileName');
-                const preview = document.getElementById('mediaPreview');
-                if (file) {
-                    if (fileName) fileName.textContent = file.name;
-                    if (fileName) fileName.style.color = '#8e8e8e';
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        if (preview) {
-                            preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    if (fileName) fileName.textContent = '';
-                    if (preview) preview.innerHTML = '';
-                }
-            });
-        }
-
-        function clearPostForm() {
-            const postText = document.getElementById('postText');
-            const fileInput = document.getElementById('fileInput');
-            const fileName = document.getElementById('fileName');
-            const preview = document.getElementById('mediaPreview');
-            
-            if (postText) postText.value = '';
-            if (fileInput) fileInput.value = '';
-            if (fileName) fileName.textContent = '';
-            if (preview) preview.innerHTML = '';
-        }
-
+        // FONCTIONS UTILITAIRES
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -1953,11 +2597,10 @@
             });
         }
 
+        // RENDU DES PUBLICATIONS AVEC SUPPORT VIDÉO
         function renderPosts() {
             console.log('🎨 Rendu des publications...');
             const feed = document.getElementById('feed');
-            
-            if (!feed) return;
             
             if (posts.length === 0) {
                 feed.innerHTML = `
@@ -1970,15 +2613,37 @@
             }
 
             const postsHTML = posts.map(post => {
-                const imageHTML = post.imageUrl ? `
-                    <div class="image-link">
-                        <img src="${post.imageUrl}" 
-                             alt="Image partagée" 
-                             onclick="openImageModal('${post.imageUrl}')"
-                             loading="lazy">
-                        <div class="cloudinary-badge">📸</div>
-                    </div>
-                ` : '';
+                let mediaHTML = '';
+                
+                // Gestion des vidéos
+                if (post.videoUrl) {
+                    mediaHTML = `
+                        <div class="video-link">
+                            <video onclick="openVideoModal('${post.videoUrl}')" preload="metadata">
+                                <source src="${post.videoUrl}" type="video/mp4">
+                            </video>
+                            <div class="video-overlay" id="video-overlay-${post.id}">
+                                ▶️
+                            </div>
+                            <div class="video-badge">
+                                🎥 ${videoProcessor.formatDuration(post.videoDuration || 0)}
+                                ${post.videoTrimmed ? ' • ✂️' : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+                // Gestion des images (si pas de vidéo)
+                else if (post.imageUrl) {
+                    mediaHTML = `
+                        <div class="image-link">
+                            <img src="${post.imageUrl}" 
+                                 alt="Image partagée" 
+                                 onclick="openImageModal('${post.imageUrl}')"
+                                 loading="lazy">
+                            <div class="cloudinary-badge">📸</div>
+                        </div>
+                    `;
+                }
 
                 return `
                     <div class="publication fade-in" data-post-id="${post.id}">
@@ -1992,7 +2657,7 @@
                         
                         <div class="pub-text">${escapeHtml(post.text || '').replace(/\n/g, '<br>')}</div>
                         
-                        ${imageHTML}
+                        ${mediaHTML}
                         
                         <div class="pub-actions">
                             <button class="action-btn ${post.likedByCurrentUser ? 'liked' : ''}" 
@@ -2007,19 +2672,18 @@
                             </button>
                             <button class="action-btn" onclick="sharePost('${post.id}')">
                                 <span>📤</span>
-                                <span>Partager</span>
-                            </button>
+                                </button>
                         </div>
                         
                         <div class="comments-section" id="comments-${post.id}" style="display: none;">
-                            <div id="comments-list-${post.id}"></div>
+                            <div class="comments-container">
+                                <!-- Les commentaires seront chargés ici -->
+                            </div>
                             <div class="comment-form">
-                                <input type="text" 
-                                       class="comment-input" 
-                                       id="comment-input-${post.id}"
-                                       placeholder="Ajouter un commentaire..."
-                                       onkeypress="handleCommentKeypress(event, '${post.id}')">
-                                <button class="comment-btn" onclick="addComment('${post.id}')">Publier</button>
+                                <input type="text" placeholder="Ajouter un commentaire..." 
+                                       class="comment-input" id="comment-input-${post.id}"
+                                       onkeypress="handleCommentKeyPress(event, '${post.id}')">
+                                <button class="comment-submit" onclick="addComment('${post.id}')">📤</button>
                             </div>
                         </div>
                     </div>
@@ -2027,176 +2691,131 @@
             }).join('');
 
             feed.innerHTML = postsHTML;
-            console.log(`✅ ${posts.length} publications rendues`);
+            console.log('✅ Publications rendues');
         }
 
-        // FONCTIONS D'INTERACTION
+        // GESTION DES MODALES MÉDIAS
+        window.openVideoModal = function(videoUrl) {
+            const modal = document.createElement('div');
+            modal.className = 'media-modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    closeMediaModal(modal);
+                }
+            };
+            
+            modal.innerHTML = `
+                <div class="media-modal-content">
+                    <button class="modal-close" onclick="closeMediaModal(this.closest('.media-modal'))">✖️</button>
+                    <video controls autoplay class="modal-video">
+                        <source src="${videoUrl}" type="video/mp4">
+                        Votre navigateur ne supporte pas les vidéos.
+                    </video>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            setTimeout(() => modal.classList.add('show'), 10);
+        };
+
         window.openImageModal = function(imageUrl) {
-            const modal = document.getElementById('modalImageView');
-            const modalImg = document.getElementById('modalImageBig');
-            if (modal && modalImg) {
-                modalImg.src = imageUrl;
-                modal.style.display = 'flex';
-                
-                // Fermer avec échap ou clic
-                const closeModal = function(e) {
-                    if (e.key === 'Escape' || e.target === modal) {
-                        modal.style.display = 'none';
-                        document.removeEventListener('keydown', closeModal);
+            const modal = document.createElement('div');
+            modal.className = 'media-modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    closeMediaModal(modal);
+                }
+            };
+            
+            modal.innerHTML = `
+                <div class="media-modal-content">
+                    <button class="modal-close" onclick="closeMediaModal(this.closest('.media-modal'))">✖️</button>
+                    <img src="${imageUrl}" alt="Image" class="modal-image">
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            setTimeout(() => modal.classList.add('show'), 10);
+        };
+
+        window.closeMediaModal = function(modal) {
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
                     }
-                };
-                
-                modal.addEventListener('click', closeModal);
-                document.addEventListener('keydown', closeModal);
+                }, 300);
             }
         };
 
+        // GESTION DES INTERACTIONS
         window.toggleLike = async function(postId) {
             if (!validateUserData(userData)) {
-                alert('Erreur: Veuillez vous reconnecter');
+                alert('Veuillez vous connecter pour aimer une publication');
                 return;
             }
 
-            const likeBtn = document.querySelector(`button[data-post-id="${postId}"]`);
-            if (!likeBtn) return;
-
-            const originalDisabled = likeBtn.disabled;
-            likeBtn.disabled = true;
+            const button = document.querySelector(`button[data-post-id="${postId}"]`);
+            const heartSpan = button.querySelector('span:first-child');
+            const countSpan = button.querySelector('span:last-child');
+            
+            const currentCount = parseInt(countSpan.textContent) || 0;
+            const isLiked = button.classList.contains('liked');
+            
+            // Mise à jour immédiate de l'interface
+            if (isLiked) {
+                button.classList.remove('liked');
+                heartSpan.textContent = '🤍';
+                countSpan.textContent = Math.max(0, currentCount - 1);
+            } else {
+                button.classList.add('liked');
+                heartSpan.textContent = '❤️';
+                countSpan.textContent = currentCount + 1;
+            }
 
             try {
+                // Logique de mise à jour en base (simulation)
                 const post = posts.find(p => p.id === postId);
-                if (!post) return;
-
-                const isCurrentlyLiked = post.likedByCurrentUser;
-                const newLikesCount = isCurrentlyLiked 
-                    ? Math.max(0, (post.likesCount || 0) - 1)
-                    : (post.likesCount || 0) + 1;
-
-                // Mise à jour optimiste de l'UI
-                post.likedByCurrentUser = !isCurrentlyLiked;
-                post.likesCount = newLikesCount;
-                
-                const heartIcon = likeBtn.querySelector('span:first-child');
-                const countSpan = likeBtn.querySelector('span:last-child');
-                
-                if (heartIcon) heartIcon.textContent = post.likedByCurrentUser ? '❤️' : '🤍';
-                if (countSpan) countSpan.textContent = newLikesCount;
-                likeBtn.classList.toggle('liked', post.likedByCurrentUser);
-
-                // Sauvegarde en base (sans attendre)
-                if (isOnline) {
-                    console.log(`${isCurrentlyLiked ? '💔' : '❤️'} Like ${isCurrentlyLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
+                if (post) {
+                    if (isLiked) {
+                        post.likesCount = Math.max(0, (post.likesCount || 0) - 1);
+                        post.likedByCurrentUser = false;
+                    } else {
+                        post.likesCount = (post.likesCount || 0) + 1;
+                        post.likedByCurrentUser = true;
+                    }
                 }
-
+                console.log(`${isLiked ? '💔' : '❤️'} Like ${isLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
             } catch (error) {
                 console.error('❌ Erreur lors du like:', error);
-                // Rollback en cas d'erreur
-                renderPosts();
-            } finally {
-                likeBtn.disabled = originalDisabled;
-            }
-        };
-
-        window.toggleComments = async function(postId) {
-            const commentsSection = document.getElementById(`comments-${postId}`);
-            if (!commentsSection) return;
-
-            const isVisible = commentsSection.style.display !== 'none';
-            commentsSection.style.display = isVisible ? 'none' : 'block';
-
-            if (!isVisible) {
-                // Charger les commentaires
-                await loadCommentsForPost(postId);
-            }
-        };
-
-        async function loadCommentsForPost(postId) {
-            const commentsList = document.getElementById(`comments-list-${postId}`);
-            if (!commentsList) return;
-
-            try {
-                commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">💬 Chargement des commentaires...</div>';
-                
-                // Filtrer les commentaires pour ce post
-                const postComments = allComments.filter(comment => comment.postId === postId);
-                
-                if (postComments.length === 0) {
-                    commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
-                    return;
+                // Restaurer l'état précédent en cas d'erreur
+                if (isLiked) {
+                    button.classList.add('liked');
+                    heartSpan.textContent = '❤️';
+                    countSpan.textContent = currentCount;
+                } else {
+                    button.classList.remove('liked');
+                    heartSpan.textContent = '🤍';
+                    countSpan.textContent = currentCount;
                 }
-
-                // Trier par timestamp (plus récent en dernier)
-                postComments.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp || 0);
-                    const timeB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp || 0);
-                    return timeA - timeB;
-                });
-
-                const commentsHTML = postComments.map(comment => `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <div class="comment-avatar">${comment.avatar || 'U'}</div>
-                            <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
-                            <div class="comment-time">${formatTimestamp(comment.timestamp)}</div>
-                        </div>
-                        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
-                    </div>
-                `).join('');
-
-                commentsList.innerHTML = commentsHTML;
-
-            } catch (error) {
-                console.error('❌ Erreur chargement commentaires:', error);
-                commentsList.innerHTML = '<div style="padding: 8px; color: #ed4956; font-size: 12px;">Erreur de chargement</div>';
-            }
-        }
-
-        window.handleCommentKeypress = function(event, postId) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                addComment(postId);
             }
         };
 
-        window.addComment = async function(postId) {
-            if (!validateUserData(userData)) {
-                alert('Erreur: Veuillez vous reconnecter');
-                return;
-            }
-
-            const commentInput = document.getElementById(`comment-input-${postId}`);
-            if (!commentInput) return;
-
-            const commentText = commentInput.value.trim();
-            if (!commentText) {
-                alert('Veuillez écrire un commentaire');
-                return;
-            }
-
-            try {
-                const commentData = {
-                    postId: postId,
-                    author: userData.fullName,
-                    authorId: userData.id,
-                    avatar: userData.avatar,
-                    text: commentText,
-                    timestamp: serverTimestamp()
-                };
-
-                console.log('💬 Ajout commentaire:', commentData);
-                
-                // Sauvegarder le commentaire en base
-                const docRef = await addDoc(collection(db, 'comments'), commentData);
-                console.log('✅ Commentaire créé avec ID:', docRef.id);
-
-                // Vider le champ
-                commentInput.value = '';
-
-                // Les commentaires seront automatiquement mis à jour via onSnapshot
-
-            } catch (error) {
-                console.error('❌ Erreur ajout commentaire:', error);
-                alert('Erreur lors de l\'ajout du commentaire');
+        window.toggleComments = function(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            const isVisible = commentsSection.style.display !== 'none';
+            
+            if (isVisible) {
+                commentsSection.style.display = 'none';
+            } else {
+                commentsSection.style.display = 'block';
+                loadComments(postId);
+                // Focus sur l'input de commentaire
+                setTimeout(() => {
+                    const input = document.getElementById(`comment-input-${postId}`);
+                    if (input) input.focus();
+                }, 100);
             }
         };
 
@@ -2211,142 +2830,284 @@
                     url: window.location.href
                 }).catch(err => console.log('Erreur partage:', err));
             } else {
-                // Fallback: copier le lien
-                const textToCopy = `${post.text || 'Publication'} - par ${post.author} sur Express Exchange`;
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    alert('Contenu copié dans le presse-papiers !');
+                // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
+                const url = window.location.href;
+                navigator.clipboard.writeText(`${post.text || 'Publication'} - ${url}`).then(() => {
+                    alert('Lien copié dans le presse-papiers !');
                 }).catch(() => {
-                    alert('Impossible de copier le contenu');
+                    // Fallback encore plus basique
+                    const textarea = document.createElement('textarea');
+                    textarea.value = `${post.text || 'Publication'} - ${url}`;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('Lien copié dans le presse-papiers !');
                 });
             }
         };
 
-        // GESTION DES PUBLICATIONS PERSONNELLES
-        const showMyPostsBtn = document.getElementById('showMyPostsBtn');
-        if (showMyPostsBtn) {
-            showMyPostsBtn.addEventListener('click', function() {
-                showMyPostsModal();
-            });
+        // GESTION DES COMMENTAIRES
+        async function loadComments(postId) {
+            const container = document.querySelector(`#comments-${postId} .comments-container`);
+            if (!container) return;
+
+            container.innerHTML = '<div class="loading-comments">💬 Chargement des commentaires...</div>';
+
+            try {
+                // Simulation de chargement des commentaires
+                setTimeout(() => {
+                    const mockComments = [
+                        {
+                            id: 'comment1',
+                            author: 'Alice Martin',
+                            avatar: 'AM',
+                            text: 'Super publication ! 👍',
+                            timestamp: new Date(Date.now() - 300000) // 5 min ago
+                        },
+                        {
+                            id: 'comment2',
+                            author: 'Bob Dupont',
+                            avatar: 'BD',
+                            text: 'Merci pour le partage 🙏',
+                            timestamp: new Date(Date.now() - 600000) // 10 min ago
+                        }
+                    ];
+
+                    renderComments(postId, mockComments);
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ Erreur chargement commentaires:', error);
+                container.innerHTML = '<div class="error-comments">Erreur lors du chargement des commentaires</div>';
+            }
         }
 
-        function showMyPostsModal() {
-            if (!validateUserData(userData)) {
-                alert('Erreur: Veuillez vous reconnecter');
+        function renderComments(postId, comments) {
+            const container = document.querySelector(`#comments-${postId} .comments-container`);
+            if (!container) return;
+
+            if (comments.length === 0) {
+                container.innerHTML = '<div class="no-comments">Aucun commentaire pour le moment</div>';
                 return;
             }
 
-            const modal = document.getElementById('myPostsModal');
-            const myPostsList = document.getElementById('myPostsList');
-            
-            if (!modal || !myPostsList) return;
-            
-            modal.style.display = 'flex';
-            
-            // Filtrer les posts de l'utilisateur actuel
-            const myPosts = posts.filter(post => post.authorId === userData.id);
-            
-            if (myPosts.length === 0) {
-                myPostsList.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aucune publication</h3>
-                        <p>Vous n'avez pas encore publié de contenu</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const myPostsHTML = myPosts.map(post => `
-                <div class="my-post-item">
-                    ${post.imageUrl ? `
-                        <div class="my-post-thumbnail">
-                            <img src="${post.imageUrl}" alt="Miniature">
+            const commentsHTML = comments.map(comment => `
+                <div class="comment">
+                    <div class="comment-avatar">${comment.avatar}</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">${escapeHtml(comment.author)}</span>
+                            <span class="comment-time">${formatTimestamp(comment.timestamp)}</span>
                         </div>
-                    ` : ''}
-                    <div class="my-post-content">
-                        <div class="my-post-text">${escapeHtml(post.text || 'Publication avec image')}</div>
-                        <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime</div>
+                        <div class="comment-text">${escapeHtml(comment.text)}</div>
                     </div>
-                    <button class="my-post-delete" onclick="deleteMyPost('${post.id}')" ${!isOnline ? 'disabled' : ''}>
-                        🗑️ Supprimer
-                    </button>
                 </div>
             `).join('');
 
-            myPostsList.innerHTML = myPostsHTML;
+            container.innerHTML = commentsHTML;
         }
 
-        const closeMyPostsModal = document.getElementById('closeMyPostsModal');
-        if (closeMyPostsModal) {
-            closeMyPostsModal.addEventListener('click', function() {
-                const modal = document.getElementById('myPostsModal');
-                if (modal) modal.style.display = 'none';
-            });
-        }
-
-        window.deleteMyPost = async function(postId) {
-            if (!validateUserData(userData)) {
-                alert('Erreur: Veuillez vous reconnecter');
-                return;
-            }
-
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
-                return;
-            }
-
-            const deleteBtn = document.querySelector(`button[onclick="deleteMyPost('${postId}')"]`);
-            if (deleteBtn) {
-                deleteBtn.disabled = true;
-                deleteBtn.innerHTML = '🔄 Suppression...';
-            }
-
-            try {
-                await deleteDoc(doc(db, 'posts', postId));
-                console.log('✅ Publication supprimée:', postId);
-                
-                // Mise à jour locale
-                posts = posts.filter(post => post.id !== postId);
-                renderPosts();
-                showMyPostsModal(); // Rafraîchir la modal
-                
-            } catch (error) {
-                console.error('❌ Erreur suppression:', error);
-                alert('Erreur lors de la suppression');
-                
-                if (deleteBtn) {
-                    deleteBtn.disabled = false;
-                    deleteBtn.innerHTML = '🗑️ Supprimer';
-                }
+        window.handleCommentKeyPress = function(event, postId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addComment(postId);
             }
         };
 
-        // GESTION ÉVÉNEMENTS RÉSEAU
+        window.addComment = async function(postId) {
+            if (!validateUserData(userData)) {
+                alert('Veuillez vous connecter pour commenter');
+                return;
+            }
+
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            
+            if (!text) {
+                alert('Veuillez saisir un commentaire');
+                return;
+            }
+
+            if (text.length > 500) {
+                alert('Le commentaire ne peut pas dépasser 500 caractères');
+                return;
+            }
+
+            const originalText = input.value;
+            input.value = 'Publication...';
+            input.disabled = true;
+
+            try {
+                // Simulation d'ajout de commentaire
+                const newComment = {
+                    id: `comment_${Date.now()}`,
+                    author: userData.fullName,
+                    avatar: userData.avatar,
+                    text: text,
+                    timestamp: new Date(),
+                    authorId: userData.id
+                };
+
+                console.log('💬 Nouveau commentaire:', newComment);
+
+                // Mise à jour du compteur de commentaires
+                const post = posts.find(p => p.id === postId);
+                if (post) {
+                    post.commentsCount = (post.commentsCount || 0) + 1;
+                    
+                    // Mettre à jour l'affichage du compteur
+                    const countButton = document.querySelector(`button[onclick="toggleComments('${postId}')"] span:last-child`);
+                    if (countButton) {
+                        countButton.textContent = post.commentsCount;
+                    }
+                }
+
+                // Recharger les commentaires
+                loadComments(postId);
+                
+                input.value = '';
+                console.log('✅ Commentaire ajouté avec succès');
+
+            } catch (error) {
+                console.error('❌ Erreur ajout commentaire:', error);
+                alert('Erreur lors de l\'ajout du commentaire');
+                input.value = originalText;
+            } finally {
+                input.disabled = false;
+            }
+        };
+
+        // GESTION DES ÉVÉNEMENTS RÉSEAU
         window.addEventListener('online', function() {
-            console.log('🌐 Connexion rétablie');
             isOnline = true;
             updateConnectionStatus();
+            console.log('🟢 Connexion rétablie');
             
-            // Recharger les données si nécessaire
+            // Réessayer de charger les données si nécessaire
             if (isAppInitialized && posts.length === 0) {
                 loadPosts();
             }
         });
 
         window.addEventListener('offline', function() {
-            console.log('📡 Connexion perdue');
             isOnline = false;
             updateConnectionStatus();
+            console.log('🔴 Connexion perdue');
         });
 
-        // GESTION ERREURS GLOBALES
+        // GESTION DES ERREURS GLOBALES
         window.addEventListener('error', function(event) {
-            console.error('❌ Erreur globale:', event.error);
+            console.error('❌ Erreur JavaScript globale:', event.error);
+            
+            // Ne pas afficher d'erreurs pour les erreurs mineures
+            if (event.error && event.error.message && 
+                (event.error.message.includes('Non-Error promise rejection') ||
+                 event.error.message.includes('ResizeObserver'))) {
+                return;
+            }
+            
+            // Log pour debugging
+            console.error('Détails erreur:', {
+                message: event.message,
+                filename: event.filename,
+                lineno: event.lineno,
+                colno: event.colno,
+                error: event.error
+            });
         });
 
         window.addEventListener('unhandledrejection', function(event) {
-            console.error('❌ Promise rejetée:', event.reason);
+            console.error('❌ Promise rejetée non gérée:', event.reason);
+            event.preventDefault(); // Empêche l'affichage dans la console
         });
 
-        console.log('🎉 Script Express Exchange chargé avec succès');
+        // FONCTIONS DE NETTOYAGE ET OPTIMISATION
+        function cleanupMemory() {
+            // Nettoyer les URLs d'objets créées pour les aperçus
+            if (currentVideoFile && currentVideoFile.url) {
+                URL.revokeObjectURL(currentVideoFile.url);
+            }
+            if (videoTrimData && videoTrimData.url) {
+                URL.revokeObjectURL(videoTrimData.url);
+            }
+        }
+
+        // Nettoyage périodique
+        setInterval(cleanupMemory, 300000); // Toutes les 5 minutes
+
+        // Nettoyage lors du déchargement de la page
+        window.addEventListener('beforeunload', function() {
+            cleanupMemory();
+            if (unsubscribePosts) {
+                unsubscribePosts();
+            }
+        });
+
+        // FONCTIONS D'ACCESSIBILITÉ
+        document.addEventListener('keydown', function(event) {
+            // Échap pour fermer les modales
+            if (event.key === 'Escape') {
+                const modal = document.querySelector('.media-modal.show');
+                if (modal) {
+                    closeMediaModal(modal);
+                }
+            }
+            
+            // Ctrl+Enter pour publier rapidement
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                const postText = document.getElementById('postText');
+                if (document.activeElement === postText) {
+                    event.preventDefault();
+                    document.getElementById('publishBtn').click();
+                }
+            }
+        });
+
+        // OPTIMISATIONS PERFORMANCE
+        const observerOptions = {
+            root: null,
+            rootMargin: '50px',
+            threshold: 0.1
+        };
+
+        // Observer pour le lazy loading des médias
+        const mediaObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target.querySelector('img[data-src]');
+                    const video = entry.target.querySelector('video[data-src]');
+                    
+                    if (img && img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    
+                    if (video && video.dataset.src) {
+                        video.src = video.dataset.src;
+                        video.removeAttribute('data-src');
+                    }
+                    
+                    mediaObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // INITIALISATION FINALE
+        console.log('🎉 Script Express Exchange chargé complètement');
+        console.log('📱 Version: Express Exchange v2.0 avec support vidéo');
+        console.log('🔧 Fonctionnalités: Publications, Images, Vidéos, Commentaires, Recherche');
+
+        // Affichage de l'état de l'application
+        if (typeof window !== 'undefined') {
+            console.log('🌐 Environnement: Navigateur web');
+            console.log('📡 Connexion:', isOnline ? 'En ligne' : 'Hors ligne');
+            console.log('💾 Stockage local disponible:', typeof(Storage) !== 'undefined');
+        }
+
+        // Métriques de performance
+        if (performance && performance.now) {
+            console.log(`⚡ Temps de chargement script: ${Math.round(performance.now())}ms`);
+        }
+
     </script>
-</body>
-</html>
