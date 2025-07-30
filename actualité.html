@@ -1363,7 +1363,7 @@
     </div>
 
     <script type="module">
-        console.log('🔰 Début du script principal Express Exchange - Version Synchronisée');
+        console.log('🔰 Début du script principal Express Exchange - Version Vidéo');
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
@@ -1379,16 +1379,12 @@
             onSnapshot, 
             deleteDoc,
             serverTimestamp,
-            where,
-            updateDoc,
-            arrayUnion,
-            arrayRemove,
-            increment
+            where
         } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
         // Configuration Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyCPGhtXoDUycykLaTSee0S0yY0tkeJpqKI",
+            apiKey: "AIzaSyCPGgtXoDUycykLaTSee0S0yY0tkeJpqKI",
             authDomain: "data-com-a94a8.firebaseapp.com",
             databaseURL: "https://data-com-a94a8-default-rtdb.firebaseio.com",
             projectId: "data-com-a94a8",
@@ -1411,9 +1407,7 @@
         let userData = null;
         let posts = [];
         let allUsers = [];
-        let postComments = new Map(); // Cache des commentaires par post
         let unsubscribePosts = null;
-        let unsubscribeComments = new Map(); // Map des unsubscribe pour les commentaires
         let isOnline = navigator.onLine;
         let isAppInitialized = false;
         let isLoadingPosts = false;
@@ -1424,9 +1418,12 @@
 
         // CLASSE UTILITAIRE VIDÉO
         class VideoProcessor {
-            static async trimVideo(file, maxDuration = 180) {
+            static async trimVideo(file, maxDuration = 180) { // 3 minutes = 180 secondes
                 return new Promise((resolve, reject) => {
                     const video = document.createElement('video');
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
                     video.onloadedmetadata = () => {
                         const duration = video.duration;
                         console.log(`📹 Durée vidéo originale: ${duration.toFixed(2)}s`);
@@ -1438,6 +1435,9 @@
                         }
                         
                         console.log(`✂️ Découpage vidéo nécessaire à ${maxDuration}s`);
+                        
+                        // Pour une vraie implémentation, on utiliserait FFmpeg.js
+                        // Ici on simule en retournant le fichier original avec un avertissement
                         resolve(file);
                     };
                     
@@ -1464,7 +1464,7 @@
             }
         }
 
-        // Classe upload Cloudinary
+        // Classe upload Cloudinary étendue pour les vidéos
         class CloudinaryUploader {
             constructor(config) {
                 this.cloudName = config.cloudName;
@@ -1508,6 +1508,7 @@
                 formData.append('resource_type', 'video');
                 formData.append('quality', 'auto');
                 
+                // Optimisations vidéo
                 if (options.maxDuration) {
                     formData.append('duration', options.maxDuration);
                 }
@@ -1530,6 +1531,29 @@
                     throw error;
                 }
             }
+
+            getOptimizedUrl(publicId, options = {}) {
+                const baseUrl = `https://res.cloudinary.com/${this.cloudName}/image/upload/`;
+                let transformations = [];
+                if (options.width) transformations.push(`w_${options.width}`);
+                if (options.height) transformations.push(`h_${options.height}`);
+                if (options.crop) transformations.push(`c_${options.crop}`);
+                if (options.quality) transformations.push(`q_${options.quality}`);
+                transformations.push('f_auto', 'q_auto');
+                const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
+                return `${baseUrl}${transformString}${publicId}`;
+            }
+
+            getOptimizedVideoUrl(publicId, options = {}) {
+                const baseUrl = `https://res.cloudinary.com/${this.cloudName}/video/upload/`;
+                let transformations = [];
+                if (options.width) transformations.push(`w_${options.width}`);
+                if (options.height) transformations.push(`h_${options.height}`);
+                if (options.quality) transformations.push(`q_${options.quality}`);
+                transformations.push('f_auto', 'q_auto');
+                const transformString = transformations.length > 0 ? transformations.join(',') + '/' : '';
+                return `${baseUrl}${transformString}${publicId}`;
+            }
         }
 
         const uploader = new CloudinaryUploader(cloudinaryConfig);
@@ -1547,13 +1571,16 @@
                     const autoPlayIndicator = videoContainer.querySelector('.video-auto-play-indicator');
                     
                     if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                        // Vidéo en vue, lancer la lecture automatique
                         videoContainer.classList.add('in-viewport');
                         videoContainer.classList.remove('out-of-viewport');
                         
                         if (video && video.paused) {
+                            // Arrêter toutes les autres vidéos
                             pauseAllVideos();
                             
-                            video.muted = true;
+                            // Démarrer cette vidéo
+                            video.muted = true; // Nécessaire pour l'autoplay
                             video.play().then(() => {
                                 currentPlayingVideo = video;
                                 videoContainer.classList.remove('paused');
@@ -1570,6 +1597,7 @@
                             });
                         }
                     } else {
+                        // Vidéo hors vue, arrêter la lecture
                         videoContainer.classList.remove('in-viewport');
                         videoContainer.classList.add('out-of-viewport');
                         
@@ -1584,10 +1612,11 @@
                     }
                 });
             }, {
-                threshold: [0.5],
+                threshold: [0.5], // Se déclenche quand 50% de la vidéo est visible
                 rootMargin: '-10px'
             });
 
+            // Observer toutes les vidéos existantes
             document.querySelectorAll('.video-container').forEach(container => {
                 videoAutoPlayObserver.observe(container);
             });
@@ -1603,7 +1632,7 @@
             currentPlayingVideo = null;
         }
 
-        // FONCTIONS D'AFFICHAGE
+        // NOUVELLE FONCTION : Affichage du loader stylisé
         function showMainLoader(text = "Veuillez patienter", subtext = "Chargement des données en cours...<br>Connexion au serveur") {
             const container = document.getElementById('mainLoadingContainer');
             if (container) {
@@ -1620,6 +1649,7 @@
             }
         }
 
+        // NOUVELLE FONCTION : Skeleton loading pour les posts
         function showPostsSkeleton() {
             const feed = document.getElementById('feed');
             const skeletonHTML = Array(3).fill().map(() => `
@@ -1640,7 +1670,7 @@
             feed.innerHTML = skeletonHTML;
         }
 
-        // FONCTIONS DE RECHERCHE
+        // FONCTIONS DE RECHERCHE AMÉLIORÉES
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchClear = document.getElementById('searchClear');
@@ -1652,6 +1682,7 @@
                 if (query.length > 0) {
                     searchClear.style.display = 'block';
                     
+                    // Debounce pour éviter trop de requêtes
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
                         performSearch(query);
@@ -1669,12 +1700,14 @@
                 searchInput.focus();
             });
 
+            // Fermer les résultats si on clique ailleurs
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.search-box')) {
                     searchResults.style.display = 'none';
                 }
             });
 
+            // Navigation au clavier
             searchInput.addEventListener('keydown', function(e) {
                 const items = searchResults.querySelectorAll('.search-result-item');
                 let selectedIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
@@ -1708,17 +1741,20 @@
             try {
                 const results = [];
                 
+                // Recherche dans les publications
                 const postResults = posts.filter(post => 
                     post.text?.toLowerCase().includes(query.toLowerCase()) ||
                     post.author?.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 5);
 
+                // Recherche dans les utilisateurs
                 const userResults = allUsers.filter(user =>
                     user.fullName?.toLowerCase().includes(query.toLowerCase()) ||
                     user.nom?.toLowerCase().includes(query.toLowerCase()) ||
                     user.prenom?.toLowerCase().includes(query.toLowerCase())
                 ).slice(0, 3);
 
+                // Affichage des résultats
                 let resultsHTML = '';
 
                 if (userResults.length > 0) {
@@ -1783,6 +1819,7 @@
             }
         };
 
+        // Fonction pour afficher le profil utilisateur (placeholder)
         window.showUserProfile = function(userId) {
             const searchResults = document.getElementById('searchResults');
             const searchInput = document.getElementById('searchInput');
@@ -1794,7 +1831,6 @@
             alert('Profil utilisateur - Fonctionnalité à venir !');
         };
 
-        // GESTION UTILISATEURS
         function validateUserData(userData) {
             console.log('🔍 Validation userData:', userData);
             if (!userData) {
@@ -1945,7 +1981,7 @@
             console.log('🎉 Application initialisée avec succès pour:', userData.fullName);
         }
 
-        // DÉCONNEXION
+        // Déconnexion
         window.logout = function() {
             console.log('🚪 Déconnexion...');
             sessionStorage.removeItem('expressExchangeUser');
@@ -1955,13 +1991,9 @@
             if (unsubscribePosts) {
                 unsubscribePosts();
             }
-            // Nettoyer tous les listeners de commentaires
-            unsubscribeComments.forEach(unsubscribe => unsubscribe());
-            unsubscribeComments.clear();
             location.reload();
         };
 
-        // INITIALISATION
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Initialisation de l\'application...');
             createParticles();
@@ -1971,7 +2003,6 @@
             }, 100);
         });
 
-        // INSCRIPTION
         document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             console.log('📋 Soumission du formulaire d\'inscription...');
@@ -2045,7 +2076,7 @@
             }
         });
 
-        // CHARGEMENT DES PUBLICATIONS AVEC SYNCHRONISATION
+        // FONCTION AMÉLIORÉE : Chargement des publications avec loader
         function loadPosts() {
             if (isLoadingPosts) return;
             isLoadingPosts = true;
@@ -2068,18 +2099,18 @@
                 posts = [];
                 snapshot.forEach((doc) => {
                     const post = { id: doc.id, ...doc.data() };
-                    // Vérifier si l'utilisateur actuel a liké ce post
-                    post.likedByCurrentUser = post.likedBy && post.likedBy.includes(userData?.id);
                     posts.push(post);
                 });
 
                 console.log(`✅ ${posts.length} publications chargées`);
                 
+                // Petit délai pour permettre de voir le loader
                 setTimeout(() => {
                     renderPosts();
                     hideMainLoader();
                     isLoadingPosts = false;
                     
+                    // Initialiser l'auto-play des vidéos après le rendu
                     setTimeout(() => {
                         initVideoAutoPlay();
                     }, 100);
@@ -2100,7 +2131,7 @@
             });
         }
 
-        // CHARGEMENT DES UTILISATEURS
+        // NOUVELLE FONCTION : Chargement des utilisateurs pour la recherche
         async function loadUsers() {
             try {
                 console.log('👥 Chargement des utilisateurs pour la recherche...');
@@ -2122,11 +2153,13 @@
             const fileName = document.getElementById('fileName');
             const preview = document.getElementById('mediaPreview');
             
+            // Réinitialiser l'autre input
             document.getElementById('fileInput').value = '';
             
             if (file) {
                 console.log('🎥 Fichier vidéo sélectionné:', file.name, file.size, file.type);
                 
+                // Vérification du type de fichier
                 if (!file.type.startsWith('video/')) {
                     alert('Seules les vidéos sont autorisées');
                     e.target.value = '';
@@ -2137,10 +2170,11 @@
                 fileName.style.color = '#8e8e8e';
                 
                 try {
+                    // Obtenir la durée de la vidéo
                     const duration = await VideoProcessor.getVideoDuration(file);
                     console.log(`📹 Durée vidéo: ${duration.toFixed(2)}s`);
                     
-                    const maxDuration = 180;
+                    const maxDuration = 180; // 3 minutes
                     let processedFile = file;
                     
                     if (duration > maxDuration) {
@@ -2160,6 +2194,7 @@
                         processingDiv.remove();
                     }
                     
+                    // Afficher la prévisualisation
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         const videoDuration = duration > maxDuration ? maxDuration : duration;
@@ -2188,12 +2223,12 @@
             }
         });
 
-        // GESTION DES FICHIERS IMAGE
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             const fileName = document.getElementById('fileName');
             const preview = document.getElementById('mediaPreview');
             
+            // Réinitialiser l'autre input
             document.getElementById('videoInput').value = '';
             
             if (file) {
@@ -2212,7 +2247,6 @@
             }
         });
 
-        // PUBLICATION
         document.getElementById('publishBtn').addEventListener('click', async function() {
             if (!validateUserData(userData)) {
                 console.error('❌ Tentative de publication avec userData invalide');
@@ -2241,7 +2275,6 @@
                     timestamp: serverTimestamp(),
                     likesCount: 0,
                     commentsCount: 0,
-                    likedBy: [], // Array des IDs d'utilisateurs qui ont liké
                     imageUrl: null,
                     imagePublicId: null,
                     videoUrl: null,
@@ -2265,6 +2298,7 @@
                 
                 if (currentSelectedFile) {
                     if (currentSelectedFile.type.startsWith('video/')) {
+                        // Upload vidéo
                         publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload vidéo...';
                         console.log('🎥 Upload vidéo en cours...');
                         
@@ -2282,6 +2316,7 @@
                         console.log('✅ Vidéo uploadée:', uploadResult);
                         
                     } else if (currentSelectedFile.type.startsWith('image/')) {
+                        // Upload image
                         publishBtn.innerHTML = '<div class="loading-spinner"></div>Upload image...';
                         console.log('📷 Upload image en cours...');
                         
@@ -2334,7 +2369,6 @@
             currentSelectedFile = null;
         }
 
-        // UTILITAIRES
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -2372,7 +2406,6 @@
             });
         }
 
-        // RENDU DES PUBLICATIONS
         function renderPosts() {
             console.log('🎨 Rendu des publications...');
             const feed = document.getElementById('feed');
@@ -2388,6 +2421,7 @@
             }
 
             const postsHTML = posts.map(post => {
+                // Gestion des vidéos
                 const videoHTML = post.videoUrl ? `
                     <div class="video-container paused" data-video-id="${post.id}">
                         <video class="video-player" 
@@ -2425,6 +2459,7 @@
                     </div>
                 ` : '';
 
+                // Gestion des images
                 const imageHTML = post.imageUrl ? `
                     <div class="image-link">
                         <img src="${post.imageUrl}" 
@@ -2484,6 +2519,7 @@
 
             feed.innerHTML = postsHTML;
             
+            // Mettre à jour les événements des vidéos
             setupVideoEvents();
             
             console.log(`✅ ${posts.length} publications rendues`);
@@ -2492,16 +2528,19 @@
         // FONCTIONS VIDÉO
         function setupVideoEvents() {
             document.querySelectorAll('.video-player').forEach(video => {
+                // Événement de mise à jour du temps
                 video.addEventListener('timeupdate', function() {
                     updateVideoProgress(this);
                 });
                 
+                // Événement de fin de vidéo
                 video.addEventListener('ended', function() {
                     this.closest('.video-container').classList.add('paused');
                     const playBtn = this.closest('.video-container').querySelector('.video-play-btn');
                     if (playBtn) playBtn.textContent = '▶️';
                 });
                 
+                // Événement de lecture/pause
                 video.addEventListener('play', function() {
                     this.closest('.video-container').classList.remove('paused');
                     const playBtn = this.closest('.video-container').querySelector('.video-play-btn');
@@ -2537,6 +2576,7 @@
             if (!video) return;
             
             if (video.paused) {
+                // Arrêter toutes les autres vidéos
                 pauseAllVideos();
                 
                 video.play().then(() => {
@@ -2578,13 +2618,14 @@
             console.log(`⏭️ Vidéo repositionnée à ${VideoProcessor.formatDuration(newTime)}`);
         };
 
-        // INTERACTIONS SYNCHRONISÉES
+        // FONCTIONS D'INTERACTION EXISTANTES
         window.openImageModal = function(imageUrl) {
             const modal = document.getElementById('modalImageView');
             const modalImg = document.getElementById('modalImageBig');
             modalImg.src = imageUrl;
             modal.style.display = 'flex';
             
+            // Fermer avec échap ou clic
             const closeModal = function(e) {
                 if (e.key === 'Escape' || e.target === modal) {
                     modal.style.display = 'none';
@@ -2596,7 +2637,6 @@
             document.addEventListener('keydown', closeModal);
         };
 
-        // GESTION SYNCHRONISÉE DES LIKES
         window.toggleLike = async function(postId) {
             if (!validateUserData(userData)) {
                 alert('Erreur: Veuillez vous reconnecter');
@@ -2604,8 +2644,9 @@
             }
 
             const likeBtn = document.querySelector(`button[data-post-id="${postId}"]`);
-            if (!likeBtn || likeBtn.disabled) return;
+            if (!likeBtn) return;
 
+            const originalDisabled = likeBtn.disabled;
             likeBtn.disabled = true;
 
             try {
@@ -2613,35 +2654,36 @@
                 if (!post) return;
 
                 const isCurrentlyLiked = post.likedByCurrentUser;
-                const postRef = doc(db, 'posts', postId);
+                const newLikesCount = isCurrentlyLiked 
+                    ? Math.max(0, (post.likesCount || 0) - 1)
+                    : (post.likesCount || 0) + 1;
 
-                if (isCurrentlyLiked) {
-                    // Retirer le like
-                    await updateDoc(postRef, {
-                        likesCount: increment(-1),
-                        likedBy: arrayRemove(userData.id)
-                    });
-                    console.log('💔 Like retiré pour le post', postId);
-                } else {
-                    // Ajouter le like
-                    await updateDoc(postRef, {
-                        likesCount: increment(1),
-                        likedBy: arrayUnion(userData.id)
-                    });
-                    console.log('❤️ Like ajouté pour le post', postId);
+                // Mise à jour optimiste de l'UI
+                post.likedByCurrentUser = !isCurrentlyLiked;
+                post.likesCount = newLikesCount;
+                
+                const heartIcon = likeBtn.querySelector('span:first-child');
+                const countSpan = likeBtn.querySelector('span:last-child');
+                
+                heartIcon.textContent = post.likedByCurrentUser ? '❤️' : '🤍';
+                countSpan.textContent = newLikesCount;
+                likeBtn.classList.toggle('liked', post.likedByCurrentUser);
+
+                // Sauvegarde en base (sans attendre)
+                if (isOnline) {
+                    // Ici on pourrait implémenter la logique de sauvegarde des likes
+                    console.log(`${isCurrentlyLiked ? '💔' : '❤️'} Like ${isCurrentlyLiked ? 'retiré' : 'ajouté'} pour le post ${postId}`);
                 }
-
-                // La mise à jour se fera automatiquement via onSnapshot
 
             } catch (error) {
                 console.error('❌ Erreur lors du like:', error);
-                alert('Erreur lors de la mise à jour du like');
+                // Rollback en cas d'erreur
+                renderPosts();
             } finally {
-                likeBtn.disabled = false;
+                likeBtn.disabled = originalDisabled;
             }
         };
 
-        // GESTION SYNCHRONISÉE DES COMMENTAIRES
         window.toggleComments = async function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
             if (!commentsSection) return;
@@ -2650,6 +2692,7 @@
             commentsSection.style.display = isVisible ? 'none' : 'block';
 
             if (!isVisible) {
+                // Charger les commentaires si ce n'est pas déjà fait
                 await loadComments(postId);
             }
         };
@@ -2659,62 +2702,19 @@
             if (!commentsList) return;
 
             try {
+                // Simulation de chargement des commentaires
                 commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">💬 Chargement des commentaires...</div>';
                 
-                // Nettoyer l'ancien listener s'il existe
-                if (unsubscribeComments.has(postId)) {
-                    unsubscribeComments.get(postId)();
-                }
-
-                // Écouter les commentaires en temps réel
-                const commentsQuery = query(
-                    collection(db, 'comments'),
-                    where('postId', '==', postId),
-                    orderBy('timestamp', 'asc'),
-                    limit(20)
-                );
-
-                const unsubscribe = onSnapshot(commentsQuery, (snapshot) => {
-                    const comments = [];
-                    snapshot.forEach((doc) => {
-                        comments.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    postComments.set(postId, comments);
-                    renderComments(postId, comments);
-                    
-                    console.log(`💬 ${comments.length} commentaires chargés pour le post ${postId}`);
-                });
-
-                unsubscribeComments.set(postId, unsubscribe);
+                // Ici on pourrait charger les vrais commentaires depuis Firestore
+                // Pour l'instant, on simule avec un délai
+                setTimeout(() => {
+                    commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
+                }, 500);
 
             } catch (error) {
                 console.error('❌ Erreur chargement commentaires:', error);
                 commentsList.innerHTML = '<div style="padding: 8px; color: #ed4956; font-size: 12px;">Erreur de chargement</div>';
             }
-        }
-
-        function renderComments(postId, comments) {
-            const commentsList = document.getElementById(`comments-list-${postId}`);
-            if (!commentsList) return;
-
-            if (comments.length === 0) {
-                commentsList.innerHTML = '<div style="padding: 8px; color: #8e8e8e; font-size: 12px;">Aucun commentaire pour le moment</div>';
-                return;
-            }
-
-            const commentsHTML = comments.map(comment => `
-                <div class="comment">
-                    <div class="comment-header">
-                        <div class="comment-avatar">${comment.avatar || 'U'}</div>
-                        <div class="comment-username">${escapeHtml(comment.author || 'Utilisateur')}</div>
-                        <div class="comment-time">${formatTimestamp(comment.timestamp)}</div>
-                    </div>
-                    <div class="comment-text">${escapeHtml(comment.text || '').replace(/\n/g, '<br>')}</div>
-                </div>
-            `).join('');
-
-            commentsList.innerHTML = commentsHTML;
         }
 
         window.handleCommentKeypress = function(event, postId) {
@@ -2739,12 +2739,6 @@
                 return;
             }
 
-            const commentBtn = commentInput.nextElementSibling;
-            if (commentBtn) {
-                commentBtn.disabled = true;
-                commentBtn.textContent = 'Publication...';
-            }
-
             try {
                 const commentData = {
                     postId: postId,
@@ -2757,26 +2751,45 @@
 
                 console.log('💬 Ajout commentaire:', commentData);
                 
-                // Sauvegarder le commentaire
-                await addDoc(collection(db, 'comments'), commentData);
+                // Ici on pourrait sauvegarder le commentaire en base
+                // await addDoc(collection(db, 'comments'), commentData);
 
-                // Mettre à jour le compteur de commentaires du post
-                const postRef = doc(db, 'posts', postId);
-                await updateDoc(postRef, {
-                    commentsCount: increment(1)
-                });
+                // Mise à jour optimiste
+                const commentsList = document.getElementById(`comments-list-${postId}`);
+                if (commentsList) {
+                    const commentHTML = `
+                        <div class="comment">
+                            <div class="comment-header">
+                                <div class="comment-avatar">${userData.avatar}</div>
+                                <div class="comment-username">${escapeHtml(userData.fullName)}</div>
+                                <div class="comment-time">À l'instant</div>
+                            </div>
+                            <div class="comment-text">${escapeHtml(commentText)}</div>
+                        </div>
+                    `;
+                    
+                    if (commentsList.innerHTML.includes('Aucun commentaire')) {
+                        commentsList.innerHTML = commentHTML;
+                    } else {
+                        commentsList.innerHTML += commentHTML;
+                    }
+                }
+
+                // Mise à jour du compteur
+                const post = posts.find(p => p.id === postId);
+                if (post) {
+                    post.commentsCount = (post.commentsCount || 0) + 1;
+                    const commentBtn = document.querySelector(`button[onclick="toggleComments('${postId}')"] span:last-child`);
+                    if (commentBtn) {
+                        commentBtn.textContent = post.commentsCount;
+                    }
+                }
 
                 commentInput.value = '';
-                console.log('✅ Commentaire ajouté avec succès');
 
             } catch (error) {
                 console.error('❌ Erreur ajout commentaire:', error);
                 alert('Erreur lors de l\'ajout du commentaire');
-            } finally {
-                if (commentBtn) {
-                    commentBtn.disabled = false;
-                    commentBtn.textContent = 'Publier';
-                }
             }
         };
 
@@ -2791,6 +2804,7 @@
                     url: window.location.href
                 }).catch(err => console.log('Erreur partage:', err));
             } else {
+                // Fallback: copier le lien
                 const textToCopy = `${post.text || 'Publication'} - par ${post.author} sur Express Exchange`;
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     alert('Contenu copié dans le presse-papiers !');
@@ -2816,6 +2830,7 @@
             
             modal.style.display = 'flex';
             
+            // Filtrer les posts de l'utilisateur actuel
             const myPosts = posts.filter(post => post.authorId === userData.id);
             
             if (myPosts.length === 0) {
@@ -2841,7 +2856,7 @@
                     ` : ''}
                     <div class="my-post-content">
                         <div class="my-post-text">${escapeHtml(post.text || (post.videoUrl ? 'Vidéo partagée' : post.imageUrl ? 'Image partagée' : 'Publication'))}</div>
-                        <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime • ${post.commentsCount || 0} commentaires • ${post.videoUrl ? '🎥' : post.imageUrl ? '📷' : '📝'}</div>
+                        <div class="my-post-time">${formatTimestamp(post.timestamp)} • ${post.likesCount || 0} j'aime • ${post.videoUrl ? '🎥' : post.imageUrl ? '📷' : '📝'}</div>
                     </div>
                     <button class="my-post-delete" onclick="deleteMyPost('${post.id}')" ${!isOnline ? 'disabled' : ''}>
                         🗑️ Supprimer
@@ -2873,39 +2888,15 @@
             }
 
             try {
-                // Supprimer tous les commentaires associés
-                const commentsQuery = query(
-                    collection(db, 'comments'),
-                    where('postId', '==', postId)
-                );
-                const commentsSnapshot = await getDocs(commentsQuery);
-                
-                const deletePromises = [];
-                commentsSnapshot.forEach((commentDoc) => {
-                    deletePromises.push(deleteDoc(doc(db, 'comments', commentDoc.id)));
-                });
-                
-                // Attendre que tous les commentaires soient supprimés
-                await Promise.all(deletePromises);
-                console.log(`🗑️ ${deletePromises.length} commentaires supprimés`);
-
-                // Supprimer la publication
                 await deleteDoc(doc(db, 'posts', postId));
                 console.log('✅ Publication supprimée:', postId);
                 
-                // Nettoyer le cache local
+                // Mise à jour locale
                 posts = posts.filter(post => post.id !== postId);
-                postComments.delete(postId);
-                
-                // Nettoyer le listener des commentaires
-                if (unsubscribeComments.has(postId)) {
-                    unsubscribeComments.get(postId)();
-                    unsubscribeComments.delete(postId);
-                }
-                
                 renderPosts();
                 showMyPostsModal(); // Rafraîchir la modal
                 
+                // Réinitialiser l'auto-play après suppression
                 setTimeout(() => {
                     initVideoAutoPlay();
                 }, 100);
@@ -2927,6 +2918,7 @@
             isOnline = true;
             updateConnectionStatus();
             
+            // Recharger les données si nécessaire
             if (isAppInitialized && posts.length === 0) {
                 loadPosts();
             }
@@ -2941,30 +2933,35 @@
         // GESTION DES INTERRUPTIONS VIDÉO
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
+                // Page cachée, mettre en pause toutes les vidéos
                 pauseAllVideos();
                 console.log('👁️ Page cachée, vidéos mises en pause');
             }
         });
 
-        // GESTION DU SCROLL
+        // GESTION DU SCROLL POUR L'AUTO-PLAY
         let scrollTimeout;
         window.addEventListener('scroll', function() {
+            // Debounce le scroll pour les performances
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
-                // L'intersection observer gère l'auto-play
+                // L'intersection observer gère déjà l'auto-play
+                // On pourrait ajouter ici une logique supplémentaire si nécessaire
             }, 100);
         });
 
         // OPTIMISATIONS MOBILE
         if ('ontouchstart' in window) {
+            // Optimisations pour mobile
             document.addEventListener('touchstart', function() {
                 // Préparation pour les interactions tactiles
             });
             
+            // Gestion du double tap pour les vidéos
             document.addEventListener('dblclick', function(e) {
                 const video = e.target.closest('.video-player');
                 if (video) {
-                    e.preventDefault();
+                    e.preventDefault(); // Empêcher le zoom
                     toggleVideoPlay(video);
                 }
             });
@@ -2974,8 +2971,10 @@
         window.addEventListener('error', function(event) {
             console.error('❌ Erreur globale:', event.error);
             
+            // Si erreur liée aux vidéos, essayer de récupérer
             if (event.error && event.error.message && event.error.message.includes('video')) {
                 console.log('🔧 Tentative de récupération des erreurs vidéo...');
+                // Réinitialiser les vidéos en cas d'erreur
                 setTimeout(() => {
                     initVideoAutoPlay();
                 }, 1000);
@@ -2986,7 +2985,8 @@
             console.error('❌ Promise rejetée:', event.reason);
         });
 
-        // LAZY LOADING POUR LES VIDÉOS
+        // OPTIMISATIONS PERFORMANCES
+        // Lazy loading pour les vidéos
         const videoLazyLoadObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -3002,6 +3002,7 @@
 
         // NETTOYAGE MÉMOIRE
         window.addEventListener('beforeunload', function() {
+            // Nettoyer les observers
             if (videoAutoPlayObserver) {
                 videoAutoPlayObserver.disconnect();
             }
@@ -3009,16 +3010,10 @@
                 videoLazyLoadObserver.disconnect();
             }
             
+            // Arrêter toutes les vidéos
             pauseAllVideos();
             
-            // Nettoyer tous les listeners de commentaires
-            unsubscribeComments.forEach(unsubscribe => unsubscribe());
-            unsubscribeComments.clear();
-            
-            if (unsubscribePosts) {
-                unsubscribePosts();
-            }
-            
+            // Nettoyer les event listeners
             document.querySelectorAll('video').forEach(video => {
                 video.removeEventListener('timeupdate', updateVideoProgress);
             });
@@ -3026,20 +3021,23 @@
             console.log('🧹 Nettoyage mémoire effectué');
         });
 
-        // SERVICE WORKER
+        // SERVICE WORKER (optionnel pour le cache)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
+                // Ici on pourrait enregistrer un service worker pour le cache
                 console.log('🔧 Service Worker disponible');
             });
         }
 
-        // RACCOURCIS CLAVIER
+        // GESTION DES RACCOURCIS CLAVIER
         document.addEventListener('keydown', function(e) {
+            // Espace pour play/pause de la vidéo courante
             if (e.code === 'Space' && currentPlayingVideo && !e.target.matches('input, textarea')) {
                 e.preventDefault();
                 toggleVideoPlay(currentPlayingVideo);
             }
             
+            // Flèches pour navigation
             if (e.code === 'ArrowLeft' && currentPlayingVideo) {
                 e.preventDefault();
                 currentPlayingVideo.currentTime = Math.max(0, currentPlayingVideo.currentTime - 10);
@@ -3050,13 +3048,14 @@
                 currentPlayingVideo.currentTime = Math.min(currentPlayingVideo.duration, currentPlayingVideo.currentTime + 10);
             }
             
+            // M pour mute/unmute
             if (e.code === 'KeyM' && currentPlayingVideo && !e.target.matches('input, textarea')) {
                 e.preventDefault();
                 toggleVideoMute(currentPlayingVideo);
             }
         });
 
-        console.log('🎉 Script Express Exchange avec synchronisation complète chargé avec succès');
+        console.log('🎉 Script Express Exchange avec support vidéo chargé avec succès');
     </script>
 </body>
 </html>
