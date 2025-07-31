@@ -56,6 +56,204 @@
             }
         }
 
+        /* BARRE DE PROGRESSION UPLOAD STYLE TIKTOK */
+        .upload-progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-progress-container {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: uploadPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes uploadPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .upload-title {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .upload-subtitle {
+            color: #8e8e8e;
+            font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        /* BARRE DE PROGRESSION CIRCULAIRE */
+        .circular-progress {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .circular-progress svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle-bg {
+            fill: none;
+            stroke: #262626;
+            stroke-width: 8;
+        }
+
+        .progress-circle {
+            fill: none;
+            stroke: url(#progressGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .progress-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* BARRE DE PROGRESSION LINÉAIRE */
+        .linear-progress {
+            width: 100%;
+            height: 6px;
+            background: #262626;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .linear-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ff6b6b);
+            background-size: 200% 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .upload-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .upload-speed {
+            color: #0095f6;
+            font-weight: 500;
+        }
+
+        .upload-eta {
+            color: #8e8e8e;
+        }
+
+        .upload-size {
+            color: #ffffff;
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .upload-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 auto 20px;
+            border: 2px solid #333333;
+        }
+
+        .upload-preview img,
+        .upload-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-cancel-btn {
+            background: transparent;
+            color: #ed4956;
+            padding: 12px 24px;
+            border: 1px solid #ed4956;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .upload-cancel-btn:hover {
+            background: rgba(237, 73, 86, 0.1);
+        }
+
+        /* ÉTATS DE SUCCÈS/ERREUR */
+        .upload-success {
+            color: #00d4aa;
+        }
+
+        .upload-error {
+            color: #ed4956;
+        }
+
+        .upload-complete-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
         /* LOADING SPINNER */
         .main-loading-container {
             display: flex;
@@ -1126,6 +1324,23 @@
                 align-items: flex-start;
                 gap: 10px;
             }
+
+            .upload-progress-container {
+                padding: 30px 20px;
+            }
+
+            .circular-progress {
+                width: 100px;
+                height: 100px;
+            }
+
+            .progress-percentage {
+                font-size: 20px;
+            }
+
+            .upload-icon {
+                font-size: 40px;
+            }
         }
 
         /* Scrollbar dark */
@@ -1156,6 +1371,48 @@
 </head>
 <body>
     <div id="particles"></div>
+
+    <!-- OVERLAY DE PROGRESSION D'UPLOAD -->
+    <div id="uploadProgressOverlay" class="upload-progress-overlay">
+        <div class="upload-progress-container">
+            <div class="upload-icon" id="uploadIcon">📤</div>
+            <div class="upload-title" id="uploadTitle">Téléchargement en cours...</div>
+            <div class="upload-subtitle" id="uploadSubtitle">Veuillez patienter pendant l'upload de votre fichier</div>
+            
+            <div class="upload-preview" id="uploadPreview"></div>
+            
+            <!-- Progression circulaire -->
+            <div class="circular-progress">
+                <svg viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ff6b6b"/>
+                            <stop offset="50%" style="stop-color:#ff8e8e"/>
+                            <stop offset="100%" style="stop-color:#ff6b6b"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="60" cy="60" r="54" class="progress-circle-bg"/>
+                    <circle cx="60" cy="60" r="54" class="progress-circle" id="progressCircle" stroke-dasharray="0 339.292"/>
+                </svg>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+            
+            <!-- Progression linéaire -->
+            <div class="linear-progress">
+                <div class="linear-progress-bar" id="linearProgressBar"></div>
+            </div>
+            
+            <!-- Statistiques d'upload -->
+            <div class="upload-stats">
+                <div class="upload-speed" id="uploadSpeed">0 KB/s</div>
+                <div class="upload-eta" id="uploadEta">Calcul...</div>
+            </div>
+            
+            <div class="upload-size" id="uploadSize">0 MB / 0 MB</div>
+            
+            <button class="upload-cancel-btn" id="uploadCancelBtn">Annuler</button>
+        </div>
+    </div>
 
     <div id="registrationOverlay">
         <div class="registration-modal">
@@ -1232,7 +1489,7 @@
     </div>
 
     <script type="module">
-        console.log('🔰 Express Exchange - Version Corrigée avec Auto-Play TikTok');
+        console.log('🔰 Express Exchange - Version avec Upload Progress TikTok Style');
 
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { 
@@ -1290,6 +1547,190 @@
         let videoAutoPlayObserver = null;
         let currentPlayingVideo = null;
         let commentsData = {};
+        let currentUploadController = null;
+
+        // CLASSE DE GESTION DE LA PROGRESSION D'UPLOAD
+        class UploadProgressManager {
+            constructor() {
+                this.overlay = document.getElementById('uploadProgressOverlay');
+                this.icon = document.getElementById('uploadIcon');
+                this.title = document.getElementById('uploadTitle');
+                this.subtitle = document.getElementById('uploadSubtitle');
+                this.preview = document.getElementById('uploadPreview');
+                this.progressCircle = document.getElementById('progressCircle');
+                this.progressPercentage = document.getElementById('progressPercentage');
+                this.linearProgressBar = document.getElementById('linearProgressBar');
+                this.uploadSpeed = document.getElementById('uploadSpeed');
+                this.uploadEta = document.getElementById('uploadEta');
+                this.uploadSize = document.getElementById('uploadSize');
+                this.cancelBtn = document.getElementById('uploadCancelBtn');
+                
+                this.startTime = null;
+                this.lastLoaded = 0;
+                this.lastTime = 0;
+                this.speeds = [];
+                this.totalSize = 0;
+                
+                this.setupCancelButton();
+            }
+            
+            setupCancelButton() {
+                this.cancelBtn.addEventListener('click', () => {
+                    if (currentUploadController) {
+                        currentUploadController.abort();
+                        this.showError('Upload annulé par l\'utilisateur');
+                        setTimeout(() => this.hide(), 2000);
+                    }
+                });
+            }
+            
+            show(file, type) {
+                this.overlay.style.display = 'flex';
+                this.startTime = Date.now();
+                this.lastLoaded = 0;
+                this.lastTime = Date.now();
+                this.speeds = [];
+                this.totalSize = file.size;
+                
+                // Configuration selon le type
+                if (type === 'video') {
+                    this.icon.textContent = '🎥';
+                    this.title.textContent = 'Upload de la vidéo...';
+                    this.subtitle.textContent = 'Compression et téléchargement en cours';
+                } else {
+                    this.icon.textContent = '📷';
+                    this.title.textContent = 'Upload de l\'image...';
+                    this.subtitle.textContent = 'Optimisation et téléchargement en cours';
+                }
+                
+                // Prévisualisation
+                this.showPreview(file, type);
+                
+                // Reset des valeurs
+                this.updateProgress(0);
+                this.updateSize(0, this.totalSize);
+                this.updateSpeed(0);
+                this.updateEta(0);
+            }
+            
+            showPreview(file, type) {
+                const url = URL.createObjectURL(file);
+                if (type === 'video') {
+                    this.preview.innerHTML = `<video src="${url}" muted></video>`;
+                } else {
+                    this.preview.innerHTML = `<img src="${url}" alt="Preview">`;
+                }
+                this.preview.style.display = 'block';
+            }
+            
+            updateProgress(percent) {
+                // Progression circulaire
+                const circumference = 2 * Math.PI * 54; // rayon = 54
+                const offset = circumference - (percent / 100) * circumference;
+                this.progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+                this.progressCircle.style.strokeDashoffset = offset;
+                
+                // Progression linéaire
+                this.linearProgressBar.style.width = percent + '%';
+                
+                // Pourcentage
+                this.progressPercentage.textContent = Math.round(percent) + '%';
+            }
+            
+            updateSize(loaded, total) {
+                const loadedMB = (loaded / (1024 * 1024)).toFixed(1);
+                const totalMB = (total / (1024 * 1024)).toFixed(1);
+                this.uploadSize.textContent = `${loadedMB} MB / ${totalMB} MB`;
+            }
+            
+            updateSpeed(bytesPerSecond) {
+                // Calculer la vitesse moyenne sur les 5 dernières mesures
+                this.speeds.push(bytesPerSecond);
+                if (this.speeds.length > 5) {
+                    this.speeds.shift();
+                }
+                
+                const avgSpeed = this.speeds.reduce((a, b) => a + b, 0) / this.speeds.length;
+                
+                if (avgSpeed > 1024 * 1024) {
+                    this.uploadSpeed.textContent = `${(avgSpeed / (1024 * 1024)).toFixed(1)} MB/s`;
+                } else if (avgSpeed > 1024) {
+                    this.uploadSpeed.textContent = `${(avgSpeed / 1024).toFixed(1)} KB/s`;
+                } else {
+                    this.uploadSpeed.textContent = `${avgSpeed.toFixed(0)} B/s`;
+                }
+            }
+            
+            updateEta(loaded) {
+                if (this.speeds.length === 0) {
+                    this.uploadEta.textContent = 'Calcul...';
+                    return;
+                }
+                
+                const avgSpeed = this.speeds.reduce((a, b) => a + b, 0) / this.speeds.length;
+                const remaining = this.totalSize - loaded;
+                const eta = remaining / avgSpeed;
+                
+                if (eta > 60) {
+                    const minutes = Math.floor(eta / 60);
+                    const seconds = Math.floor(eta % 60);
+                    this.uploadEta.textContent = `${minutes}m ${seconds}s restantes`;
+                } else {
+                    this.uploadEta.textContent = `${Math.floor(eta)}s restantes`;
+                }
+            }
+            
+            onProgress(event) {
+                if (event.lengthComputable) {
+                    const percent = (event.loaded / event.total) * 100;
+                    const currentTime = Date.now();
+                    const timeDiff = (currentTime - this.lastTime) / 1000; // en secondes
+                    const bytesDiff = event.loaded - this.lastLoaded;
+                    
+                    if (timeDiff > 0.5) { // Mise à jour toutes les 500ms
+                        const speed = bytesDiff / timeDiff;
+                        this.updateSpeed(speed);
+                        this.updateEta(event.loaded);
+                        this.lastTime = currentTime;
+                        this.lastLoaded = event.loaded;
+                    }
+                    
+                    this.updateProgress(percent);
+                    this.updateSize(event.loaded, event.total);
+                }
+            }
+            
+            showSuccess(message = 'Upload terminé avec succès !') {
+                this.icon.textContent = '✅';
+                this.title.textContent = 'Succès !';
+                this.title.className = 'upload-title upload-success';
+                this.subtitle.textContent = message;
+                this.updateProgress(100);
+                this.cancelBtn.style.display = 'none';
+                
+                // Cacher automatiquement après 2 secondes
+                setTimeout(() => this.hide(), 2000);
+            }
+            
+            showError(message = 'Erreur lors de l\'upload') {
+                this.icon.textContent = '❌';
+                this.title.textContent = 'Erreur';
+                this.title.className = 'upload-title upload-error';
+                this.subtitle.textContent = message;
+                this.cancelBtn.textContent = 'Fermer';
+            }
+            
+            hide() {
+                this.overlay.style.display = 'none';
+                this.preview.style.display = 'none';
+                this.preview.innerHTML = '';
+                this.title.className = 'upload-title';
+                this.cancelBtn.style.display = 'block';
+                this.cancelBtn.textContent = 'Annuler';
+            }
+        }
+
+        const uploadProgress = new UploadProgressManager();
 
         // CLASSE VIDÉO CORRIGÉE - LIMITE 5 MINUTES
         class VideoProcessor {
@@ -1334,7 +1775,7 @@
             }
         }
 
-        // Classe upload Cloudinary
+        // Classe upload Cloudinary avec progression
         class CloudinaryUploader {
             constructor(config) {
                 this.cloudName = config.cloudName;
@@ -1355,22 +1796,7 @@
                     formData.append('crop', 'scale');
                 }
                 
-                try {
-                    const response = await fetch(this.imageApiUrl, { method: 'POST', body: formData });
-                    if (!response.ok) throw new Error(`Erreur upload: ${response.statusText}`);
-                    const result = await response.json();
-                    return {
-                        url: result.secure_url,
-                        publicId: result.public_id,
-                        width: result.width,
-                        height: result.height,
-                        format: result.format,
-                        bytes: result.bytes
-                    };
-                } catch (error) {
-                    console.error('❌ Erreur upload image:', error);
-                    throw error;
-                }
+                return this.uploadWithProgress(this.imageApiUrl, formData, 'image');
             }
 
             async uploadVideo(file, options = {}) {
@@ -1380,23 +1806,72 @@
                 formData.append('resource_type', 'video');
                 formData.append('quality', 'auto');
                 
-                try {
-                    const response = await fetch(this.videoApiUrl, { method: 'POST', body: formData });
-                    if (!response.ok) throw new Error(`Erreur upload vidéo: ${response.statusText}`);
-                    const result = await response.json();
-                    return {
-                        url: result.secure_url,
-                        publicId: result.public_id,
-                        width: result.width,
-                        height: result.height,
-                        format: result.format,
-                        bytes: result.bytes,
-                        duration: result.duration
+                return this.uploadWithProgress(this.videoApiUrl, formData, 'video');
+            }
+            
+            async uploadWithProgress(url, formData, type) {
+                return new Promise((resolve, reject) => {
+                    // Créer un contrôleur pour pouvoir annuler
+                    currentUploadController = new AbortController();
+                    
+                    const xhr = new XMLHttpRequest();
+                    
+                    // Gestion de la progression
+                    xhr.upload.addEventListener('progress', (event) => {
+                        uploadProgress.onProgress(event);
+                    });
+                    
+                    // Gestion de la réponse
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            try {
+                                const result = JSON.parse(xhr.responseText);
+                                const uploadResult = {
+                                    url: result.secure_url,
+                                    publicId: result.public_id,
+                                    width: result.width,
+                                    height: result.height,
+                                    format: result.format,
+                                    bytes: result.bytes
+                                };
+                                
+                                if (type === 'video') {
+                                    uploadResult.duration = result.duration;
+                                }
+                                
+                                uploadProgress.showSuccess();
+                                resolve(uploadResult);
+                            } catch (error) {
+                                uploadProgress.showError('Erreur lors du traitement du fichier');
+                                reject(error);
+                            }
+                        } else {
+                            uploadProgress.showError(`Erreur serveur: ${xhr.statusText}`);
+                            reject(new Error(`Erreur upload: ${xhr.statusText}`));
+                        }
                     };
-                } catch (error) {
-                    console.error('❌ Erreur upload vidéo:', error);
-                    throw error;
-                }
+                    
+                    // Gestion des erreurs
+                    xhr.onerror = function() {
+                        uploadProgress.showError('Erreur de connexion');
+                        reject(new Error('Erreur de connexion'));
+                    };
+                    
+                    // Gestion de l'annulation
+                    xhr.onabort = function() {
+                        uploadProgress.showError('Upload annulé');
+                        reject(new Error('Upload annulé'));
+                    };
+                    
+                    // Associer le contrôleur d'annulation
+                    currentUploadController.signal.addEventListener('abort', () => {
+                        xhr.abort();
+                    });
+                    
+                    // Démarrer l'upload
+                    xhr.open('POST', url);
+                    xhr.send(formData);
+                });
             }
         }
 
@@ -2235,20 +2710,18 @@
         window.toggleComments = function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
             if (commentsSection) {
-                const isVisible = commentsSection.style.display !== 'none';
+                const isVisible= commentsSection.style.display !== 'none';
                 commentsSection.style.display = isVisible ? 'none' : 'block';
                 
                 if (!isVisible) {
-                    const commentInput = commentsSection.querySelector('.comment-input');
-                    if (commentInput) {
-                        setTimeout(() => commentInput.focus(), 100);
-                    }
+                    const input = commentsSection.querySelector('.comment-input');
+                    if (input) input.focus();
                 }
             }
         };
 
         window.handleCommentKeyPress = function(event, postId) {
-            if (event.key === 'Enter' && !event.shiftKey) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
                 submitComment(postId);
             }
@@ -2260,140 +2733,167 @@
                 return;
             }
 
-            const commentInput = document.querySelector(`#comments-${postId} .comment-input`);
-            const commentText = commentInput?.value.trim();
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (!commentsSection) return;
 
-            if (!commentText) {
-                alert('Veuillez saisir un commentaire');
-                return;
-            }
+            const input = commentsSection.querySelector('.comment-input');
+            const text = input.value.trim();
 
+            if (!text) return;
+
+            const btn = commentsSection.querySelector('.comment-btn');
+            const originalText = btn.textContent;
+            
             try {
-                const comment = {
+                btn.disabled = true;
+                btn.textContent = '...';
+                
+                await addDoc(collection(db, 'comments'), {
                     postId: postId,
+                    text: text,
                     authorId: userData.id,
                     authorName: userData.fullName,
                     authorAvatar: userData.avatar,
-                    text: commentText,
                     timestamp: serverTimestamp()
-                };
+                });
 
-                await addDoc(collection(db, 'comments'), comment);
-                
-                if (commentInput) {
-                    commentInput.value = '';
-                }
-
-                console.log('💬 Commentaire ajouté');
+                input.value = '';
+                console.log('✅ Commentaire ajouté');
 
             } catch (error) {
                 console.error('❌ Erreur commentaire:', error);
-                alert('Erreur lors de la publication du commentaire');
+                alert('Erreur lors de l\'ajout du commentaire');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         };
 
         window.loadMoreComments = function(postId) {
             const commentsSection = document.getElementById(`comments-${postId}`);
+            if (!commentsSection) return;
+
             const allComments = commentsData[postId] || [];
-            
-            if (commentsSection && allComments.length > 3) {
-                const commentsHTML = allComments.map(comment => `
-                    <div class="comment">
-                        <div class="comment-header">
-                            <div class="comment-avatar">${comment.authorAvatar || 'U'}</div>
-                            <div class="comment-username">${escapeHtml(comment.authorName || 'Utilisateur')}</div>
-                            <div class="comment-time">${getTimeAgo(comment.timestamp?.toDate ? comment.timestamp.toDate() : new Date(comment.timestamp))}</div>
-                        </div>
-                        <div class="comment-text">${escapeHtml(comment.text || '')}</div>
+            const commentsHTML = allComments.map(comment => `
+                <div class="comment">
+                    <div class="comment-header">
+                        <div class="comment-avatar">${comment.authorAvatar || 'U'}</div>
+                        <div class="comment-username">${escapeHtml(comment.authorName || 'Utilisateur')}</div>
+                        <div class="comment-time">${getTimeAgo(comment.timestamp?.toDate ? comment.timestamp.toDate() : new Date(comment.timestamp))}</div>
                     </div>
-                `).join('');
+                    <div class="comment-text">${escapeHtml(comment.text || '')}</div>
+                </div>
+            `).join('');
 
-                // Remplacer les commentaires existants
-                const existingComments = commentsSection.querySelectorAll('.comment');
-                existingComments.forEach(comment => comment.remove());
-                
-                const loadMoreBtn = commentsSection.querySelector('.action-btn');
-                if (loadMoreBtn) {
-                    loadMoreBtn.insertAdjacentHTML('beforebegin', commentsHTML);
-                    loadMoreBtn.style.display = 'none';
-                }
-            }
+            const commentForm = commentsSection.querySelector('.comment-form');
+            commentsSection.innerHTML = commentsHTML + (commentForm ? commentForm.outerHTML : '');
         };
 
-        // PARTAGE
-        window.sharePost = function(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            const shareText = `Regardez cette publication de ${post.author} sur Express Exchange`;
-            const shareUrl = `${window.location.origin}?post=${postId}`;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Express Exchange',
-                    text: shareText,
-                    url: shareUrl
-                }).catch(err => console.log('Erreur partage:', err));
-            } else {
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    alert('Lien copié dans le presse-papiers !');
-                }).catch(() => {
-                    alert(`Partagez ce lien: ${shareUrl}`);
-                });
-            }
-        };
-
-        // MENU PUBLICATION
+        // GESTION DES PUBLICATIONS
         window.showPostMenu = function(postId) {
             const post = posts.find(p => p.id === postId);
             if (!post) return;
 
             const isOwner = post.authorId === userData?.id;
+            let menu = 'Options:\n';
             
             if (isOwner) {
-                if (confirm('Voulez-vous supprimer cette publication ?')) {
-                    deletePost(postId);
-                }
-            } else {
-                if (confirm('Voulez-vous signaler cette publication ?')) {
-                    alert('Publication signalée. Merci pour votre retour.');
-                }
+                menu += '1. Supprimer\n';
+            }
+            menu += '2. Signaler\n3. Copier le lien';
+
+            const choice = prompt(menu);
+            
+            if (choice === '1' && isOwner) {
+                deletePost(postId);
+            } else if (choice === '2') {
+                alert('Publication signalée');
+            } else if (choice === '3') {
+                navigator.clipboard.writeText(`${window.location.origin}#post-${postId}`)
+                    .then(() => alert('Lien copié'))
+                    .catch(() => alert('Impossible de copier le lien'));
             }
         };
 
         async function deletePost(postId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
+                return;
+            }
+
             try {
                 await deleteDoc(doc(db, 'posts', postId));
-                console.log('🗑️ Publication supprimée');
+                
+                // Supprimer les likes associés
+                const likesSnapshot = await getDocs(
+                    query(collection(db, 'likes'), where('postId', '==', postId))
+                );
+                const deletePromises = likesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                
+                // Supprimer les commentaires associés
+                const commentsSnapshot = await getDocs(
+                    query(collection(db, 'comments'), where('postId', '==', postId))
+                );
+                deletePromises.push(...commentsSnapshot.docs.map(doc => deleteDoc(doc.ref)));
+                
+                await Promise.all(deletePromises);
+                
+                console.log('✅ Publication supprimée');
+                alert('Publication supprimée avec succès');
+
             } catch (error) {
                 console.error('❌ Erreur suppression:', error);
                 alert('Erreur lors de la suppression');
             }
         }
 
-        // MODAL IMAGE
-        window.openImageModal = function(imageUrl) {
-            const modal = document.getElementById('modalImageView');
-            const modalImg = document.getElementById('modalImageBig');
+        window.sharePost = function(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const text = `Découvrez cette publication sur Express Exchange:\n\n"${post.text || 'Contenu multimédia'}"`;
             
-            if (modal && modalImg) {
-                modalImg.src = imageUrl;
-                modal.style.display = 'flex';
-                
-                modal.onclick = function(e) {
-                    if (e.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                };
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Express Exchange',
+                    text: text,
+                    url: `${window.location.origin}#post-${postId}`
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(`${text}\n\n${window.location.origin}#post-${postId}`)
+                    .then(() => alert('Lien copié dans le presse-papiers'))
+                    .catch(() => {
+                        prompt('Copiez ce lien:', `${window.location.origin}#post-${postId}`);
+                    });
             }
         };
 
-        // GESTION DES FICHIERS
+        // GESTION DES MODALES
+        window.openImageModal = function(imageUrl) {
+            const modal = document.getElementById('modalImageView');
+            const img = document.getElementById('modalImageBig');
+            if (modal && img) {
+                img.src = imageUrl;
+                modal.style.display = 'flex';
+                modal.onclick = closeImageModal;
+            }
+        };
+
+        window.closeImageModal = function() {
+            const modal = document.getElementById('modalImageView');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // PUBLICATION DE CONTENU
+        const publishBtn = document.getElementById('publishBtn');
+        const postText = document.getElementById('postText');
         const fileInput = document.getElementById('fileInput');
         const videoInput = document.getElementById('videoInput');
         const mediaPreview = document.getElementById('mediaPreview');
         const fileName = document.getElementById('fileName');
 
+        // Gestion des fichiers
         if (fileInput) {
             fileInput.addEventListener('change', handleFileSelect);
         }
@@ -2402,151 +2902,166 @@
             videoInput.addEventListener('change', handleVideoSelect);
         }
 
-        async function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (file) {
-                currentSelectedFile = file;
-                updateMediaPreview(file, 'image');
-            }
-        }
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        async function handleVideoSelect(e) {
-            const file = e.target.files[0];
-            if (file) {
-                try {
-                    // Vérifier la durée AVANT de traiter
-                    const duration = await VideoProcessor.getVideoDuration(file);
-                    if (duration > 300) { // 5 minutes
-                        alert(`Vidéo trop longue (${VideoProcessor.formatDuration(duration)}). Limite: 5 minutes.`);
-                        e.target.value = '';
-                        return;
-                    }
-                    
-                    currentSelectedFile = file;
-                    updateMediaPreview(file, 'video');
-                } catch (error) {
-                    alert(`Erreur: ${error.message}`);
-                    e.target.value = '';
-                }
-            }
-        }
-
-        function updateMediaPreview(file, type) {
-            if (!mediaPreview || !fileName) return;
-
-            fileName.textContent = file.name;
-            
-            if (type === 'video') {
-                const videoUrl = URL.createObjectURL(file);
-                mediaPreview.innerHTML = `
-                    <div class="video-preview">
-                        <video controls style="width: 100%; max-width: 300px;">
-                            <source src="${videoUrl}" type="${file.type}">
-                        </video>
-                        <button onclick="removeSelectedFile()" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">×</button>
-                    </div>
-                `;
-            } else if (type === 'image') {
-                const imageUrl = URL.createObjectURL(file);
-                mediaPreview.innerHTML = `
-                    <div style="position: relative; display: inline-block;">
-                        <img src="${imageUrl}" style="max-width: 300px; max-height: 300px; border-radius: 8px;">
-                        <button onclick="removeSelectedFile()" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">×</button>
-                    </div>
-                `;
-            }
-        }
-
-        window.removeSelectedFile = function() {
-            currentSelectedFile = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('videoInput').value = '';
-            document.getElementById('fileName').textContent = '';
-            document.getElementById('mediaPreview').innerHTML = '';
-        };
-
-        // PUBLICATION
-        const publishBtn = document.getElementById('publishBtn');
-        if (publishBtn) {
-            publishBtn.addEventListener('click', publishPost);
-        }
-
-        async function publishPost() {
-            const postText = document.getElementById('postText').value.trim();
-            
-            if (!postText && !currentSelectedFile) {
-                alert('Veuillez saisir du texte ou sélectionner un fichier');
+            // Vérifier la taille (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Le fichier est trop volumineux (max 10MB)');
+                event.target.value = '';
                 return;
             }
 
-            if (!userData || !userData.id) {
-                alert('Erreur: utilisateur non connecté');
+            currentSelectedFile = { file, type: 'image' };
+            showMediaPreview(file, 'image');
+        }
+
+        async function handleVideoSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Vérifier la taille (max 50MB)
+            if (file.size > 50 * 1024 * 1024) {
+                alert('La vidéo est trop volumineuse (max 50MB)');
+                event.target.value = '';
                 return;
             }
-
-            const publishBtn = document.getElementById('publishBtn');
-            const originalText = publishBtn.textContent;
-            publishBtn.disabled = true;
-            publishBtn.textContent = 'Publication...';
 
             try {
-                const postData = {
-                    authorId: userData.id,
-                    author: userData.fullName,
-                    avatar: userData.avatar,
-                    text: postText || '',
-                    timestamp: serverTimestamp(),
-                    likesCount: 0,
-                    commentsCount: 0
-                };
-
-                // Upload du fichier si présent
-                if (currentSelectedFile) {
-                    if (currentSelectedFile.type.startsWith('video/')) {
-                        publishBtn.textContent = 'Upload vidéo...';
-                        
-                        // Vérification finale de la durée
-                        const processedVideo = await VideoProcessor.trimVideo(currentSelectedFile, 300);
-                        const videoDuration = await VideoProcessor.getVideoDuration(processedVideo);
-                        
-                        const videoResult = await uploader.uploadVideo(processedVideo);
-                        
-                        postData.videoUrl = videoResult.url;
-                        postData.videoDuration = videoDuration;
-                        postData.videoWidth = videoResult.width;
-                        postData.videoHeight = videoResult.height;
-                        
-                    } else if (currentSelectedFile.type.startsWith('image/')) {
-                        publishBtn.textContent = 'Upload image...';
-                        
-                        const imageResult = await uploader.uploadImage(currentSelectedFile, {
-                            maxWidth: 1080
-                        });
-                        
-                        postData.imageUrl = imageResult.url;
-                        postData.imageWidth = imageResult.width;
-                        postData.imageHeight = imageResult.height;
-                    }
-                }
-
-                publishBtn.textContent = 'Finalisation...';
+                // Vérifier la durée (max 5 minutes)
+                await VideoProcessor.trimVideo(file, 300);
                 
-                // Sauvegarder dans Firebase
-                await addDoc(collection(db, 'posts'), postData);
-                
-                // Reset du formulaire
-                document.getElementById('postText').value = '';
-                removeSelectedFile();
-                
-                console.log('✅ Publication créée avec succès');
+                const duration = await VideoProcessor.getVideoDuration(file);
+                currentSelectedFile = { file, type: 'video', duration };
+                showMediaPreview(file, 'video', duration);
                 
             } catch (error) {
-                console.error('❌ Erreur publication:', error);
-                alert(`Erreur: ${error.message}`);
-            } finally {
-                publishBtn.disabled = false;
-                publishBtn.textContent = originalText;
+                alert(error.message);
+                event.target.value = '';
+                currentSelectedFile = null;
             }
+        }
+
+        function showMediaPreview(file, type, duration = null) {
+            if (!mediaPreview || !fileName) return;
+
+            const url = URL.createObjectURL(file);
+            fileName.textContent = `📎 ${file.name}`;
+
+            if (type === 'video') {
+                const durationText = duration ? VideoProcessor.formatDuration(duration) : '';
+                const warningClass = duration > 300 ? 'warning' : '';
+                
+                mediaPreview.innerHTML = `
+                    <div class="video-preview">
+                        <video controls muted>
+                            <source src="${url}" type="video/mp4">
+                        </video>
+                        <div class="video-duration ${warningClass}">${durationText}</div>
+                        <div class="video-processing">
+                            <div class="processing-spinner"></div>
+                            Traitement...
+                        </div>
+                    </div>
+                    <button onclick="clearMediaPreview()" style="margin-top: 10px; padding: 6px 12px; background: #ed4956; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        ❌ Supprimer
+                    </button>
+                `;
+            } else {
+                mediaPreview.innerHTML = `
+                    <div style="max-width: 250px;">
+                        <img src="${url}" style="width: 100%; height: auto; border-radius: 8px;" alt="Aperçu">
+                    </div>
+                    <button onclick="clearMediaPreview()" style="margin-top: 10px; padding: 6px 12px; background: #ed4956; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        ❌ Supprimer
+                    </button>
+                `;
+            }
+        }
+
+        window.clearMediaPreview = function() {
+            if (mediaPreview) mediaPreview.innerHTML = '';
+            if (fileName) fileName.textContent = '';
+            if (fileInput) fileInput.value = '';
+            if (videoInput) videoInput.value = '';
+            currentSelectedFile = null;
+        };
+
+        // Publication
+        if (publishBtn) {
+            publishBtn.addEventListener('click', async function() {
+                const text = postText?.value?.trim();
+                
+                if (!text && !currentSelectedFile) {
+                    alert('Veuillez saisir du texte ou sélectionner un fichier');
+                    return;
+                }
+
+                if (!userData) {
+                    alert('Vous devez être connecté pour publier');
+                    return;
+                }
+
+                const originalText = publishBtn.textContent;
+                publishBtn.disabled = true;
+                publishBtn.innerHTML = '<div class="loading-spinner"></div>Publication...';
+
+                try {
+                    let mediaUrl = null;
+                    let videoDuration = null;
+
+                    if (currentSelectedFile) {
+                        console.log(`📤 Upload ${currentSelectedFile.type}...`);
+                        
+                        // Afficher la progression d'upload
+                        uploadProgress.show(currentSelectedFile.file, currentSelectedFile.type);
+
+                        if (currentSelectedFile.type === 'video') {
+                            const result = await uploader.uploadVideo(currentSelectedFile.file);
+                            mediaUrl = result.url;
+                            videoDuration = result.duration || currentSelectedFile.duration;
+                        } else {
+                            const result = await uploader.uploadImage(currentSelectedFile.file, { maxWidth: 1080 });
+                            mediaUrl = result.url;
+                        }
+
+                        console.log('✅ Upload terminé:', mediaUrl);
+                    }
+
+                    // Créer la publication
+                    const postData = {
+                        text: text || '',
+                        author: userData.fullName,
+                        authorId: userData.id,
+                        avatar: userData.avatar,
+                        timestamp: serverTimestamp()
+                    };
+
+                    if (currentSelectedFile?.type === 'video') {
+                        postData.videoUrl = mediaUrl;
+                        postData.videoDuration = videoDuration;
+                    } else if (currentSelectedFile?.type === 'image') {
+                        postData.imageUrl = mediaUrl;
+                    }
+
+                    await addDoc(collection(db, 'posts'), postData);
+
+                    // Reset du formulaire
+                    if (postText) postText.value = '';
+                    clearMediaPreview();
+                    
+                    console.log('✅ Publication créée');
+
+                } catch (error) {
+                    console.error('❌ Erreur publication:', error);
+                    uploadProgress.showError(error.message);
+                    setTimeout(() => uploadProgress.hide(), 3000);
+                } finally {
+                    publishBtn.disabled = false;
+                    publishBtn.textContent = originalText;
+                }
+            });
         }
 
         // MES PUBLICATIONS
@@ -2560,105 +3075,123 @@
 
         if (closeMyPostsModal) {
             closeMyPostsModal.addEventListener('click', () => {
-                myPostsModal.style.display = 'none';
+                if (myPostsModal) myPostsModal.style.display = 'none';
             });
         }
 
-        function showMyPosts() {
-            if (!userData) return;
-            
-            const myPosts = posts.filter(post => post.authorId === userData.id);
+        async function showMyPosts() {
+            if (!userData || !myPostsModal) return;
+
+            myPostsModal.style.display = 'flex';
             const myPostsList = document.getElementById('myPostsList');
             
-            if (myPosts.length === 0) {
-                myPostsList.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aucune publication</h3>
-                        <p>Vous n'avez pas encore publié de contenu</p>
-                    </div>
-                `;
-            } else {
-                myPostsList.innerHTML = myPosts.map(post => `
-                    <div class="my-post-item">
-                        <div class="my-post-thumbnail">
-                            ${post.videoUrl ? 
-                                `<video src="${post.videoUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"></video>` :
-                                post.imageUrl ? 
-                                `<img src="${post.imageUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">` :
-                                `<div style="width: 60px; height: 60px; background: #262626; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8e8e8e;">📝</div>`
-                            }
-                        </div>
-                        <div class="my-post-content">
-                            <div class="my-post-text">${escapeHtml(post.text || 'Publication sans texte')}</div>
-                            <div class="my-post-time">${getTimeAgo(post.timestamp?.toDate ? post.timestamp.toDate() : new Date(post.timestamp))}</div>
-                        </div>
-                        <button class="my-post-delete" onclick="deleteMyPost('${post.id}')">Supprimer</button>
-                    </div>
-                `).join('');
+            if (myPostsList) {
+                myPostsList.innerHTML = '<div style="text-align: center; padding: 20px;">Chargement...</div>';
+
+                try {
+                    const myPosts = posts.filter(post => post.authorId === userData.id);
+                    
+                    if (myPosts.length === 0) {
+                        myPostsList.innerHTML = `
+                            <div class="empty-state">
+                                <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                                <h3>Aucune publication</h3>
+                                <p>Vous n'avez pas encore publié de contenu</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const postsHTML = myPosts.map(post => {
+                        const timeAgo = getTimeAgo(post.timestamp?.toDate ? post.timestamp.toDate() : new Date(post.timestamp));
+                        
+                        return `
+                            <div style="background: #262626; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="color: #8e8e8e; font-size: 12px;">${timeAgo}</span>
+                                    <button onclick="deletePost('${post.id}')" style="background: #ed4956; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                        🗑️ Supprimer
+                                    </button>
+                                </div>
+                                ${post.text ? `<p style="color: #ffffff; margin-bottom: 8px; line-height: 1.4;">${escapeHtml(post.text)}</p>` : ''}
+                                ${post.videoUrl ? `<p style="color: #0095f6; font-size: 14px;">🎥 Vidéo (${post.videoDuration ? VideoProcessor.formatDuration(post.videoDuration) : 'Durée inconnue'})</p>` : ''}
+                                ${post.imageUrl ? `<p style="color: #0095f6; font-size: 14px;">📷 Image</p>` : ''}
+                                <div style="display: flex; gap: 16px; margin-top: 8px;">
+                                    <span style="color: #8e8e8e; font-size: 13px;">❤️ ${post.likesCount || 0}</span>
+                                    <span style="color: #8e8e8e; font-size: 13px;">💬 ${post.commentsCount || 0}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    myPostsList.innerHTML = postsHTML;
+
+                } catch (error) {
+                    console.error('❌ Erreur mes publications:', error);
+                    myPostsList.innerHTML = '<div style="text-align: center; color: #ed4956; padding: 20px;">Erreur de chargement</div>';
+                }
             }
-            
-            myPostsModal.style.display = 'flex';
         }
 
-        window.deleteMyPost = async function(postId) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette publication ?')) {
-                return;
-            }
-            
-            try {
-                await deleteDoc(doc(db, 'posts', postId));
-                showMyPosts(); // Recharger la liste
-                console.log('🗑️ Ma publication supprimée');
-            } catch (error) {
-                console.error('❌ Erreur suppression:', error);
-                alert('Erreur lors de la suppression');
-            }
-        };
-
-        // ÉVÉNEMENTS SYSTÈME
-        window.addEventListener('online', function() {
+        // GESTION DES ÉVÉNEMENTS GLOBAUX
+        window.addEventListener('online', () => {
             isOnline = true;
             updateConnectionStatus();
-            console.log('🌐 Connexion rétablie');
+            console.log('🟢 Connexion rétablie');
         });
 
-        window.addEventListener('offline', function() {
+        window.addEventListener('offline', () => {
             isOnline = false;
             updateConnectionStatus();
-            console.log('📡 Connexion perdue');
+            console.log('🔴 Connexion perdue');
         });
 
-        window.addEventListener('resize', function() {
-            createParticles();
+        // Fermeture des modales avec Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeImageModal();
+                if (myPostsModal) myPostsModal.style.display = 'none';
+            }
         });
 
-        window.addEventListener('beforeunload', function() {
+        // Pause vidéos quand on change d'onglet
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                pauseAllVideos();
+            }
+        });
+
+        // NETTOYAGE
+        window.addEventListener('beforeunload', () => {
             if (unsubscribePosts) unsubscribePosts();
             if (unsubscribeComments) unsubscribeComments();
             if (videoAutoPlayObserver) videoAutoPlayObserver.disconnect();
-            pauseAllVideos();
         });
-
-        // DÉCONNEXION
-        window.logout = function() {
-            console.log('🚪 Déconnexion...');
-            sessionStorage.removeItem('expressExchangeUser');
-            localStorage.removeItem('expressExchangeUser');
-            location.reload();
-        };
 
         // INITIALISATION
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initialisation Express Exchange...');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Express Exchange - Initialisation');
             createParticles();
-            updateConnectionStatus();
+            checkUserRegistration();
             
-            setTimeout(() => {
-                checkUserRegistration();
-            }, 100);
+            // Auto-créer des particules périodiquement
+            setInterval(createParticles, 10000);
         });
 
-        console.log('🎉 Express Exchange - Script complet chargé avec succès');
+        // Si la page est déjà chargée
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('🚀 Express Exchange - Initialisation (ready state)');
+                createParticles();
+                checkUserRegistration();
+            });
+        } else {
+            console.log('🚀 Express Exchange - Initialisation immédiate');
+            createParticles();
+            checkUserRegistration();
+        }
+
+        console.log('✅ Express Exchange - Script chargé');
     </script>
 </body>
 </html>
