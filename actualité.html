@@ -359,14 +359,18 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .welcome-text {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.welcome-text {
+    font-size: 24px;
+    font-weight: 700;
+    /* Dégradé en fond */
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    /* Clip le fond sur le texte pour Webkit (Chrome/Safari/Edge) */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* Clip le fond sur le texte pour Firefox */
+    background-clip: text;
+    color: transparent;
+}
 
         .header-actions {
             display: flex;
@@ -1568,6 +1572,7 @@
             <div class="publish-controls">
                 <div style="display: flex; gap: 8px;">
                     <button id="showMyProfileBtn" class="profile-btn">Mon profil</button>
+                    <button class="nav-btn" onclick="location.href='message.html'">Retrouvez vos amis</button>
                     <button id="showMyPostsBtn" class="profile-btn">Mes posts</button>
                 </div>
                 <button id="publishBtn" class="publish-btn">Publier</button>
@@ -2589,6 +2594,38 @@
                 });
             }
         }
+
+        (function() {
+    // Nom de la clé utilisée pour la session
+    const USER_KEY = 'expressExchangeUser';
+
+    // Si la session existe en sessionStorage mais pas en localStorage, on la copie
+    if (sessionStorage.getItem(USER_KEY) && !localStorage.getItem(USER_KEY)) {
+        localStorage.setItem(USER_KEY, sessionStorage.getItem(USER_KEY));
+    }
+
+    // Override les méthodes natives pour utiliser localStorage à la place de sessionStorage
+    window.sessionStorage.setItem = function(key, value) {
+        if (key === USER_KEY) {
+            localStorage.setItem(key, value);
+        } else {
+            Storage.prototype.setItem.call(sessionStorage, key, value);
+        }
+    };
+    window.sessionStorage.getItem = function(key) {
+        if (key === USER_KEY) {
+            return localStorage.getItem(key);
+        }
+        return Storage.prototype.getItem.call(sessionStorage, key);
+    };
+    window.sessionStorage.removeItem = function(key) {
+        if (key === USER_KEY) {
+            localStorage.removeItem(key);
+        } else {
+            Storage.prototype.removeItem.call(sessionStorage, key);
+        }
+    };
+})();
 
         // DÉCONNEXION CORRIGÉE
         function setupLogout() {
